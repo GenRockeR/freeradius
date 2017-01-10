@@ -54,7 +54,7 @@ authorize {
 	#  See policy.d/filter for the definition of the filter_username policy.
 	#
 	filter_username
-
+	python
 	#
 	#  Do checks on outer / inner User-Name, so that users
 	#  can't spoof us by using incompatible identities
