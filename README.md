@@ -3,11 +3,12 @@ freeradius
 
 This is a freeradius setup that uses a python script to control user-password authentication and MACs to place user+MAC combinations into the proper vlan
 
+to have freeradius actually able to execute the python scripts
 ```
 vim /etc/environment
 ---
 # append
-PYTHONPATH=/etc/raddb/mods-config/python/network.json
+PYTHONPATH=/etc/raddb/mods-config/python/
 ```
 
 install python2 and freeradius
