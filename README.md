@@ -1,7 +1,7 @@
 freeradius
 ===
 
-This is a freeradius setup that uses a python script to control user-password authentication and MACs to place user+MAC combinations into the proper vlan
+This is a freeradius setup that uses a python script to control user-password authentication and MACs to place user+MAC combinations into the proper vlan. This was done on Arch linux
 
 to have freeradius actually able to execute the python scripts
 ```
@@ -9,6 +9,13 @@ vim /etc/environment
 ---
 # append
 PYTHONPATH=/etc/raddb/mods-config/python/
+```
+
+```
+vim /usr/lib/systemd/system/freeradius.service
+---
+# add to the [Service] section
+Environment=PYTHONPATH=/etc/raddb/mods-config/python/
 ```
 
 install python2 and freeradius
