@@ -1,3 +1,4 @@
 users
 mods-config/files/authorize
 clients.conf
+*.pyc

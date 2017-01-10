@@ -279,7 +279,7 @@ authorize {
 	#  It takes care of processing the 'raddb/mods-config/preprocess/hints' 
 	#  and the 'raddb/mods-config/preprocess/huntgroups' files.
 	preprocess
-
+	python
 	#  If you intend to use CUI and you require that the Operator-Name
 	#  be set for CUI generation and you want to generate CUI also
 	#  for your local clients then uncomment the operator-name
@@ -469,6 +469,7 @@ authenticate {
 
 	#
 	#  MSCHAP authentication.
+	python
 	Auth-Type MS-CHAP {
 		mschap
 	}
@@ -591,6 +592,7 @@ accounting {
 	#  Note that accounting requests which are proxied
 	#  are also logged in the detail file.
 	detail
+	python
 #	daily
 
 	#  Update the wtmp file
