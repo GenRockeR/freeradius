@@ -7,7 +7,7 @@ This is a freeradius setup that uses a python script to control user-password au
 
 * This expects _ALL_ endpoints to support peap+mschapv2 (tested on Android 7.1.1, Arch using NetworkManager, and Windows 10)
 * Avoids deviating from standard configs at all, assumes users are capable of handling things like systemd themselves
-* The "default" config is the open point (e.g. ports 1812 and 1813 are open) so it has been stripped down where possible
+* The "default" config is the open point (e.g. ports 1812 and 1813 are open for udp traffic) so it has been stripped down where possible
 
 # setup
 
