@@ -17,30 +17,44 @@ def byteify(input):
 # json keys
 PASS_KEY = "pass"
 MAC_KEY = "macs"
+USER_KEY = "users"
+VLAN_KEY = "vlans"
 
-def _user_config(user_name):
+def _config(user_name):
   """get a user config from file."""
   with open('/etc/raddb/mods-config/python/network.json') as f:
     obj = byteify(json.loads(f.read()))
-    if user_name in obj:
-      return obj[user_name]
+    users = obj[USER_KEY]
+    vlans = obj[VLAN_KEY]
+    user_obj = None
+    vlan_obj = None
+    if "." in user_name:
+      parts = user_name.split(".")
+      vlan = parts[0]
+      if user_name in users:
+        user_obj = users[user_name]
+      if vlan in vlans:
+        vlan_obj = vlans[vlan]
+    return (user_obj, vlan_obj)
 
 def _get_pass(user_name):
   """set the configuration for down-the-line modules."""
-  user = _user_config(user_name)
+  config = _config(user_name)
+  user = config[0]
   if user is not None:
-    config = ()
     if PASS_KEY in user:
       return user[PASS_KEY]
 
 def _get_vlan(user_name, mac):
   """set the reply for a user and mac."""
-  user = _user_config(user_name)
-  if user is not None:
+  config = _config(user_name)
+  user = config[0]
+  vlan = config[1]
+  if user is not None and vlan is not None:
     if MAC_KEY in user:
       macs = user[MAC_KEY]
       if mac in macs:
-        return str(macs[mac])
+        return vlan
 
 def _get_user_mac(p):
   """extract user/mac from request."""
