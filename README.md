@@ -3,6 +3,12 @@ freeradius
 
 This is a freeradius setup that uses a python script to control user-password authentication and MACs to place user+MAC combinations into the proper vlan. This was done on Arch linux (in a container, as root)
 
+# notes
+
+* This expects _ALL_ endpoints to support peap+mschapv2 (tested on Android 7.1.1, Arch using NetworkManager, and Windows 10)
+* Avoids deviating from standard configs at all, assumes users are capable of handling things like systemd themselves
+* The "default" config is the open point (e.g. ports 1812 and 1813 are open) so it has been stripped down where possible
+
 # setup
 
 to have freeradius actually able to execute the python scripts
