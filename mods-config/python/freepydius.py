@@ -107,7 +107,7 @@ def checksimul(p):
   return radiusd.RLM_MODULE_OK
 
 def authorize(p):
-  _log("authenticate", p)
+  _log("authorize", p)
   print "*** authorize ***"
   print
   radiusd.radlog(radiusd.L_INFO, '*** radlog call in authorize ***')
@@ -139,7 +139,7 @@ def preacct(p):
   return radiusd.RLM_MODULE_OK
 
 def accounting(p):
-  _log("authenticate", p)
+  _log("accounting", p)
   print "*** accounting ***"
   radiusd.radlog(radiusd.L_INFO, '*** radlog call in accounting (0) ***')
   print
@@ -157,7 +157,7 @@ def post_proxy(p):
   return radiusd.RLM_MODULE_OK
 
 def post_auth(p):
-  _log("authenticate", p)
+  _log("post_auth", p)
   print "*** post_auth ***"
   print p
   user_mac = _get_user_mac(p)
