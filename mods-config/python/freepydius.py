@@ -1,6 +1,9 @@
 import radiusd
 import json
-
+import logging
+import threading
+import uuid
+from logging.handlers import TimedRotatingFileHandler
 """Supports user + mac mapping and general configuration."""
 
 
@@ -19,6 +22,8 @@ PASS_KEY = "pass"
 MAC_KEY = "macs"
 USER_KEY = "users"
 VLAN_KEY = "vlans"
+rlock = threading.RLock()
+logger = None
 
 def _config(user_name):
   """get a user config from file."""
@@ -67,13 +72,30 @@ def _get_user_mac(p):
       mac = item[1].replace(":", "").replace("-", "").lower()
   return (user_name, mac)
 
+def _log(name, params):
+  """common logging."""
+  with rlock:
+    if logger is not None:
+      logger.info("{0} -> {1}".format(name, params))
+
 def instantiate(p):
   print "*** instantiate ***"
   print p
   # return 0 for success or -1 for failure
+  with rlock:
+    global logger
+    logger = logging.getLogger("freepydius-logger")
+    logger.setLevel(logging.INFO)
+    uid = str(uuid.uuid4())
+    handler = TimedRotatingFileHandler("/var/log/radius/freepydius/trace-{0}.log".format(uid),
+                                       when="midnight",
+                                       interval=1)
+    logger.addHandler(handler)
+    logger.info('created')
   return 0
 
 def authenticate(p):
+  _log("authenticate", p)
   radiusd.radlog(radiusd.L_INFO, '*** radlog call in authenticate ***')
   print
   print p
@@ -85,6 +107,7 @@ def checksimul(p):
   return radiusd.RLM_MODULE_OK
 
 def authorize(p):
+  _log("authenticate", p)
   print "*** authorize ***"
   print
   radiusd.radlog(radiusd.L_INFO, '*** radlog call in authorize ***')
@@ -116,6 +139,7 @@ def preacct(p):
   return radiusd.RLM_MODULE_OK
 
 def accounting(p):
+  _log("authenticate", p)
   print "*** accounting ***"
   radiusd.radlog(radiusd.L_INFO, '*** radlog call in accounting (0) ***')
   print
@@ -133,6 +157,7 @@ def post_proxy(p):
   return radiusd.RLM_MODULE_OK
 
 def post_auth(p):
+  _log("authenticate", p)
   print "*** post_auth ***"
   print p
   user_mac = _get_user_mac(p)

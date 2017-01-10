@@ -1,7 +1,9 @@
 freeradius
 ===
 
-This is a freeradius setup that uses a python script to control user-password authentication and MACs to place user+MAC combinations into the proper vlan. This was done on Arch linux
+This is a freeradius setup that uses a python script to control user-password authentication and MACs to place user+MAC combinations into the proper vlan. This was done on Arch linux (in a container, as root)
+
+# setup
 
 to have freeradius actually able to execute the python scripts
 ```
@@ -22,6 +24,14 @@ install python2 and freeradius
 ```
 pacman -S freeradius python2
 ```
+
+freepydius logging
+```
+mkdir /var/log/radius/freepydius
+chown radiusd:radiusd /var/log/radius/freepydius
+```
+
+# configuration
 
 the json required (as shown below) uses a few approaches to get users+MAC into the proper VLAN
 * [vlan].[name] is the user name which is used to set their password for freeradius configuration/checking
