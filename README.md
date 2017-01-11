@@ -54,6 +54,7 @@ now run the renew script
 /etc/raddb/certs/renew.sh
 ```
 
+we need the system to have knowledge of the key
 ```
 vim /etc/raddb/clients.conf
 ---
