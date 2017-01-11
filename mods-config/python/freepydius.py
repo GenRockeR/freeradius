@@ -2,7 +2,6 @@ import radiusd
 import json
 import logging
 import threading
-import uuid
 from logging.handlers import TimedRotatingFileHandler
 """Supports user + mac mapping and general configuration."""
 
@@ -87,8 +86,7 @@ def instantiate(p):
     global logger
     logger = logging.getLogger("freepydius-logger")
     logger.setLevel(logging.INFO)
-    uid = str(uuid.uuid4())
-    handler = TimedRotatingFileHandler("/var/log/radius/freepydius/trace-{0}.log".format(uid),
+    handler = TimedRotatingFileHandler("/var/log/radius/freepydius/trace.log",
                                        when="midnight",
                                        interval=1)
     formatter = logging.Formatter("%(asctime)s %(message)s")
