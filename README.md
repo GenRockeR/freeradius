@@ -38,7 +38,7 @@ mkdir /var/log/radius/freepydius
 chown radiusd:radiusd /var/log/radius/freepydius
 ```
 
-need to set the internal certs. all passwords _MUST_ be the same
+need to set the internal certs. all passwords _MUST_ be the same (example here: somestring)
 ```
 vim /etc/raddb/certs/passwords.mk
 ---
@@ -52,6 +52,12 @@ CA_DEFAULT_DAYS  = '1825'
 now run the renew script
 ```
 /etc/raddb/certs/renew.sh
+```
+
+```
+vim /etc/raddb/clients.conf
+---
+certprivkey = somestring
 ```
 
 # configuration
