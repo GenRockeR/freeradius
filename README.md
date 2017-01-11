@@ -3,6 +3,16 @@ freeradius
 
 This is a freeradius setup that uses a python script to control user-password authentication and MACs to place user+MAC combinations into the proper vlan. This was done on Arch linux (in a container, as root)
 
+# goals
+
+* Support a port-restricted LAN (+wifi) in a controlled physical area
+* Provide a singular authentication strategy for supported clients (Windows, Linux, Android)
+* Map authenticated user+MAC combinations to specific VLANs
+* Integrate with Ubiquiti devices
+* Avoid client-issued certificates (and management)
+* Centralized configuration file
+* As few open endpoints as possible
+
 # notes
 
 * This expects _ALL_ endpoints to support peap+mschapv2 (tested on Android 7.1.1, Arch using NetworkManager, and Windows 10)
