@@ -9,3 +9,5 @@ certs/*.key
 certs/*.p12
 certs/serial*
 certs/index.txt*
+certs/passwords.mk
+certs/dh

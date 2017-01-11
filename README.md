@@ -91,6 +91,12 @@ vim /etc/raddb/mods-config/python/network.json
 
 # systemd
 
+first time
+```
+cd /etc/raddb/certs
+./bootstrap
+```
+
 using systemd to regenerate the internal certificates on the 1st of every month
 
 ```
