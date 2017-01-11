@@ -1,6 +1,0 @@
-[Unit]
-Description=radius renew certs
-
-[Service]
-Type=oneshot
-ExecStart=/etc/raddb/systemd/renew.sh

@@ -14,8 +14,8 @@ private_key		= $dir/ca.key
 RANDFILE		= $dir/.rand
 name_opt		= ca_default
 cert_opt		= ca_default
-default_days		= 60
-default_crl_days	= 30
+default_days		= 1825
+default_crl_days	= 1825
 default_md		= sha256
 preserve		= no
 policy			= policy_match
@@ -47,12 +47,12 @@ output_password		= whatever
 x509_extensions		= v3_ca
 
 [certificate_authority]
-countryName		= FR
+countryName		= US
 stateOrProvinceName	= Radius
-localityName		= Somewhere
-organizationName	= Example Inc.
+localityName		= radius
+organizationName	= epiphyte
 emailAddress		= admin@example.org
-commonName		= "Example Certificate Authority"
+commonName		= "epiphyte Certificate Authority"
 
 [v3_ca]
 subjectKeyIdentifier	= hash

@@ -8,6 +8,7 @@ This is a freeradius setup that uses a python script to control user-password au
 * This expects _ALL_ endpoints to support peap+mschapv2 (tested on Android 7.1.1, Arch using NetworkManager, and Windows 10)
 * Avoids deviating from standard configs at all, assumes users are capable of handling things like systemd themselves
 * The "default" config is the open point (e.g. ports 1812 and 1813 are open for udp traffic) so it has been stripped down where possible
+* There is _NO_ issuance of any cert to clients for this implementation, we do handle managing the internal radius certs
 
 # setup
 
@@ -35,6 +36,11 @@ freepydius logging
 ```
 mkdir /var/log/radius/freepydius
 chown radiusd:radiusd /var/log/radius/freepydius
+```
+
+need to set the internal dev certs
+```
+/etc/raddb/certs/renew.sh
 ```
 
 # configuration
@@ -90,12 +96,6 @@ vim /etc/raddb/mods-config/python/network.json
 ```
 
 # systemd
-
-first time
-```
-cd /etc/raddb/certs
-./bootstrap
-```
 
 using systemd to regenerate the internal certificates on the 1st of every month
 

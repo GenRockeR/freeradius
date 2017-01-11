@@ -14,8 +14,8 @@ private_key		= $dir/server.key
 RANDFILE		= $dir/.rand
 name_opt		= ca_default
 cert_opt		= ca_default
-default_days		= 60
-default_crl_days	= 30
+default_days		= 1825
+default_crl_days	= 1825
 default_md		= sha256
 preserve		= no
 policy			= policy_match
@@ -45,10 +45,10 @@ input_password		= whatever
 output_password		= whatever
 
 [server]
-countryName		= FR
+countryName		= US
 stateOrProvinceName	= Radius
-localityName		= Somewhere
-organizationName	= Example Inc.
+localityName		= radius
+organizationName	= epiphyte
 emailAddress		= admin@example.org
-commonName		= "Example Server Certificate"
+commonName		= "epiphyte Server Certificate"
 
