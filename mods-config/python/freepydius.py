@@ -25,6 +25,7 @@ VLAN_KEY = "vlans"
 rlock = threading.RLock()
 logger = None
 
+
 def _config(user_name):
   """get a user config from file."""
   with open('/etc/raddb/mods-config/python/network.json') as f:
@@ -90,12 +91,14 @@ def instantiate(p):
     handler = TimedRotatingFileHandler("/var/log/radius/freepydius/trace-{0}.log".format(uid),
                                        when="midnight",
                                        interval=1)
+    formatter = logging.Formatter("%(asctime)s %(message)s")
+    handler.setFormatter(formatter)
     logger.addHandler(handler)
-    logger.info('created')
+    _log("INSTNCE", "created")
   return 0
 
 def authenticate(p):
-  _log("authenticate", p)
+  _log("AUTHICT", p)
   radiusd.radlog(radiusd.L_INFO, '*** radlog call in authenticate ***')
   print
   print p
@@ -107,7 +110,7 @@ def checksimul(p):
   return radiusd.RLM_MODULE_OK
 
 def authorize(p):
-  _log("authorize", p)
+  _log("AUTHRZE", p)
   print "*** authorize ***"
   print
   radiusd.radlog(radiusd.L_INFO, '*** radlog call in authorize ***')
@@ -139,7 +142,7 @@ def preacct(p):
   return radiusd.RLM_MODULE_OK
 
 def accounting(p):
-  _log("accounting", p)
+  _log("ACCTING", p)
   print "*** accounting ***"
   radiusd.radlog(radiusd.L_INFO, '*** radlog call in accounting (0) ***')
   print
@@ -157,7 +160,7 @@ def post_proxy(p):
   return radiusd.RLM_MODULE_OK
 
 def post_auth(p):
-  _log("post_auth", p)
+  _log("PSTAUTH", p)
   print "*** post_auth ***"
   print p
   user_mac = _get_user_mac(p)
