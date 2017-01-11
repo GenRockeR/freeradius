@@ -94,14 +94,3 @@ vim /etc/raddb/mods-config/python/network.json
     }
 }
 ```
-
-# systemd
-
-using systemd to regenerate the internal certificates on the 1st of every month
-
-```
-systemctl enable /etc/raddb/systemd/radius-renew.timer
-ln -s /etc/raddb/systemd/radius-renew.service /etc/systemd/system/
-systemctl daemon-reload
-systemctl start radius-renew.timer
-```
