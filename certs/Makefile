@@ -36,6 +36,7 @@ server: server.pem server.vrfy
 .PHONY: verify
 verify: server.vrfy client.vrfy
 
+# this is disabled, if you want to have private passwords, don't rely on updating the makefile
 passwords.mk: server.cnf ca.cnf client.cnf
 	@echo "PASSWORD_SERVER	= '$(shell grep output_password server.cnf | sed 's/.*=//;s/^ *//')'"		> $@
 	@echo "PASSWORD_CA	= '$(shell grep output_password ca.cnf | sed 's/.*=//;s/^ *//')'"		>> $@

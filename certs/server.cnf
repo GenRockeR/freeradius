@@ -41,8 +41,6 @@ emailAddress		= optional
 prompt			= no
 distinguished_name	= server
 default_bits		= 2048
-input_password		= whatever
-output_password		= whatever
 
 [server]
 countryName		= US
