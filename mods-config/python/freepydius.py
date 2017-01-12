@@ -8,6 +8,7 @@ import radiusd
 import json
 import logging
 import threading
+import uuid
 from logging.handlers import TimedRotatingFileHandler
 
 # json keys
@@ -84,11 +85,17 @@ def _get_user_mac(p):
   return (user_name, mac)
 
 
-def _log(name, params):
-  """common logging."""
-  with rlock:
-    if logger is not None:
-      logger.info("{0} -> {1}".format(name, params))
+class Log(object):
+  """logging object."""
+  def __init__(self, cat):
+    self.id = str(uuid.uuid4())
+    self.name = cat
+
+  def log(params):
+    """common logging."""
+    with rlock:
+      if logger is not None:
+        logger.info("{0}:{1} -> {2}".format(self.name, self.id, params))
 
 
 def instantiate(p):
@@ -104,13 +111,15 @@ def instantiate(p):
     formatter = logging.Formatter("%(asctime)s %(message)s")
     handler.setFormatter(formatter)
     logger.addHandler(handler)
-    _log("INSTNCE", "created")
+    log = Log("INSTANCE")
+    log.log(( ('Response', 'created'), ))
   # return 0 for success or -1 for failure
   return 0
 
 
 def authenticate(p):
-  _log("AUTHICT", p)
+  log = Log("AUTHENTICATE")
+  log.log(p)
   radiusd.radlog(radiusd.L_INFO, '*** radlog call in authenticate ***')
   print
   print p
@@ -124,7 +133,8 @@ def checksimul(p):
 
 
 def authorize(p):
-  _log("AUTHRZE", p)
+  log = Log("AUTHORIZE")
+  log.log(p)
   print "*** authorize ***"
   print
   radiusd.radlog(radiusd.L_INFO, '*** radlog call in authorize ***')
@@ -148,8 +158,8 @@ def authorize(p):
         reply = ( ('Tunnel-Type', 'VLAN'),
                   ('Tunnel-Medium-Type', 'IEEE-802'),
                   ('Tunnel-Private-Group-Id', vlan), )
-  _log("AUTHREP", reply)
-  _log("AUTHCNF", conf)
+  log.log(reply)
+  log.log(conf)
   return (radiusd.RLM_MODULE_OK, reply, conf)
 
 
@@ -160,7 +170,8 @@ def preacct(p):
 
 
 def accounting(p):
-  _log("ACCTING", p)
+  log = Log("ACCOUNTING")
+  log.log(p)
   print "*** accounting ***"
   radiusd.radlog(radiusd.L_INFO, '*** radlog call in accounting (0) ***')
   print
@@ -181,7 +192,8 @@ def post_proxy(p):
 
 
 def post_auth(p):
-  _log("PSTAUTH", p)
+  log = Log("POSTAUTH")
+  log.log(p)
   print "*** post_auth ***"
   print p
   user_mac = _get_user_mac(p)
@@ -191,7 +203,7 @@ def post_auth(p):
   if user is not None and mac is not None:
     if _get_vlan(user, mac) is not None:
       response = radiusd.RLM_MODULE_OK
-  _log("PSTAUTD", ( ('Response', response), ))
+  log.log(( ('Response', response), ))
   return response
 
 
