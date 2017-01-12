@@ -132,6 +132,8 @@ def authorize(p):
         reply = ( ('Tunnel-Type', 'VLAN'),
                   ('Tunnel-Medium-Type', 'IEEE-802'),
                   ('Tunnel-Private-Group-Id', vlan), )
+  _log("AUTHREP", reply)
+  _log("AUTHCNF", conf)
   return (radiusd.RLM_MODULE_OK, reply, conf)
 
 def preacct(p):
@@ -168,6 +170,7 @@ def post_auth(p):
   if user is not None and mac is not None:
     if _get_vlan(user, mac) is not None:
       response = radiusd.RLM_MODULE_OK
+  _log("PSTAUTD", ( ('Response', response), ))
   return response
 
 def recv_coa(p):
