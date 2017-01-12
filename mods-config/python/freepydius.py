@@ -90,6 +90,7 @@ def _log(name, params):
     if logger is not None:
       logger.info("{0} -> {1}".format(name, params))
 
+
 def instantiate(p):
   print "*** instantiate ***"
   print p
@@ -107,6 +108,7 @@ def instantiate(p):
   # return 0 for success or -1 for failure
   return 0
 
+
 def authenticate(p):
   _log("AUTHICT", p)
   radiusd.radlog(radiusd.L_INFO, '*** radlog call in authenticate ***')
@@ -116,8 +118,10 @@ def authenticate(p):
   print radiusd.config
   return radiusd.RLM_MODULE_OK
 
+
 def checksimul(p):
   return radiusd.RLM_MODULE_OK
+
 
 def authorize(p):
   _log("AUTHRZE", p)
@@ -148,10 +152,12 @@ def authorize(p):
   _log("AUTHCNF", conf)
   return (radiusd.RLM_MODULE_OK, reply, conf)
 
+
 def preacct(p):
   print "*** preacct ***"
   print p
   return radiusd.RLM_MODULE_OK
+
 
 def accounting(p):
   _log("ACCTING", p)
@@ -161,15 +167,18 @@ def accounting(p):
   print p
   return radiusd.RLM_MODULE_OK
 
+
 def pre_proxy(p):
   print "*** pre_proxy ***"
   print p
   return radiusd.RLM_MODULE_OK
 
+
 def post_proxy(p):
   print "*** post_proxy ***"
   print p
   return radiusd.RLM_MODULE_OK
+
 
 def post_auth(p):
   _log("PSTAUTH", p)
@@ -185,10 +194,12 @@ def post_auth(p):
   _log("PSTAUTD", ( ('Response', response), ))
   return response
 
+
 def recv_coa(p):
   print "*** recv_coa ***"
   print p
   return radiusd.RLM_MODULE_OK
+
 
 def send_coa(p):
   print "*** send_coa ***"
@@ -199,4 +210,3 @@ def send_coa(p):
 def detach():
   print "*** goodbye from example.py ***"
   return radiusd.RLM_MODULE_OK
-
