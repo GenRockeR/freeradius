@@ -91,7 +91,7 @@ class Log(object):
     self.id = str(uuid.uuid4())
     self.name = cat
 
-  def log(params):
+  def log(self, params):
     """common logging."""
     with rlock:
       if logger is not None:
