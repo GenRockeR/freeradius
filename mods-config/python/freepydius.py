@@ -1,20 +1,14 @@
+# Copyright 2017
+# MIT License
+# Sean Enck
+# Support user+mac mapping and VLAN assignment
+# Fully supports User-Password authentication (PEAP+MSChapV2)
+# Supports reply attributes needed by Ubiquiti equipment for VLAN assignment
 import radiusd
 import json
 import logging
 import threading
 from logging.handlers import TimedRotatingFileHandler
-"""Supports user + mac mapping and general configuration."""
-
-
-def byteify(input):
-  if isinstance(input, dict):
-    return {byteify(key): byteify(value) for key, value in input.iteritems()}
-  elif isinstance(input, list):
-    return [byteify(element) for element in input]
-  elif isinstance(input, unicode):
-    return input.encode('utf-8')
-  else:
-    return input
 
 # json keys
 PASS_KEY = "pass"
@@ -23,6 +17,18 @@ USER_KEY = "users"
 VLAN_KEY = "vlans"
 rlock = threading.RLock()
 logger = None
+
+
+def byteify(input):
+  """make sure we get strings."""
+  if isinstance(input, dict):
+    return {byteify(key): byteify(value) for key, value in input.iteritems()}
+  elif isinstance(input, list):
+    return [byteify(element) for element in input]
+  elif isinstance(input, unicode):
+    return input.encode('utf-8')
+  else:
+    return input
 
 
 def _config(user_name):
@@ -42,6 +48,7 @@ def _config(user_name):
         vlan_obj = vlans[vlan]
     return (user_obj, vlan_obj)
 
+
 def _get_pass(user_name):
   """set the configuration for down-the-line modules."""
   config = _config(user_name)
@@ -49,6 +56,7 @@ def _get_pass(user_name):
   if user is not None:
     if PASS_KEY in user:
       return user[PASS_KEY]
+
 
 def _get_vlan(user_name, mac):
   """set the reply for a user and mac."""
@@ -61,6 +69,7 @@ def _get_vlan(user_name, mac):
       if mac in macs:
         return vlan
 
+
 def _get_user_mac(p):
   """extract user/mac from request."""
   user_name = None
@@ -69,8 +78,11 @@ def _get_user_mac(p):
     if item[0] == "User-Name":
       user_name = item[1]
     elif item[0] == "Calling-Station-Id":
-      mac = item[1].replace(":", "").replace("-", "").lower()
+      mac = item[1].lower()
+      for c in [":", "-"]:
+        mac = mac.replace(c, "")
   return (user_name, mac)
+
 
 def _log(name, params):
   """common logging."""
@@ -81,7 +93,6 @@ def _log(name, params):
 def instantiate(p):
   print "*** instantiate ***"
   print p
-  # return 0 for success or -1 for failure
   with rlock:
     global logger
     logger = logging.getLogger("freepydius-logger")
@@ -93,6 +104,7 @@ def instantiate(p):
     handler.setFormatter(formatter)
     logger.addHandler(handler)
     _log("INSTNCE", "created")
+  # return 0 for success or -1 for failure
   return 0
 
 def authenticate(p):
