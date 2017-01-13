@@ -34,7 +34,7 @@ PYTHONPATH=/etc/raddb/mods-config/python/
 vim /usr/lib/systemd/system/freeradius.service
 ---
 # add to the [Service] section
-Environment=PYTHONPATH=/etc/raddb/mods-config/python/
+EnvironmentFile=/etc/environment
 ```
 
 install python2 and freeradius
