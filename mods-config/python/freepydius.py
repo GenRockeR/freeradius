@@ -45,7 +45,7 @@ def _config(user_name):
     if "." in user_name:
       parts = user_name.split(".")
       vlan = parts[0]
-      if user_name in users and user_name not in blacklist:
+      if user_name in users and user_name not in blacklist and parts[1] not in blacklist:
         user_obj = users[user_name]
       if vlan in vlans and vlan not in blacklist:
         vlan_obj = vlans[vlan]
