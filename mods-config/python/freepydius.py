@@ -16,6 +16,7 @@ PASS_KEY = "pass"
 MAC_KEY = "macs"
 USER_KEY = "users"
 VLAN_KEY = "vlans"
+BLCK_KEY = "blacklist"
 rlock = threading.RLock()
 logger = None
 
@@ -38,14 +39,15 @@ def _config(user_name):
     obj = byteify(json.loads(f.read()))
     users = obj[USER_KEY]
     vlans = obj[VLAN_KEY]
+    blacklist = obj[BLCK_KEY]
     user_obj = None
     vlan_obj = None
     if "." in user_name:
       parts = user_name.split(".")
       vlan = parts[0]
-      if user_name in users:
+      if user_name in users and user_name not in blacklist:
         user_obj = users[user_name]
-      if vlan in vlans:
+      if vlan in vlans and vlan not in blacklist:
         vlan_obj = vlans[vlan]
     return (user_obj, vlan_obj)
 
