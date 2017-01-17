@@ -83,16 +83,17 @@ def _get_pass(user_name):
       return user[PASS_KEY]
 
 
-def _get_vlan(user_name, mac):
+def _get_vlan(user_name, macs):
   """set the reply for a user and mac."""
   config = _config(user_name)
   user = config[0]
   vlan = config[1]
   if user is not None and vlan is not None:
     if MAC_KEY in user:
-      macs = user[MAC_KEY]
-      if mac in macs:
-        return vlan
+      mac_set = user[MAC_KEY]
+      for mac in macs:
+        if mac in mac_set:
+          return vlan
 
 
 def _get_user_mac(p):
@@ -169,15 +170,15 @@ def authorize(p):
   print
   user_mac = _get_user_mac(p)
   user = user_mac[0]
-  mac = user_mac[1]
+  macs = user_mac[1]
   reply = ()
   conf = ()
   if user is not None:
     password = _get_pass(user)
     if password is not None:
       conf = ( ('Cleartext-Password', password), )
-    if mac is not None:
-      vlan = _get_vlan(user, mac)
+    if macs is not None:
+      vlan = _get_vlan(user, macs)
       if vlan is not None:
         reply = ( ('Tunnel-Type', 'VLAN'),
                   ('Tunnel-Medium-Type', 'IEEE-802'),
@@ -223,9 +224,9 @@ def post_auth(p):
   user_mac = _get_user_mac(p)
   response = radiusd.RLM_MODULE_REJECT
   user = user_mac[0]
-  mac = user_mac[1]
-  if user is not None and mac is not None:
-    if _get_vlan(user, mac) is not None:
+  macs = user_mac[1]
+  if user is not None and macs is not None:
+    if _get_vlan(user, macs) is not None:
       response = radiusd.RLM_MODULE_OK
   log.log(( ('Response', response), ))
   return response
