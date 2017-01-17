@@ -3,6 +3,7 @@
 
 import argparse
 import freepydius
+import radiusd
 
 def main():
     options = dir(freepydius)
@@ -20,6 +21,7 @@ def main():
     parser.add_argument('kv', nargs='*', help="key/value pairs")
     args = parser.parse_args()
     kv = []
+    radiusd.config = ()
     for val in args.kv:
         if "=" not in val:
             print("key/value must be key=value")
