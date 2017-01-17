@@ -79,7 +79,7 @@ the json required (as shown below) uses a few approaches to get users+MAC into t
 * [mac] is used to allow only certain devices to be used by certain users in certain vlans
 * this corresponds to the implementation (in python) called freepydius under the mods-config/python folder
 
-the following json represents a routing definition
+the following json represents a routing definition, prod.* and dev.* would be users, the 1234567890ab represents a MAC-device authenticating
 ```
 vim /etc/raddb/mods-config/python/network.json
 ---
@@ -112,6 +112,15 @@ vim /etc/raddb/mods-config/python/network.json
             [
                 "4fff3a7e7a11",
                 "aaffbb112233"
+            ]
+        },
+        "1234567890ab":
+        {
+            "pass": "1234567890ab",
+            "vlan": "dev",
+            "macs":
+            [
+                "pass": "1234567890ab",
             ]
         }
     },
