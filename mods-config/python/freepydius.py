@@ -17,6 +17,7 @@ MAC_KEY = "macs"
 USER_KEY = "users"
 VLAN_KEY = "vlans"
 BLCK_KEY = "blacklist"
+FORCE_VLAN = "vlan"
 rlock = threading.RLock()
 logger = None
 _CONFIG_FILE = "/etc/raddb/mods-config/python/network.json"
@@ -49,6 +50,19 @@ def _config(user_name):
         user_obj = users[user_name]
       if vlan in vlans and vlan not in blacklist:
         vlan_obj = vlans[vlan]
+    else:
+      if len(user_name) == 12 and user_name.lower() == user_name:
+        valid = True
+        for c in user_name.lower():
+          if c not in ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f']:
+            valid = False
+            break
+        if valid:
+          user_obj = users[user_name]
+          if FORCE_VLAN in user_obj:
+            vlan_obj = vlans[user_obj[FORCE_VLAN]]
+          else:
+            user_obj = None
     return (user_obj, vlan_obj)
 
 
