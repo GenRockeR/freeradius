@@ -71,6 +71,15 @@ vim /etc/raddb/clients.conf
 certprivkey = somestring
 ```
 
+# blacklist
+
+support blacklisting by
+* users (e.g. user1)
+* vlan (e.g. prod)
+* vlan.user (e.g. prod.user1)
+
+devices (MACs) per user can not be blacklisted, they should just be removed from the list of MACs
+
 # configuration
 
 the json required (as shown below) uses a few approaches to get users+MAC into the proper VLAN
@@ -128,6 +137,7 @@ vim /etc/raddb/mods-config/python/network.json
     {
         "prod": "10",
         "dev": "20"
-    }
+    },
+    "blacklist": []
 }
 ```
