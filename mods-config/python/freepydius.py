@@ -64,7 +64,7 @@ def _config(user_name):
             valid = False
             break
         if valid and lowered in users and lowered not in blacklist:
-          user_obj = users[user_name]
+          user_obj = users[lowered]
           if FORCE_VLAN in user_obj:
             forced = user_obj[FORCE_VLAN]
             if _valid_vlan(forced, blacklist, vlans):
