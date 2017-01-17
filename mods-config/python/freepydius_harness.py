@@ -12,7 +12,7 @@ def main():
             continue
         elif opt.startswith("_"):
             continue
-        elif opt in ["byteify", "radiusd", "Log", "TimedRotatingFileHandler", "json", "logger", "logging", "rlock", "threading", "uuid"]:
+        elif opt in ["FORCE_VLAN", "byteify", "radiusd", "Log", "TimedRotatingFileHandler", "json", "logger", "logging", "rlock", "threading", "uuid"]:
             continue
         choices.append(opt)
     parser = argparse.ArgumentParser(description="freepyidus test harness")
