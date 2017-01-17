@@ -141,3 +141,15 @@ vim /etc/raddb/mods-config/python/network.json
     "blacklist": ["dev"]
 }
 ```
+
+# debugging
+
+there are a few utilities in the mods-config/python/ folder associated with freepydius.py
+
+## harness
+
+allows for playing key/value pairs into the radius module
+
+## replay
+
+supports playing back a log (from freepydius output) back into the radius module
