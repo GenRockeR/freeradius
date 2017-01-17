@@ -19,7 +19,7 @@ VLAN_KEY = "vlans"
 BLCK_KEY = "blacklist"
 rlock = threading.RLock()
 logger = None
-
+_CONFIG_FILE = "/etc/raddb/mods-config/python/network.json"
 
 def byteify(input):
   """make sure we get strings."""
@@ -35,7 +35,7 @@ def byteify(input):
 
 def _config(user_name):
   """get a user config from file."""
-  with open('/etc/raddb/mods-config/python/network.json') as f:
+  with open(_CONFIG_FILE) as f:
     obj = byteify(json.loads(f.read()))
     users = obj[USER_KEY]
     vlans = obj[VLAN_KEY]
