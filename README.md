@@ -78,7 +78,7 @@ support blacklisting by
 * vlan (e.g. prod)
 * vlan.user (e.g. prod.user1)
 
-devices (MACs) per user can not be blacklisted, they should just be removed from the list of MACs
+devices (MACs) per user can not be blacklisted, they should just be removed from the list of MACs. This is rationalized as either a device is 'bad' and needs to be removed OR the user is using a device and the user should be blacklisted until the problem is resolved
 
 # configuration
 
