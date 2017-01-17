@@ -99,7 +99,7 @@ def _get_vlan(user_name, macs):
 def _get_user_mac(p):
   """extract user/mac from request."""
   user_name = None
-  mac = None
+  macs = []
   for item in p:
     if item[0] == "User-Name":
       user_name = item[1]
@@ -107,7 +107,11 @@ def _get_user_mac(p):
       mac = item[1].lower()
       for c in [":", "-"]:
         mac = mac.replace(c, "")
-  return (user_name, mac)
+      macs.append(mac)
+  mac_set = None
+  if len(macs) > 0:
+    mac_set = macs
+  return (user_name, mac_set)
 
 
 class Log(object):
