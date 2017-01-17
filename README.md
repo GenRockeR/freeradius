@@ -138,6 +138,6 @@ vim /etc/raddb/mods-config/python/network.json
         "prod": "10",
         "dev": "20"
     },
-    "blacklist": []
+    "blacklist": ["dev"]
 }
 ```
