@@ -34,6 +34,11 @@ def byteify(input):
     return input
 
 
+def _valid_vlan(vlan, blacklist, vlans):
+  """validate vlan availability."""
+  return vlan in vlans and vlan not in blacklist
+
+
 def _config(user_name):
   """get a user config from file."""
   with open(_CONFIG_FILE) as f:
@@ -48,20 +53,23 @@ def _config(user_name):
       vlan = parts[0]
       if user_name in users and user_name not in blacklist and parts[1] not in blacklist:
         user_obj = users[user_name]
-      if vlan in vlans and vlan not in blacklist:
+      if _valid_vlan(vlan, blacklist, vlans):
         vlan_obj = vlans[vlan]
     else:
-      if len(user_name) == 12 and user_name.lower() == user_name:
+      lowered = user_name.lower()
+      if len(user_name) == 12 and lowered == user_name:
         valid = True
-        for c in user_name.lower():
+        for c in lowered:
           if c not in ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f']:
             valid = False
             break
-        if valid:
+        if valid and lowered in users and lowered not in blacklist:
           user_obj = users[user_name]
           if FORCE_VLAN in user_obj:
-            vlan_obj = vlans[user_obj[FORCE_VLAN]]
-          else:
+            forced = user_obj[FORCE_VLAN]
+            if _valid_vlan(forced, blacklist, vlans):
+              vlan_obj = vlans[forced]
+          if vlan_obj is None:
             user_obj = None
     return (user_obj, vlan_obj)
 
