@@ -34,6 +34,7 @@ def main():
     attr = getattr(freepydius, args.method)
     res = attr(tuples)
     print(res)
+    print
 
 if __name__ == '__main__':
     main()
