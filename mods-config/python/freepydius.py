@@ -21,6 +21,7 @@ FORCE_VLAN = "vlan"
 rlock = threading.RLock()
 logger = None
 _CONFIG_FILE = "/etc/raddb/mods-config/python/network.json"
+_LOG_FILE = "/var/log/radius/freepydius/trace.log"
 
 def byteify(input):
   """make sure we get strings."""
@@ -136,7 +137,7 @@ def instantiate(p):
     global logger
     logger = logging.getLogger("freepydius-logger")
     logger.setLevel(logging.INFO)
-    handler = TimedRotatingFileHandler("/var/log/radius/freepydius/trace.log",
+    handler = TimedRotatingFileHandler(_LOG_FILE,
                                        when="midnight",
                                        interval=1)
     formatter = logging.Formatter("%(asctime)s %(message)s")

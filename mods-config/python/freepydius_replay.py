@@ -4,6 +4,7 @@
 import argparse
 import ast
 import subprocess
+import freepydius
 
 KEY = " -> "
 
@@ -12,7 +13,7 @@ def _commented(text):
 
 def main():
     parser = argparse.ArgumentParser(description="freepyidus log replay")
-    parser.add_argument('--file', help="file input", default="/var/log/radius/freepydius/trace.log")
+    parser.add_argument('--file', help="file input", default=freepydius._LOG_FILE)
     args = parser.parse_args()
     with open(args.file, 'r') as f:
         for line in f:
