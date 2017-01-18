@@ -23,6 +23,8 @@ logger = None
 _CONFIG_FILE = "/etc/raddb/mods-config/python/network.json"
 _LOG_FILE = "/var/log/radius/freepydius/trace.log"
 
+_DOMAIN_SLASH = "\\"
+
 def byteify(input):
   """make sure we get strings."""
   if isinstance(input, dict):
@@ -40,8 +42,18 @@ def _valid_vlan(vlan, blacklist, vlans):
   return vlan in vlans and vlan not in blacklist
 
 
-def _config(user_name):
+def _convert_user_name(name):
+  """rules to support user name conversion(s)."""
+  user_name = name
+  # prepending of domain name to user-name...thanks Windows
+  if _DOMAIN_SLASH in user_name:
+      idx = user_name.index(_DOMAIN_SLASH)
+      user_name = user_name[idx + len(_DOMAIN_SLASH):]
+  return user_name
+
+def _config(input_name):
   """get a user config from file."""
+  user_name = _convert_user_name(input_name)
   with open(_CONFIG_FILE) as f:
     obj = byteify(json.loads(f.read()))
     users = obj[USER_KEY]
