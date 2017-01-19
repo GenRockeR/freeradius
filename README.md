@@ -18,7 +18,7 @@ FreeRadius is a server that provides the following three things:
 ### our goals
 
 * Support a port-restricted LAN (+wifi) in a controlled, physical area
-* Provide a singular authentication strategy for supported clients using peap+mschapv2
+* Provide a singular authentication strategy for supported clients using [peap](https://en.wikipedia.org/wiki/Protected_Extensible_Authentication_Protocol)+[mschapv2](https://en.wikipedia.org/wiki/Protected_Extensible_Authentication_Protocol#PEAPv0_with_EAP-MSCHAPv2) (no CA validation).
  * Windows 7/10
  * Arch/Fedora Linux (any supporting modern versions of NetworkManager or systemd-networkd when server/headless)
  * Android 7+
@@ -29,6 +29,29 @@ FreeRadius is a server that provides the following three things:
 * Centralized configuration file
 * As few open endpoints as possible on the radius server (only open ports 1812 and 1813 for radius)
 * Avoid deviations from the standard/installed freeradius configurations
+
+---
+
+## Implementation Details
+
+### Flow
+
+1. The user does not enter credentials - the switch will send a request (on behalf of the system) to do MAC-based authentication
+2. The user does enter credentials - those credentials will be accepted/rejected, if rejected go-to 1
+
+Unauthenticated users are assigned no VLAN by radius and will be, by the networking backbone, assigned to a VLAN with restricted connection for troubleshooting/requests only.
+
+### Analysis
+
+We are able to review information about accounting (e.g. Start/Stop) to see connection information (e.g. packets/octets) via the date-based trace log from the python module: 
+* What devices are connecting over certain ports and switches (and by which user).
+* Generate statistics and/or review stats over accepts/rejects/etc.
+
+### Future Options
+
+* Distribute the CA cert that freeradius uses; however, it is only minimally correct (it is correct-enough for inner-tunnel in freeradius) and becomes a management problem for us
+* Limit further port authorization at the freeradius endpoint to switch + port (or similar)
+* Perform functions based on being wired or wireless
 
 ---
 
@@ -173,31 +196,6 @@ the blacklist section is a list of strings where a string can be:
 * MAC-based auth MAC
 
 devices (MACs) per user can not be blacklisted, they should just be removed from the list of MACs. This is rationalized as either a device is 'bad' and needs to be removed OR the user is using a device and the user should be blacklisted until the problem is resolved
-
----
-
-## Implementation Details
-
-### Current
-
-We are using: [peap](https://en.wikipedia.org/wiki/Protected_Extensible_Authentication_Protocol)+[mschapv2](https://en.wikipedia.org/wiki/Protected_Extensible_Authentication_Protocol#PEAPv0_with_EAP-MSCHAPv2) (no CA validation).
-
-### Flow
-
-1. The user does not enter credentials - the switch will send a request (on behalf of the system) to do MAC-based authentication
-2. The user does enter credentials - those credentials will be accepted/rejected, if rejected go-to 1
-
-Unauthenticated users are assigned no VLAN by radius and will be, by the networking backbone, assigned to a VLAN with restricted connection for troubleshooting/requests only.
-
-### Analysis
-
-We are able to review information about accounting (e.g. Start/Stop) to see connection information (e.g. packets/octets). See what devices are connecting over certain ports and switches (and by which user). Generate statistics and/or review stats over accepts/rejects/etc.
-
-### Future
-
-* Distribute the CA cert that freeradius uses; however, it is only minimally correct (it is correct-enough for inner-tunnel in freeradius) and becomes a management problem
-* Limit further port authorization at the freeradius endpoint to switch + port (or similar)
-* Perform functions based on being wired or wireless
 
 ---
 
