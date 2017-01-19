@@ -41,6 +41,17 @@ FreeRadius is a server that provides the following three things:
 
 Unauthenticated users are assigned no VLAN by radius and will be, by the networking backbone, assigned to a VLAN with restricted connection for troubleshooting/requests only.
 
+#### radius
+
+1. The request is received
+2. Authorize & Authenticate happen (recognizing those are not the same but for the sake of this document)...
+3. Within those sections the python module is called, it will (at minimum) have the User-Name attribute - we can set the Cleartext-Password config attribute which...
+4. The config, having a cleartext password for the user (else they've been rejected by python), can move through the system (e.g. inner-tunnel, (p)eap, mschapv2) with the necessary attributes
+5. Having (assumingly) been authorized/authenticated - the post_auth step also hits the python module which interrogates the MAC (Calling-Station-Id) and verifies that the MAC is supported for the given user
+6. Assuming the user: entered their user name and password (properly), on a device configured for them (MAC), they will be Accepted...otherwise they are rejected
+
+MAC-based/bypass works similarly in that the system's MAC is passed as the User-Name and Calling-Station-Id and used as the auth password as well.
+
 ### Analysis
 
 We are able to review information about accounting (e.g. Start/Stop) to see connection information (e.g. packets/octets) via the date-based trace log from the python module: 
@@ -52,6 +63,12 @@ We are able to review information about accounting (e.g. Start/Stop) to see conn
 * Distribute the CA cert that freeradius uses; however, it is only minimally correct (it is correct-enough for inner-tunnel in freeradius) and becomes a management problem for us
 * Limit further port authorization at the freeradius endpoint to switch + port (or similar)
 * Perform functions based on being wired or wireless
+
+### Technical Notes
+
+* We do have Cleartext-Password both in the configuration enumerated below, but it is also (currently) logged to the trace log. Be advised of this when distributing/debugging logs
+* Instead of removing commented out sections, they are there for reference in the configs
+* Though the python module is configured to be available for each phase (e.g. authorize, authenticate, accounting, post_auth, pre_proxy, preacct), it is not currently enable for all (e.g. preacct, pre_proxy)
 
 ---
 
