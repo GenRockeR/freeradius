@@ -41,6 +41,8 @@ FreeRadius is a server that provides the following three things:
 
 Unauthenticated users are assigned no VLAN by radius and will be, by the networking backbone, assigned to a VLAN with restricted connection for troubleshooting/requests only.
 
+---
+
 #### radius
 
 1. The request is received
@@ -51,6 +53,8 @@ Unauthenticated users are assigned no VLAN by radius and will be, by the network
 6. Assuming the user: entered their user name and password (properly), on a device configured for them (MAC), they will be Accepted...otherwise they are rejected
 
 MAC-based/bypass works similarly in that the system's MAC is passed as the User-Name and Calling-Station-Id and used as the auth password as well.
+
+---
 
 ### Analysis
 
@@ -68,7 +72,7 @@ We are able to review information about accounting (e.g. Start/Stop) to see conn
 
 * We do have Cleartext-Password both in the configuration enumerated below, but it is also (currently) logged to the trace log. Be advised of this when distributing/debugging logs
 * Instead of removing commented out sections, they are there for reference in the configs
-* Though the python module is configured to be available for each phase (e.g. authorize, authenticate, accounting, post_auth, pre_proxy, preacct), it is not currently enable for all (e.g. preacct, pre_proxy)
+* Though the python module is configured to be available for each phase (e.g. authorize, authenticate, accounting, post_auth, pre_proxy, preacct), it is not currently enabled for all (e.g. preacct, pre_proxy)
 
 ---
 
@@ -139,7 +143,7 @@ radiusd -X
 
 ---
 
-## configuration
+## configuration file (network.json)
 
 the json required (as shown below) uses a few approaches to get users+MAC into the proper VLAN and to support MAC-based/bypass
 * [vlan].[name] is the user name which is used to set their password for freeradius configuration/checking
