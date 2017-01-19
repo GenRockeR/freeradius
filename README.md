@@ -15,28 +15,26 @@ FreeRadius is a server that provides the following three things:
 - Authorization (Your driver's license lets you drive your car, motorcycle, or CDL)
 - Accounting (A log shows tat you've driven on these roads at a certain date)
 
-## goals
+## our goals
 
-* Support a port-restricted LAN (+wifi) in a controlled physical area
-* Provide a singular authentication strategy for supported clients (Windows, Linux, Android)
+* Support a port-restricted LAN (+wifi) in a controlled, physical area
+* Provide a singular authentication strategy for supported clients using peap+mschapv2
+** Windows 7/10
+** Arch/Fedora Linux (any supporting modern versions of NetworkManager or systemd-networkd when server/headless)
+** Android 7+
 * Map authenticated user+MAC combinations to specific VLANs
+* Support MAC-based authentication (bypass) for systems that can not authenticate themselves
 * Integrate with Ubiquiti devices
 * Avoid client-issued certificates (and management)
 * Centralized configuration file
-* As few open endpoints as possible
-
-## plan
-
-* This expects _ALL_ endpoints to support peap+mschapv2 (tested on Android 7.1.1, Arch using NetworkManager, and Windows 10)
-* Avoids deviating from standard configs at all, assumes users are capable of handling things like systemd themselves
-* The "default" config is the open point (e.g. ports 1812 and 1813 are open for udp traffic) so it has been stripped down where possible
-* There is _NO_ issuance of any cert to clients for this implementation, we do handle managing the internal radius certs. This implementation is for a restricted area LAN.
+* As few open endpoints as possible on the radius server (only open ports 1812 and 1813 for radius)
+* Avoid deviations from the standard/installed freeradius configurations
 
 ---
 
 ## setup/install
 
-to have freeradius actually able to execute the python scripts
+to have freeradius actually able to execute the python scripts during execution (or debug)
 ```
 vim /etc/environment
 ---
