@@ -153,3 +153,26 @@ allows for playing key/value pairs into the radius module
 ## replay
 
 supports playing back a log (from freepydius output) back into the radius module
+
+# Implementation Details
+
+## Current
+
+We are using: [peap](https://en.wikipedia.org/wiki/Protected_Extensible_Authentication_Protocol)+[mschapv2](https://en.wikipedia.org/wiki/Protected_Extensible_Authentication_Protocol#PEAPv0_with_EAP-MSCHAPv2) (no CA validation).
+
+## Flow
+
+1. The user does not enter credentials - the switch will send a request (on behalf of the system) to do MAC-based authentication
+2. The user does enter credentials - those credentials will be accepted/rejected, if rejected go-to 1
+
+Unauthenticated users are assigned no VLAN by radius and will be, by the networking backbone, assigned to a VLAN with restricted connection for troubleshooting/requests only.
+
+## Analysis
+
+We are able to review information about accounting (e.g. Start/Stop) to see connection information (e.g. packets/octets). See what devices are connecting over certain ports and switches (and by which user). Generate statistics and/or review stats over accepts/rejects/etc.
+
+## Future
+
+* Distribute the CA cert that freeradius uses; however, it is only minimally correct (it is correct-enough for inner-tunnel in freeradius) and becomes a management problem
+* Limit further port authorization at the freeradius endpoint to switch + port (or similar)
+* Perform functions based on being wired or wireless
