@@ -3,7 +3,7 @@ freeradius
 
 This is a freeradius setup that uses a python script to control user-password authentication and MACs to place user+MAC combinations into the proper vlan. This was done on Arch linux (in a container, as root)
 
-# goals
+## goals
 
 * Support a port-restricted LAN (+wifi) in a controlled physical area
 * Provide a singular authentication strategy for supported clients (Windows, Linux, Android)
@@ -13,14 +13,16 @@ This is a freeradius setup that uses a python script to control user-password au
 * Centralized configuration file
 * As few open endpoints as possible
 
-# notes
+## plan
 
 * This expects _ALL_ endpoints to support peap+mschapv2 (tested on Android 7.1.1, Arch using NetworkManager, and Windows 10)
 * Avoids deviating from standard configs at all, assumes users are capable of handling things like systemd themselves
 * The "default" config is the open point (e.g. ports 1812 and 1813 are open for udp traffic) so it has been stripped down where possible
 * There is _NO_ issuance of any cert to clients for this implementation, we do handle managing the internal radius certs. This implementation is for a restricted area LAN.
 
-# setup
+---
+
+## setup/install
 
 to have freeradius actually able to execute the python scripts
 ```
@@ -71,16 +73,9 @@ vim /etc/raddb/clients.conf
 certprivkey = somestring
 ```
 
-# blacklist
+---
 
-support blacklisting by
-* users (e.g. user1)
-* vlan (e.g. prod)
-* vlan.user (e.g. prod.user1)
-
-devices (MACs) per user can not be blacklisted, they should just be removed from the list of MACs. This is rationalized as either a device is 'bad' and needs to be removed OR the user is using a device and the user should be blacklisted until the problem is resolved
-
-# configuration
+## configuration
 
 the json required (as shown below) uses a few approaches to get users+MAC into the proper VLAN
 * [vlan].[name] is the user name which is used to set their password for freeradius configuration/checking
@@ -142,37 +137,50 @@ vim /etc/raddb/mods-config/python/network.json
 }
 ```
 
-# debugging
+### blacklist
 
-there are a few utilities in the mods-config/python/ folder associated with freepydius.py
+support blacklisting by
+* users (e.g. user1)
+* vlan (e.g. prod)
+* vlan.user (e.g. prod.user1)
 
-## harness
+devices (MACs) per user can not be blacklisted, they should just be removed from the list of MACs. This is rationalized as either a device is 'bad' and needs to be removed OR the user is using a device and the user should be blacklisted until the problem is resolved
 
-allows for playing key/value pairs into the radius module
+---
 
-## replay
+## Implementation Details
 
-supports playing back a log (from freepydius output) back into the radius module
-
-# Implementation Details
-
-## Current
+### Current
 
 We are using: [peap](https://en.wikipedia.org/wiki/Protected_Extensible_Authentication_Protocol)+[mschapv2](https://en.wikipedia.org/wiki/Protected_Extensible_Authentication_Protocol#PEAPv0_with_EAP-MSCHAPv2) (no CA validation).
 
-## Flow
+### Flow
 
 1. The user does not enter credentials - the switch will send a request (on behalf of the system) to do MAC-based authentication
 2. The user does enter credentials - those credentials will be accepted/rejected, if rejected go-to 1
 
 Unauthenticated users are assigned no VLAN by radius and will be, by the networking backbone, assigned to a VLAN with restricted connection for troubleshooting/requests only.
 
-## Analysis
+### Analysis
 
 We are able to review information about accounting (e.g. Start/Stop) to see connection information (e.g. packets/octets). See what devices are connecting over certain ports and switches (and by which user). Generate statistics and/or review stats over accepts/rejects/etc.
 
-## Future
+### Future
 
 * Distribute the CA cert that freeradius uses; however, it is only minimally correct (it is correct-enough for inner-tunnel in freeradius) and becomes a management problem
 * Limit further port authorization at the freeradius endpoint to switch + port (or similar)
 * Perform functions based on being wired or wireless
+
+---
+
+## debugging
+
+there are a few utilities in the mods-config/python/ folder associated with freepydius.py
+
+### harness
+
+allows for playing key/value pairs into the radius module
+
+### replay
+
+supports playing back a log (from freepydius output) back into the radius module
