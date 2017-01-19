@@ -42,16 +42,17 @@ vim /etc/environment
 PYTHONPATH=/etc/raddb/mods-config/python/
 ```
 
+install python2 and freeradius
+```
+pacman -S freeradius python2
+```
+
+need to update the freeradius systemd script to include the environment setting for python
 ```
 vim /usr/lib/systemd/system/freeradius.service
 ---
 # add to the [Service] section
 EnvironmentFile=/etc/environment
-```
-
-install python2 and freeradius
-```
-pacman -S freeradius python2
 ```
 
 freepydius logging
@@ -73,14 +74,21 @@ CA_DEFAULT_DAYS  = '1825'
 
 now run the renew script
 ```
-/etc/raddb/certs/renew.sh
+cd /etc/raddb/certs
+./renew.sh
 ```
 
-we need the system to have knowledge of the key
+now we need the system to have knowledge of the key
 ```
 vim /etc/raddb/clients.conf
 ---
 certprivkey = somestring
+# also configure your clients at this point
+```
+
+at this point running the radius server should be possible, though nothing can auth to it
+```
+radiusd -X
 ```
 
 ---
