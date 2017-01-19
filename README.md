@@ -241,23 +241,41 @@ python2.7 freepydius_replay.py
 # or with named file
 python2.7 freepydius_replay.py --file trace.log
 ```
+---
 
-### pieces
+## examples/debugging (radius)
 
+some generalized notes for debugging radius _without_ the python module in place or in use
+
+to configure a plain-text user settings definition, also make sure sites-enabled/default has 'files' enabled for authorize/authenticate
 ```
+vim /etc/raddb/users
+---
 testing Cleartext-Password := "hello"
 ```
 
-In /etc/freeradius/clients.conf add:
+always make sure to configure the clients.conf for the device that will actually be "dealing" with radius
 
-I will have an account called testing in FreeRadius (as above), but i MUST have a local account on the EdgeRouter as well (password is irrelelavant, but can still be accessed if the FreeRadius Server is not available).  Also,  the secret key must be identical on the remote client authenticator
 ```
+vim /etc/raddb/clients.conf
+---
+# you should already have a cert key in here!
+
+# when using something like an edgerouter lite
 client EdgeRouterLite {
-     secret = testing123
+    secret = testing123
     ipaddr=192.168.0.10
 }
+
+# or maybe a set of edgeswitch devices
+# on 'all' of 192.168.0.*
+client 192.168.0.0/24 {
+        secret = myedgeswitchpassword
+        require_message_authenticator = no
+        nastype = other
+}
+
 ```
-the ip address is the client that will be sending the Access_Request packets.
 
 On the EdgeRouterLite, you add radius access by doing the following:
 ```
@@ -268,10 +286,14 @@ $ save
 $ exit
 ```
 
+This is slightly more complicated on an edge switch, please consult the ubnt documentation and/or community
+
+either way, at this point, run radius in debug mode
 ```
 radiusd -X
 ```
 
+to test the configuration (from the radius host)
 ```
 # testing and hello are the matching user credentials from above
 # localhost when running locally
@@ -280,7 +302,7 @@ radiusd -X
 radtest testing hello localhost 0 testing123
 ```
 
-should result in
+if everything is configured properly this should result in
 ```
 rad_recv: Access-Accept packet from host 127.0.0.1 port 1812, length=20
 ```
