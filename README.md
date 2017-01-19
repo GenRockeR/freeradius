@@ -3,6 +3,18 @@ freeradius
 
 This is a freeradius setup that uses a python script to control user-password authentication and MACs to place user+MAC combinations into the proper vlan. This was done on Arch linux (in a container, as root)
 
+## overview
+
+For definitive information and guides about freeradius, visit the project [site](http://freeradius.org/)
+
+### Summarized
+
+FreeRadius is a server that provides the following three things:
+
+- Authentication (Your driver's license proves that you're the person you say you are
+- Authorization (Your driver's license lets you drive your car, motorcycle, or CDL)
+- Accounting (A log shows tat you've driven on these roads at a certain date)
+
 ## goals
 
 * Support a port-restricted LAN (+wifi) in a controlled physical area
@@ -185,3 +197,46 @@ allows for playing key/value pairs into the radius module
 ### replay
 
 supports playing back a log (from freepydius output) back into the radius module
+
+### pieces
+
+```
+testing Cleartext-Password := "hello"
+```
+
+In /etc/freeradius/clients.conf add:
+
+I will have an account called testing in FreeRadius (as above), but i MUST have a local account on the EdgeRouter as well (password is irrelelavant, but can still be accessed if the FreeRadius Server is not available).  Also,  the secret key must be identical on the remote client authenticator
+```
+client EdgeRouterLite {
+     secret = testing123
+    ipaddr=192.168.0.10
+}
+```
+the ip address is the client that will be sending the Access_Request packets.
+
+On the EdgeRouterLite, you add radius access by doing the following:
+```
+$ configure
+$ set system login radius-server <ip address> secret <secret radius key>
+$ commit
+$ save
+$ exit
+```
+
+```
+radiusd -X
+```
+
+```
+# testing and hello are the matching user credentials from above
+# localhost when running locally
+# 0 is the NAS-port, shouldn't normally matter
+# testing123 is the client secret
+radtest testing hello localhost 0 testing123
+```
+
+should result in
+```
+rad_recv: Access-Accept packet from host 127.0.0.1 port 1812, length=20
+```
