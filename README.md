@@ -34,17 +34,23 @@ FreeRadius is a server that provides the following three things:
 
 ## setup/install
 
+install python2 and freeradius
+```
+pacman -S freeradius python2
+```
+sorry freeradius but we need to talk...
+```
+cd /etc
+rm -rf raddb
+git clone git@github.com:epiphyte/freeradius.git raddb
+```
+
 to have freeradius actually able to execute the python scripts during execution (or debug)
 ```
 vim /etc/environment
 ---
 # append
 PYTHONPATH=/etc/raddb/mods-config/python/
-```
-
-install python2 and freeradius
-```
-pacman -S freeradius python2
 ```
 
 need to update the freeradius systemd script to include the environment setting for python
