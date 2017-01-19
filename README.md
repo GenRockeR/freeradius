@@ -19,9 +19,9 @@ FreeRadius is a server that provides the following three things:
 
 * Support a port-restricted LAN (+wifi) in a controlled, physical area
 * Provide a singular authentication strategy for supported clients using peap+mschapv2
-** Windows 7/10
-** Arch/Fedora Linux (any supporting modern versions of NetworkManager or systemd-networkd when server/headless)
-** Android 7+
+ * Windows 7/10
+ * Arch/Fedora Linux (any supporting modern versions of NetworkManager or systemd-networkd when server/headless)
+ * Android 7+
 * Map authenticated user+MAC combinations to specific VLANs
 * Support MAC-based authentication (bypass) for systems that can not authenticate themselves
 * Integrate with Ubiquiti devices
