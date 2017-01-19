@@ -222,15 +222,25 @@ devices (MACs) per user can not be blacklisted, they should just be removed from
 
 ## debugging
 
-there are a few utilities in the mods-config/python/ folder associated with freepydius.py
+there are a few utilities in the mods-config/python/ folder associated with freepydius.py. It is _very_ difficult to debug certain problems in a python module by allowing freeradius to execute it (information is eaten alive...). The harness and replay allow for using logs and/or manual input to test cases against the module. Regardless of feeling about python 2 vs. 3 - freeradius currently (at least here) is using 2 and so all tooling has been built to both match that requirement but some...styling decisions from the radiusd & example.py installed by freeradius
 
 ### harness
 
 allows for playing key/value pairs into the radius module
+```
+python2.7 freepydius_harness.py accounting User-Name=test Calling-Station-Id=00-11-22-33-44-55
+```
 
 ### replay
 
 supports playing back a log (from freepydius output) back into the radius module
+
+```
+# default log location
+python2.7 freepydius_replay.py
+# or with named file
+python2.7 freepydius_replay.py --file trace.log
+```
 
 ### pieces
 
