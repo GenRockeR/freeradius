@@ -7,7 +7,7 @@ At this point, before jumping in:
 
 1. A lot of this was "radius the hard way" as the amount of documentation and people doing such an implementation is rather minimal and/or not documented. For that reason there is not much of a community
 2. There are some oddities (that is the nice way to put it) for how freeradius has implemented some things (I'm looking at you tuple of tuples in python)
-3. Due to 1 & 2 if you see holes are problems in this approach I would love to have a conversation about them
+3. Due to 1 & 2 if you see holes and/or problems in this approach I would love to have a conversation about them
 4. If you have questions and/or comments about custom freeradius implementation I would do by best to help you understand what I can.
 
 ## overview
@@ -80,6 +80,7 @@ We are able to review information about accounting (e.g. Start/Stop) to see conn
 * We do have Cleartext-Password both in the configuration enumerated below, but it is also (currently) logged to the trace log. Be advised of this when distributing/debugging logs
 * Instead of removing commented out sections, they are there for reference in the configs
 * Though the python module is configured to be available for each phase (e.g. authorize, authenticate, accounting, post_auth, pre_proxy, preacct), it is not currently enabled for all (e.g. preacct, pre_proxy)
+* MAC spoofing is likely the highest risk (currently known) for this configuration, see 'Future Options' above for how this can and may be mitigated
 
 ---
 
