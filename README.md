@@ -95,11 +95,11 @@ radiusd -X
 
 ## configuration
 
-the json required (as shown below) uses a few approaches to get users+MAC into the proper VLAN
+the json required (as shown below) uses a few approaches to get users+MAC into the proper VLAN and to support MAC-based/bypass
 * [vlan].[name] is the user name which is used to set their password for freeradius configuration/checking
 * [vlan] is used to set attributes to allow switches to get the corresponding attributes back
 * [mac] is used to allow only certain devices to be used by certain users in certain vlans
-* this corresponds to the implementation (in python) called freepydius under the mods-config/python folder
+* this corresponds to the implementation (in python) called freepydius under the mods-config/python folder (which is already setup in the mods-available/python file)
 
 the following json represents a routing definition, prod.* and dev.* would be users, the 1234567890ab represents a MAC-device authenticating
 ```
@@ -158,10 +158,13 @@ vim /etc/raddb/mods-config/python/network.json
 
 ### blacklist
 
-support blacklisting by
+because it may be beneficial to temporarily disable a vlan, user, or device there is an ability to blacklist
+
+the blacklist section is a list of strings where a string can be:
 * users (e.g. user1)
 * vlan (e.g. prod)
 * vlan.user (e.g. prod.user1)
+* MAC-based auth MAC
 
 devices (MACs) per user can not be blacklisted, they should just be removed from the list of MACs. This is rationalized as either a device is 'bad' and needs to be removed OR the user is using a device and the user should be blacklisted until the problem is resolved
 
