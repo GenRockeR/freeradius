@@ -15,7 +15,7 @@ FreeRadius is a server that provides the following three things:
 - Authorization (Your driver's license lets you drive your car, motorcycle, or CDL)
 - Accounting (A log shows tat you've driven on these roads at a certain date)
 
-## our goals
+### our goals
 
 * Support a port-restricted LAN (+wifi) in a controlled, physical area
 * Provide a singular authentication strategy for supported clients using peap+mschapv2
