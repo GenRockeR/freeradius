@@ -122,6 +122,7 @@ vim /etc/raddb/mods-config/python/network.json
         {
             "pass": "1234567890ab",
             "vlan": "dev",
+            "owner": "user1",
             "macs":
             [
                 "1234567890ab"
