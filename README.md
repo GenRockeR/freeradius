@@ -4,6 +4,7 @@ freeradius
 This is a freeradius setup that uses a python script to control user-password authentication and MACs to place user+MAC combinations into the proper vlan. This was done on Arch linux (in a container, as root)
 
 At this point, before jumping in:
+
 1. A lot of this was "radius the hard way" as the amount of documentation and people doing such an implementation is rather minimal and/or not documented. For that reason there is not much of a community
 2. There are some oddities (that is the nice way to put it) for how freeradius has implemented some things (I'm looking at you tuple of tuples in python)
 3. Due to 1 & 2 if you see holes are problems in this approach I would love to have a conversation about them
