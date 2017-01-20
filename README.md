@@ -95,6 +95,8 @@ sorry freeradius but we need to talk...
 cd /etc
 rm -rf raddb
 git clone git@github.com:epiphyte/freeradius.git raddb
+cd raddb
+git checkout stable
 ```
 
 to have freeradius actually able to execute the python scripts during execution (or debug)
