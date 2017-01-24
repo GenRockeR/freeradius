@@ -10,17 +10,49 @@ IN_OCTET = "Acct-Input-Octets"
 OUT_OCTET = 'Acct-Output-Octets'
 
 
-def _packets(cursor):
+def _packets_daily(cursor):
+    _packets(cursor, False)
+
+
+def _packets_all(cursor):
+    _packets(cursor, True)
+
+
+def _octets_all(cursor):
+    _octets(cursor, True)
+
+
+def _octets_daily(cursor):
+    _octets(cursor, False)
+
+
+def _session_time_all(cursor):
+    _session_time(cursor, True)
+
+
+def _session_time_daily(cursor):
+    _session_time(cursor, False)
+
+
+def _authorizes_all(cursor):
+    _authorizes(cursor, True)
+
+
+def _authorizes_daily(cursor):
+    _authorizes(cursor, False)
+
+
+def _packets(cursor, aggr):
     """print information about packet throughput."""
-    _accounting_stat(cursor, IN_PACKETS, OUT_PACKETS)
+    _accounting_stat(cursor, IN_PACKETS, OUT_PACKETS, aggr)
 
 
-def _octets(cursor):
+def _octets(cursor, aggr):
     """print information about octet throughput."""
-    _accounting_stat(cursor, IN_OCTET, OUT_OCTET)
+    _accounting_stat(cursor, IN_OCTET, OUT_OCTET, aggr)
 
 
-def _session_time(cursor):
+def _session_time(cursor, aggr):
     """print information about session time."""
     cursor.execute("select line from data where key = 'Acct-Status-Type' and val = 'Stop'")
     stop_lines = [x[0] for x in cursor.fetchall()]
@@ -30,7 +62,10 @@ def _session_time(cursor):
         sess = "select val, line from data where line = {0} and key = 'Acct-Session-Time'".format(stop)
         q = "select substr(date, 0, 11) as date, u.val as user, s.val from (select date, line from data where line = {0}) as X inner join ({1}) as u on u.line = X.line inner join({2}) as s on s.line = X.line".format(stop, user, sess)
         queries.append(q)
-    cursor.execute("select date, user, avg(val), max(val), min(val), sum(val) from (" + " UNION ".join(queries) + ") as Y group by date, user order by date, user")
+    query = "select date, user, avg(val) as a, max(val) as mx, min(val) as mn, sum(val) as s from (" + " UNION ".join(queries) + ") as Y group by date, user order by date, user"
+    if aggr:
+        query = "select 'all', user, avg(a), max(mx), min(mn), sum(s) from (" + query + ") as Z group by user"
+    cursor.execute(query)
     def _gen():
         for row in cursor.fetchall():
             yield "{:>20}{:>15}{:>15}{:>15}{:>15}{:>15}".format(row[1], row[0], row[2], row[3], row[4], row[5])
@@ -45,16 +80,19 @@ def _print_data(cat, generator):
         print row
     print
 
-def _authorizes(cursor):
+def _authorizes(cursor, aggr):
     """get the number of authorizes by user by day."""
-    cursor.execute("select val, date, sum(authorizes) from (select substr(date, 0, 11) as date, val, 1 as authorizes from data where type = 'AUTHORIZE' and key = 'User-Name' group by date, val) as X group by date, val order by date, val")
+    query = "select val, date, sum(authorizes) as s from (select substr(date, 0, 11) as date, val, 1 as authorizes from data where type = 'AUTHORIZE' and key = 'User-Name' group by date, val) as X group by date, val order by date, val"
+    if aggr:
+        query = "select val, 'all', sum(s) from (" + query + ") as Z group by val"
+    cursor.execute(query)
     def _gen():
         for row in cursor.fetchall():
             yield "{:>20}{:>15}{:>15}".format(row[0], row[1], row[2])
     _print_data("authorizes", _gen)
 
 
-def _accounting_stat(cursor, in_col, out_col):
+def _accounting_stat(cursor, in_col, out_col, aggr):
     cursor.execute("select line, key, val from data where key = '{0}' or key = '{1}'".format(out_col, in_col))
     queries = {}
     for row in cursor.fetchall():
@@ -65,9 +103,11 @@ def _accounting_stat(cursor, in_col, out_col):
         if key not in queries:
             queries[key] = []
         queries[key].append(query)
-    template = "select val, date, sum(packets) from ({0}) as X group by val, date order by val, date"
+    template = "select val, date, sum(packets) s from ({0}) as X group by val, date order by val, date"
     for q in queries:
         query = template.format(" UNION ".join(queries[q]))
+        if aggr:
+            query = "select val, 'all', sum(s) from (" + query + ") as Z group by val"
         cursor.execute(query)
         def _gen():
             for row in cursor.fetchall():
@@ -77,10 +117,14 @@ def _accounting_stat(cursor, in_col, out_col):
 
 # available reports
 available = {}
-available["packets"] = _packets
-available["octets"] = _octets
-available["authorizes"] = _authorizes
-available["session-time"] = _session_time
+available["packets"] = _packets_all
+available["octets"] = _octets_all
+available["authorizes"] = _authorizes_all
+available["session-time"] = _session_time_all
+available["packets-daily"] = _packets_daily
+available["octets-daily"] = _octets_daily
+available["authorizes-daily"] = _authorizes_daily
+available["session-time-daily"] = _session_time_daily
 
 
 def main():
@@ -90,12 +134,13 @@ def main():
     parser.add_argument("--reports", nargs='*')
     args = parser.parse_args()
     if args.reports is None or len(args.reports) == 0:
-        print "please give some reports to run..."
-        exit(1)
-    execute = args.reports
+        execute = available.keys()
+    else:
+        execute = args.reports
     conn = sqlite3.connect(args.database)
     curs = conn.cursor()
     for item in execute:
+        print "executing " + item
         if item in available:
             available[item](curs)
         else:
