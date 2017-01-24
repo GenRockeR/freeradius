@@ -43,6 +43,7 @@ def _accounting_stat(cursor, in_col, out_col):
 # available reports
 available = {}
 available["packets"] = _packets
+available["octets"] = _octets
 
 
 def main():
