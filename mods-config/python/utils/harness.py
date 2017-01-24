@@ -2,11 +2,10 @@
 """Testing harness for freepydius implementation."""
 
 import argparse
-import freepydius
-import radiusd
+import wrapper
 
 def main():
-    options = dir(freepydius)
+    options = dir(wrapper.freepydius)
     choices = []
     for opt in options:
         if opt.endswith("_KEY"):
@@ -21,7 +20,7 @@ def main():
     parser.add_argument('kv', nargs='*', help="key/value pairs")
     args = parser.parse_args()
     kv = []
-    radiusd.config = ()
+    wrapper.radiusd.config = ()
     for val in args.kv:
         if "=" not in val:
             print("key/value must be key=value")
@@ -30,8 +29,8 @@ def main():
         new_kv = (parts[0], parts[1])
         kv.append(new_kv)
     tuples = tuple(tuple(x) for x in kv)
-    freepydius._CONFIG_FILE = "network.json"
-    attr = getattr(freepydius, args.method)
+    wrapper.freepydius._CONFIG_FILE = "../network.json"
+    attr = getattr(wrapper.freepydius, args.method)
     res = attr(tuples)
     print(res)
     print

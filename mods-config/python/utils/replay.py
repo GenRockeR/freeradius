@@ -4,7 +4,7 @@
 import argparse
 import ast
 import subprocess
-import freepydius
+import wrapper
 
 KEY = " -> "
 
@@ -13,7 +13,7 @@ def _commented(text):
 
 def main():
     parser = argparse.ArgumentParser(description="freepyidus log replay")
-    parser.add_argument('--file', help="file input", default=freepydius._LOG_FILE)
+    parser.add_argument('--file', help="file input", default=wrapper.LOG_NAME)
     args = parser.parse_args()
     with open(args.file, 'r') as f:
         for line in f:
@@ -39,7 +39,7 @@ def main():
             else:
                 print "unknown method: " + method
                 exit(-1)
-            cmd = ["python2.7", "freepydius_harness.py", method]
+            cmd = ["python2.7", "harness.py", method]
             for item in objs:
                 cmd.append(item)
             _commented(method)
