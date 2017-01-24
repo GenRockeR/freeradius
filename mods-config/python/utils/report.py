@@ -30,7 +30,7 @@ def _session_time(cursor):
         sess = "select val, line from data where line = {0} and key = 'Acct-Session-Time'".format(stop)
         q = "select substr(date, 0, 11) as date, u.val as user, s.val from (select date, line from data where line = {0}) as X inner join ({1}) as u on u.line = X.line inner join({2}) as s on s.line = X.line".format(stop, user, sess)
         queries.append(q)
-    cursor.execute("select date, user, avg(val), max(val), min(val), sum(val) from (" + " UNION ".join(queries) + ") as Y group by date, user")
+    cursor.execute("select date, user, avg(val), max(val), min(val), sum(val) from (" + " UNION ".join(queries) + ") as Y group by date, user order by date, user")
     def _gen():
         for row in cursor.fetchall():
             yield "{:>20}{:>15}{:>15}{:>15}{:>15}{:>15}".format(row[1], row[0], row[2], row[3], row[4], row[5])
@@ -47,7 +47,7 @@ def _print_data(cat, generator):
 
 def _authorizes(cursor):
     """get the number of authorizes by user by day."""
-    cursor.execute("select val, date, sum(authorizes) from (select substr(date, 0, 11) as date, val, 1 as authorizes from data where type = 'AUTHORIZE' and key = 'User-Name' group by date, val) as X group by date, val")
+    cursor.execute("select val, date, sum(authorizes) from (select substr(date, 0, 11) as date, val, 1 as authorizes from data where type = 'AUTHORIZE' and key = 'User-Name' group by date, val) as X group by date, val order by date, val")
     def _gen():
         for row in cursor.fetchall():
             yield "{:>20}{:>15}{:>15}".format(row[0], row[1], row[2])
