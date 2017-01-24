@@ -18,6 +18,23 @@ def _octets(cursor):
     """print information about octet throughput."""
     _accounting_stat(cursor, IN_OCTET, OUT_OCTET)
 
+def _print_data(cat, generator):
+    print
+    print cat
+    print "==="
+    for row in generator():
+        print row
+    print
+
+def _authorizes(cursor):
+    """get the number of authorizes by user by day."""
+    cursor.execute("select val, date, sum(authorizes) from (select substr(date, 0, 11) as date, val, 1 as authorizes from data where type = 'AUTHORIZE' and key = 'User-Name' group by date, val) as X group by date, val")
+    def _gen():
+        for row in cursor.fetchall():
+            yield "{:>20}{:>15}{:>15}".format(row[0], row[1], row[2])
+    _print_data("authorizes", _gen)
+
+
 def _accounting_stat(cursor, in_col, out_col):
     cursor.execute("select line, key, val from data where key = '{0}' or key = '{1}'".format(out_col, in_col))
     queries = {}
@@ -33,17 +50,17 @@ def _accounting_stat(cursor, in_col, out_col):
     for q in queries:
         query = template.format(" UNION ".join(queries[q]))
         cursor.execute(query)
-        print q
-        print "==="
-        for row in cursor.fetchall():
-            print "{:>15}{:>15}{:>15}".format(row[0], row[1], row[2])
-        print
+        def _gen():
+            for row in cursor.fetchall():
+                yield "{:>20}{:>15}{:>15}".format(row[0], row[1], row[2])
+        _print_data(q, _gen)
 
 
 # available reports
 available = {}
 available["packets"] = _packets
 available["octets"] = _octets
+available["authorizes"] = _authorizes
 
 
 def main():
