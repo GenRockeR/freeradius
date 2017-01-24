@@ -4,7 +4,7 @@
 import ast
 import sys
 import sqlite3
-import freepydius_replay
+import replay
 
 
 class Entry(object):
@@ -36,7 +36,7 @@ def _accept(input_stream):
                  val text,
                  type text)''')
     for line in input_stream:
-        parts = line.split(freepydius_replay.KEY)
+        parts = line.split(replay.KEY)
         meta = parts[0]
         data = ast.literal_eval(parts[1])
         last = meta.rfind(":")
