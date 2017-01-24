@@ -14,9 +14,28 @@ def _packets(cursor):
     """print information about packet throughput."""
     _accounting_stat(cursor, IN_PACKETS, OUT_PACKETS)
 
+
 def _octets(cursor):
     """print information about octet throughput."""
     _accounting_stat(cursor, IN_OCTET, OUT_OCTET)
+
+
+def _session_time(cursor):
+    """print information about session time."""
+    cursor.execute("select line from data where key = 'Acct-Status-Type' and val = 'Stop'")
+    stop_lines = [x[0] for x in cursor.fetchall()]
+    queries = []
+    for stop in stop_lines:
+        user = "select val, line from data where line = {0} and key = 'User-Name'".format(stop)
+        sess = "select val, line from data where line = {0} and key = 'Acct-Session-Time'".format(stop)
+        q = "select substr(date, 0, 11) as date, u.val as user, s.val from (select date, line from data where line = {0}) as X inner join ({1}) as u on u.line = X.line inner join({2}) as s on s.line = X.line".format(stop, user, sess)
+        queries.append(q)
+    cursor.execute("select date, user, avg(val), max(val), min(val), sum(val) from (" + " UNION ".join(queries) + ") as Y group by date, user")
+    def _gen():
+        for row in cursor.fetchall():
+            yield "{:>20}{:>15}{:>15}{:>15}{:>15}{:>15}".format(row[1], row[0], row[2], row[3], row[4], row[5])
+    _print_data("sessions (avg, max, min, sum)", _gen)
+
 
 def _print_data(cat, generator):
     print
@@ -61,6 +80,7 @@ available = {}
 available["packets"] = _packets
 available["octets"] = _octets
 available["authorizes"] = _authorizes
+available["session-time"] = _session_time
 
 
 def main():
