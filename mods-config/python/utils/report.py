@@ -6,11 +6,20 @@ import sqlite3
 
 OUT_PACKETS = 'Acct-Output-Packets'
 IN_PACKETS = 'Acct-Input-Packets'
+IN_OCTET = "Acct-Input-Octets"
+OUT_OCTET = 'Acct-Output-Octets'
 
 
 def _packets(cursor):
-    """print information about packet thru-put."""
-    cursor.execute("select line, key, val from data where key = '{0}' or key = '{1}'".format(OUT_PACKETS, IN_PACKETS))
+    """print information about packet throughput."""
+    _accounting_stat(cursor, IN_PACKETS, OUT_PACKETS)
+
+def _octets(cursor):
+    """print information about octet throughput."""
+    _accounting_stat(cursor, IN_OCTET, OUT_OCTET)
+
+def _accounting_stat(cursor, in_col, out_col):
+    cursor.execute("select line, key, val from data where key = '{0}' or key = '{1}'".format(out_col, in_col))
     queries = {}
     for row in cursor.fetchall():
         num = row[0]
