@@ -4,4 +4,4 @@ python:
 
 script:
     - cd mods-config/python/tests/
-    - ./check.sh
+    - make

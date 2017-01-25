@@ -1,3 +1,4 @@
+#!/bin/bash
 blacklist=$(cat network.json | grep "blacklist" | cut -d ":" -f 2 | cut -d "[" -f 2 | cut -d "]" -f 1 | sed 's/"//g' | sed "s/,//g")
 idx=0
 mac=""
