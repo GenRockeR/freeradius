@@ -38,18 +38,13 @@ def byteify(input):
     return input
 
 
-def _valid_vlan(vlan, blacklist, vlans):
-  """validate vlan availability."""
-  return vlan in vlans and vlan not in blacklist
-
-
 def _convert_user_name(name):
   """rules to support user name conversion(s)."""
   user_name = name
   # prepending of domain name to user-name...thanks Windows
   if _DOMAIN_SLASH in user_name:
-      idx = user_name.index(_DOMAIN_SLASH)
-      user_name = user_name[idx + len(_DOMAIN_SLASH):]
+    idx = user_name.index(_DOMAIN_SLASH)
+    user_name = user_name[idx + len(_DOMAIN_SLASH):]
   return user_name
 
 
@@ -58,23 +53,50 @@ def _create_bypass_user(name):
   return { PASS_KEY: name, MAC_KEY: [name] }
 
 
+def _blacklist_objects(objs, blacklist, sep=None, sub_key=None):
+  """cleanse blacklisted objects from the config."""
+  cleansed = {}
+  for item in objs:
+    if item in blacklist:
+      continue
+    if sep is not None:
+      parts = item.split(sep)
+      valid = True
+      for part in parts:
+        if part in blacklist:
+          valid = False
+          break
+      if not valid:
+        continue
+      if sub_key is not None and sub_key in objs[item]:
+        valid = True
+        for sub in objs[item][sub_key]:
+          if sub in blacklist:
+            valid = False
+            break
+        if not valid:
+          continue
+    cleansed[item] = objs[item]
+  return objs
+
+
 def _config(input_name):
   """get a user config from file."""
   user_name = _convert_user_name(input_name)
   with open(_CONFIG_FILE) as f:
     obj = byteify(json.loads(f.read()))
-    users = obj[USER_KEY]
-    vlans = obj[VLAN_KEY]
-    bypass = obj[BYPASS_KEY]
     blacklist = obj[BLCK_KEY]
+    users = _blacklist_objects(obj[USER_KEY], blacklist, sep=".", sub_key=MAC_KEY)
+    vlans = _blacklist_objects(obj[VLAN_KEY], blacklist)
+    bypass = _blacklist_objects(obj[BYPASS_KEY], blacklist)
     user_obj = None
     vlan_obj = None
     if "." in user_name:
       parts = user_name.split(".")
       vlan = parts[0]
-      if user_name in users and user_name not in blacklist and parts[1] not in blacklist:
+      if user_name in users:
         user_obj = users[user_name]
-      if _valid_vlan(vlan, blacklist, vlans):
+      if vlan in vlans:
         vlan_obj = vlans[vlan]
     else:
       lowered = user_name.lower()
@@ -84,9 +106,9 @@ def _config(input_name):
           if c not in ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f']:
             valid = False
             break
-        if valid and lowered in bypass and lowered not in blacklist:
+        if valid and lowered in bypass:
             vlan_name = bypass[lowered]
-            if _valid_vlan(vlan_name, blacklist, vlans):
+            if vlan_name in vlans:
                 user_obj = _create_bypass_user(lowered)
                 vlan_obj = vlans[vlan_name]
     return (user_obj, vlan_obj)

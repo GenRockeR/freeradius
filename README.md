@@ -219,8 +219,7 @@ the blacklist section is a list of strings where a string can be:
 * vlan (e.g. prod)
 * vlan.user (e.g. prod.user1)
 * MAC-based auth MAC
-
-devices (MACs) per user can not be blacklisted, they should just be removed from the list of MACs. This is rationalized as either a device is 'bad' and needs to be removed OR the user is using a device and the user should be blacklisted until the problem is resolved
+* MAC (for a user set) which will blacklist all users with that mac assigned to them
 
 ---
 
