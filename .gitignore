@@ -1,6 +1,7 @@
 clients.conf
 *.pyc
 mods-config/python/network.json
+mods-config/python/tests/alt.json
 certs/*.pem
 certs/*.der
 certs/*.csr

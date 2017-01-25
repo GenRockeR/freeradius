@@ -80,7 +80,7 @@ def _blacklist_objects(objs, blacklist, sep=None, sub_key=None, value=False):
       if objs[item] in blacklist:
         continue
     cleansed[item] = objs[item]
-  return objs
+  return cleansed
 
 
 def _config(input_name):

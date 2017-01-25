@@ -1,0 +1,53 @@
+{
+    "blacklist": ["112233445566", "vlan1", "vlan2.user1", "user2", "aabbccddeeff"],
+    "bypass":
+    {
+        "112233445566": "vlan2",
+        "112233aabbcc": "vlan1",
+        "aabbcc112233": "vlan2",
+        "aabbccddeeff": "vlan2"
+    },
+    "users": {
+        "vlan2.user6": {
+            "macs": [
+                "001122334455"
+            ],
+            "pass": "pass1"
+        },
+        "vlan2.user3": {
+            "macs": [
+                "001122334455",
+                "aabbccddeeff"
+            ],
+            "pass": "pass1"
+        },
+        "vlan1.user4": {
+            "macs": [
+                "001122334455"
+            ],
+            "pass": "pass2"
+        },
+        "vlan1.user5": {
+            "macs": [
+                "001122334455"
+            ],
+            "pass": "pass3"
+        },
+        "vlan2.user1": {
+            "macs": [
+                "001122334455"
+            ],
+            "pass": "pass4"
+        },
+        "vlan2.user2": {
+            "macs": [
+                "001122334455"
+            ],
+            "pass": "pass5"
+        }
+    },
+    "vlans": {
+        "vlan1": "10",
+        "vlan2": "11"
+    }
+}
