@@ -166,6 +166,10 @@ the following json represents a routing definition, prod.* and dev.* would be us
 vim /etc/raddb/mods-config/python/network.json
 ---
 {
+    "bypass":
+    {
+        "1234567890ab": "dev"
+    },
     "users":
     {
         "prod.user1":
@@ -194,16 +198,6 @@ vim /etc/raddb/mods-config/python/network.json
             [
                 "4fff3a7e7a11",
                 "aaffbb112233"
-            ]
-        },
-        "1234567890ab":
-        {
-            "pass": "1234567890ab",
-            "vlan": "dev",
-            "owner": "user1",
-            "macs":
-            [
-                "1234567890ab"
             ]
         }
     },

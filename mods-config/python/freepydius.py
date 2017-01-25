@@ -18,6 +18,7 @@ USER_KEY = "users"
 VLAN_KEY = "vlans"
 BLCK_KEY = "blacklist"
 FORCE_VLAN = "vlan"
+BYPASS_KEY = "bypass"
 rlock = threading.RLock()
 logger = None
 _CONFIG_FILE = "/etc/raddb/mods-config/python/network.json"
@@ -51,6 +52,12 @@ def _convert_user_name(name):
       user_name = user_name[idx + len(_DOMAIN_SLASH):]
   return user_name
 
+
+def _create_bypass_user(name):
+  """create a bypass user from an input."""
+  return { PASS_KEY: name, MAC_KEY: [name] }
+
+
 def _config(input_name):
   """get a user config from file."""
   user_name = _convert_user_name(input_name)
@@ -58,6 +65,7 @@ def _config(input_name):
     obj = byteify(json.loads(f.read()))
     users = obj[USER_KEY]
     vlans = obj[VLAN_KEY]
+    bypass = obj[BYPASS_KEY]
     blacklist = obj[BLCK_KEY]
     user_obj = None
     vlan_obj = None
@@ -76,16 +84,11 @@ def _config(input_name):
           if c not in ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f']:
             valid = False
             break
-        if valid and lowered in users and lowered not in blacklist:
-          user_obj = users[lowered]
-          if FORCE_VLAN in user_obj:
-            forced = user_obj[FORCE_VLAN]
-            if _valid_vlan(forced, blacklist, vlans):
-              vlan_obj = vlans[forced]
-          if vlan_obj is None:
-            user_obj = None
-          else:
-            user_obj[PASS_KEY] = user_name
+        if valid and lowered in bypass and lowered not in blacklist:
+            vlan_name = bypass[lowered]
+            if _valid_vlan(vlan_name, blacklist, vlans):
+                user_obj = _create_bypass_user(lowered)
+                vlan_obj = vlans[vlan_name]
     return (user_obj, vlan_obj)
 
 
