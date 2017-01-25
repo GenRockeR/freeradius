@@ -59,3 +59,8 @@ function test-all()
 }
 
 test-all > $OUT
+diff expected.log $OUT
+if [ $? -ne 0 ]; then
+    echo "different results..."
+    exit -1
+fi
