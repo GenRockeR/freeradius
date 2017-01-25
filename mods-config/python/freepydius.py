@@ -111,6 +111,14 @@ def _get_vlan(user_name, macs):
           return vlan
 
 
+def _convert_mac(mac)
+  """convert a mac to a lower, cleansed value."""
+  using = mac.lower()
+  for c in [":", "-"]
+    using = using.replace(c, "")
+  return using
+
+
 def _get_user_mac(p):
   """extract user/mac from request."""
   user_name = None
@@ -119,9 +127,7 @@ def _get_user_mac(p):
     if item[0] == "User-Name":
       user_name = item[1]
     elif item[0] == "Calling-Station-Id":
-      mac = item[1].lower()
-      for c in [":", "-"]:
-        mac = mac.replace(c, "")
+      mac = _convert_mac(item[1])
       macs.append(mac)
   mac_set = None
   if len(macs) > 0:
