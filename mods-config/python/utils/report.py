@@ -51,16 +51,32 @@ def _octets(cursor, aggr):
     """print information about octet throughput."""
     _accounting_stat(cursor, IN_OCTET, OUT_OCTET, aggr)
 
+USER_NAME = 'User-Name'
+STOP_QUERY = """
+    select line from data
+    where key = 'Acct-Status-Type' and val = 'Stop'
+"""
+
+VAL_LINE_WHERE = """
+    select val, line from data where line = {0} and key = '{1}'
+"""
+
+SESSION_USER = """
+    select date, u.val as user, s.val
+    from (select date, line from data where line = {0}) as X
+    inner join ({1}) as u on u.line = X.line
+    inner join({2}) as s on s.line = X.line
+"""
 
 def _session_time(cursor, aggr):
     """print information about session time."""
-    cursor.execute("select line from data where key = 'Acct-Status-Type' and val = 'Stop'")
+    cursor.execute(STOP_QUERY)
     stop_lines = [x[0] for x in cursor.fetchall()]
     queries = []
     for stop in stop_lines:
-        user = "select val, line from data where line = {0} and key = 'User-Name'".format(stop)
-        sess = "select val, line from data where line = {0} and key = 'Acct-Session-Time'".format(stop)
-        q = "select substr(date, 0, 11) as date, u.val as user, s.val from (select date, line from data where line = {0}) as X inner join ({1}) as u on u.line = X.line inner join({2}) as s on s.line = X.line".format(stop, user, sess)
+        user = VAL_LINE_WHERE.format(stop, USER_NAME)
+        sess = VAL_LINE_WHERE.format(stop, "Acct-Session-Time")
+        q = SESSION_USER.format(stop, user, sess)
         queries.append(q)
     query = "select date, user, avg(val) as a, max(val) as mx, min(val) as mn, sum(val) as s from (" + " UNION ".join(queries) + ") as Y group by date, user order by date, user"
     if aggr:

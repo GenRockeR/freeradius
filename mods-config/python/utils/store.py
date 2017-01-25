@@ -21,7 +21,13 @@ class Entry(object):
 
     def to_row(self):
         """convert to an inserted row."""
-        return [self.date, self.time, self.line, self.instance, self.key, self.val, self.typed]
+        return [self.date,
+                self.time,
+                self.line,
+                self.instance,
+                self.key,
+                self.val,
+                self.typed]
 
 
 def _accept(input_stream):
