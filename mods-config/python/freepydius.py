@@ -53,7 +53,7 @@ def _create_bypass_user(name):
   return { PASS_KEY: name, MAC_KEY: [name] }
 
 
-def _blacklist_objects(objs, blacklist, sep=None, sub_key=None):
+def _blacklist_objects(objs, blacklist, sep=None, sub_key=None, value=False):
   """cleanse blacklisted objects from the config."""
   cleansed = {}
   for item in objs:
@@ -76,6 +76,9 @@ def _blacklist_objects(objs, blacklist, sep=None, sub_key=None):
             break
         if not valid:
           continue
+    if value:
+      if objs[item] in blacklist:
+        continue
     cleansed[item] = objs[item]
   return objs
 
@@ -88,7 +91,7 @@ def _config(input_name):
     blacklist = obj[BLCK_KEY]
     users = _blacklist_objects(obj[USER_KEY], blacklist, sep=".", sub_key=MAC_KEY)
     vlans = _blacklist_objects(obj[VLAN_KEY], blacklist)
-    bypass = _blacklist_objects(obj[BYPASS_KEY], blacklist)
+    bypass = _blacklist_objects(obj[BYPASS_KEY], blacklist, value=True)
     user_obj = None
     vlan_obj = None
     if "." in user_name:
