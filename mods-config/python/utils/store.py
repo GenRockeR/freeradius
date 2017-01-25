@@ -14,6 +14,7 @@ CALLING_STATION = "Calling-Station-Id"
 
 class Entry(object):
     """represents a single entry for a name/value pair."""
+
     def __init__(self, line, instance, date, time, typed, key_val):
         """initialiez the instance."""
         self.line = line
@@ -34,7 +35,10 @@ class Entry(object):
                 self.val,
                 self.typed]
 
+
 def _clean_object(cursor, table, column, key, conv):
+    """clean an object."""
+    print "cleaning up: " + table
     cursor.execute('CREATE TABLE {0} (line integer, {1} text)'.format(table,
                                                                       column))
     cursor.execute("SELECT line, val FROM data WHERE key = '{0}'".format(key))
@@ -75,11 +79,11 @@ def _accept(input_stream):
             row = entry.to_row()
             c.execute("INSERT INTO data VALUES (?, ?, ?, ?, ?, ?, ?)", row)
         line_num = line_num + 1
-    print "cleaning up users..."
+
     def _user_conv(user_name):
         return wrapper.convert_user(user_name)[:20]
     _clean_object(c, "users", "user", USER_NAME, _user_conv)
-    print "cleaning up mac/calling station..."
+
     def _mac_conv(mac):
         return wrapper.convert_mac(mac)
     _clean_object(c, "macs", "mac", CALLING_STATION, _mac_conv)

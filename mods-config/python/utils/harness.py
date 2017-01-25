@@ -4,7 +4,9 @@
 import argparse
 import wrapper
 
+
 def main():
+    """main entry."""
     options = dir(wrapper.freepydius)
     choices = []
     for opt in options:
@@ -12,7 +14,17 @@ def main():
             continue
         elif opt.startswith("_"):
             continue
-        elif opt in ["FORCE_VLAN", "byteify", "radiusd", "Log", "TimedRotatingFileHandler", "json", "logger", "logging", "rlock", "threading", "uuid"]:
+        elif opt in ["FORCE_VLAN",
+                     "byteify",
+                     "radiusd",
+                     "Log",
+                     "TimedRotatingFileHandler",
+                     "json",
+                     "logger",
+                     "logging",
+                     "rlock",
+                     "threading",
+                     "uuid"]:
             continue
         choices.append(opt)
     parser = argparse.ArgumentParser(description="freepyidus test harness")

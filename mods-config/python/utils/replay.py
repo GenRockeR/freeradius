@@ -8,10 +8,14 @@ import wrapper
 
 KEY = " -> "
 
+
 def _commented(text):
+    """commented line."""
     print "# " + text
 
+
 def main():
+    """main entry point."""
     parser = argparse.ArgumentParser(description="freepyidus log replay")
     parser.add_argument('--file', help="file input", default=wrapper.LOG_NAME)
     args = parser.parse_args()

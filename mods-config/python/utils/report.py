@@ -15,7 +15,7 @@ ACCT_SESS_TIME = "Acct-Session-Time"
 
 # queries
 USERS_BY_KEY = """
-    select key as attr, val datum, user, date 
+    select key as attr, val datum, user, date
     from data inner join users on users.line = data.line
     where key in ({0})
 """
@@ -32,7 +32,7 @@ AUTHORIZES = """
         select date, user, 1 as authorizes
         from data
         inner join users on users.line = data.line
-        where type = 'AUTHORIZE' 
+        where type = 'AUTHORIZE'
         and key = '{0}'
     ) as X
     group by date, user order by date, user
@@ -91,22 +91,22 @@ ALL_USERS_REPORT = "select user from ({0}) group by user"
 
 
 def _packets_daily(cursor):
-    """packets daily."""
+    """packet report daily."""
     _packets(cursor, False)
 
 
 def _packets_all(cursor):
-    """packets all."""
+    """packet report all."""
     _packets(cursor, True)
 
 
 def _octets_all(cursor):
-    """octets all."""
+    """octet report all."""
     _octets(cursor, True)
 
 
 def _octets_daily(cursor):
-    """octets daily."""
+    """octet report daily."""
     _octets(cursor, False)
 
 
@@ -144,6 +144,7 @@ def _print_data(cat, curs):
     """output data."""
     print
     cols = _get_cols(curs)
+
     def _gen():
         for row in curs.fetchall():
             yield row
@@ -203,11 +204,14 @@ def _user_last(cursor):
     """all user report."""
     _user_last_full(cursor, True)
 
+
 def _user_last_daily(cursor):
     """user last logged time."""
     _user_last_full(cursor, False)
 
+
 def _user_last_full(cursor, aggr):
+    """user last full query."""
     query = ALL_USERS
     if aggr:
         query = ALL_USERS_REPORT.format(query)
@@ -219,11 +223,14 @@ def _user_mac_last_daily(cursor):
     """user+mac last logged time."""
     _user_mac_last(cursor, False)
 
+
 def _user_mac_full(cursor):
     """user+mac list detected."""
     _user_mac_last(cursor, True)
 
+
 def _user_mac_last(cursor, aggr):
+    """user mac querying."""
     query = USER_MACS.format(store.CALLING_STATION)
     if aggr:
         query = USER_MAC_REPORT.format(query)
