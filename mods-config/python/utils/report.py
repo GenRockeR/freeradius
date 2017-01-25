@@ -3,42 +3,100 @@
 
 import argparse
 import sqlite3
+import wrapper
 
+# key/vals
 OUT_PACKETS = 'Acct-Output-Packets'
 IN_PACKETS = 'Acct-Input-Packets'
 IN_OCTET = "Acct-Input-Octets"
 OUT_OCTET = 'Acct-Output-Octets'
+USER_NAME = 'User-Name'
+ACCT_SESS_TIME = "Acct-Session-Time"
+
+# queries
+AUTHORIZES = """
+    select user, date, sum(authorizes) as total
+    from (
+        select date, val as user, 1 as authorizes
+        from data where type = 'AUTHORIZE' 
+        and key = '{0}'
+    ) as X
+    group by date, user order by date, user
+"""
+AUTHORIZES_AGGR = """
+    select user, sum(total) as total from ({0}) as Z group by user
+"""
+STOP_QUERY = """
+    select line from data
+    where key = 'Acct-Status-Type' and val = 'Stop'
+"""
+SESSION_TIME_STATS = """
+    select date,
+    user,
+    round(avg(val)) as avg_val,
+    max(val) as max_val,
+    min(val) as min_val,
+    sum(val) as sum_val
+    from ({0}) as Y
+    group by date, user order by date, user
+"""
+SESSION_TIME_AGGR = """
+    select user,
+           avg(avg_val) as avg_val,
+           max(max_val) as max_val,
+           min(min_val) as min_val,
+           sum(sum_val) as sum_val
+           from ({0}) as Z
+           group by user
+"""
+VAL_LINE_WHERE = """
+    select val, line from data where line = {0} and key = '{1}'
+"""
+SESSION_USER = """
+    select date, u.val as user, s.val
+    from (select date, line from data where line = {0}) as X
+    inner join ({1}) as u on u.line = X.line
+    inner join({2}) as s on s.line = X.line
+"""
 
 
 def _packets_daily(cursor):
+    """packets daily."""
     _packets(cursor, False)
 
 
 def _packets_all(cursor):
+    """packets all."""
     _packets(cursor, True)
 
 
 def _octets_all(cursor):
+    """octets all."""
     _octets(cursor, True)
 
 
 def _octets_daily(cursor):
+    """octets daily."""
     _octets(cursor, False)
 
 
 def _session_time_all(cursor):
+    """session time all."""
     _session_time(cursor, True)
 
 
 def _session_time_daily(cursor):
+    """session time daily."""
     _session_time(cursor, False)
 
 
 def _authorizes_all(cursor):
+    """all authorizes."""
     _authorizes(cursor, True)
 
 
 def _authorizes_daily(cursor):
+    """daily authorizes."""
     _authorizes(cursor, False)
 
 
@@ -51,22 +109,45 @@ def _octets(cursor, aggr):
     """print information about octet throughput."""
     _accounting_stat(cursor, IN_OCTET, OUT_OCTET, aggr)
 
-USER_NAME = 'User-Name'
-STOP_QUERY = """
-    select line from data
-    where key = 'Acct-Status-Type' and val = 'Stop'
-"""
 
-VAL_LINE_WHERE = """
-    select val, line from data where line = {0} and key = '{1}'
-"""
+def _print_data(cat, curs):
+    """output data."""
+    print
+    cols = _get_cols(curs)
+    def _gen():
+        for row in curs.fetchall():
+            yield row
+    user_idx = -1
+    format_str = []
+    idx = 0
+    for col in cols:
+        use_format = "15"
+        if col == "user":
+            use_format = "20"
+            user_idx = idx
+        format_str.append("{:>" + use_format + "}")
+        idx = idx + 1
+    formatter = "".join(format_str)
+    print "{0} - ({1})".format(cat, ", ".join(cols))
+    print "==="
+    for row in _gen():
+        data = row
+        use_data = []
+        idx = 0
+        for item in data:
+            val = item
+            if idx == user_idx:
+                val = wrapper.convert_user(val)
+            use_data.append(val)
+            idx = idx + 1
+        print formatter.format(*use_data)
+    print
 
-SESSION_USER = """
-    select date, u.val as user, s.val
-    from (select date, line from data where line = {0}) as X
-    inner join ({1}) as u on u.line = X.line
-    inner join({2}) as s on s.line = X.line
-"""
+
+def _get_cols(cursor):
+    """get column names."""
+    return list(map(lambda x: x[0], cursor.description))
+
 
 def _session_time(cursor, aggr):
     """print information about session time."""
@@ -75,37 +156,23 @@ def _session_time(cursor, aggr):
     queries = []
     for stop in stop_lines:
         user = VAL_LINE_WHERE.format(stop, USER_NAME)
-        sess = VAL_LINE_WHERE.format(stop, "Acct-Session-Time")
+        sess = VAL_LINE_WHERE.format(stop, ACCT_SESS_TIME)
         q = SESSION_USER.format(stop, user, sess)
         queries.append(q)
-    query = "select date, user, avg(val) as a, max(val) as mx, min(val) as mn, sum(val) as s from (" + " UNION ".join(queries) + ") as Y group by date, user order by date, user"
+    query = SESSION_TIME_STATS.format(" UNION ".join(queries))
     if aggr:
-        query = "select 'all', user, avg(a), max(mx), min(mn), sum(s) from (" + query + ") as Z group by user"
+        query = SESSION_TIME_AGGR.format(query)
     cursor.execute(query)
-    def _gen():
-        for row in cursor.fetchall():
-            yield "{:>20}{:>15}{:>15}{:>15}{:>15}{:>15}".format(row[1], row[0], row[2], row[3], row[4], row[5])
-    _print_data("sessions (avg, max, min, sum)", _gen)
+    _print_data("sessions", cursor)
 
-
-def _print_data(cat, generator):
-    print
-    print cat
-    print "==="
-    for row in generator():
-        print row
-    print
 
 def _authorizes(cursor, aggr):
     """get the number of authorizes by user by day."""
-    query = "select val, date, sum(authorizes) as s from (select substr(date, 0, 11) as date, val, 1 as authorizes from data where type = 'AUTHORIZE' and key = 'User-Name' group by date, val) as X group by date, val order by date, val"
+    query = AUTHORIZES.format(USER_NAME)
     if aggr:
-        query = "select val, 'all', sum(s) from (" + query + ") as Z group by val"
+        query = AUTHORIZES_AGGR.format(query)
     cursor.execute(query)
-    def _gen():
-        for row in cursor.fetchall():
-            yield "{:>20}{:>15}{:>15}".format(row[0], row[1], row[2])
-    _print_data("authorizes", _gen)
+    _print_data("authorizes", cursor)
 
 
 def _accounting_stat(cursor, in_col, out_col, aggr):
@@ -147,7 +214,7 @@ def main():
     """main entry."""
     parser = argparse.ArgumentParser()
     parser.add_argument("--database", required=True, type=str)
-    parser.add_argument("--reports", nargs='*')
+    parser.add_argument("--reports", nargs='*', choices=available.keys())
     args = parser.parse_args()
     if args.reports is None or len(args.reports) == 0:
         execute = available.keys()
