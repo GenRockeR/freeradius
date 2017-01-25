@@ -5,6 +5,11 @@ import ast
 import sys
 import sqlite3
 import replay
+import wrapper
+
+DB_NAME = "dump.db"
+USER_NAME = "User-Name"
+CALLING_STATION = "Calling-Station-Id"
 
 
 class Entry(object):
@@ -29,11 +34,22 @@ class Entry(object):
                 self.val,
                 self.typed]
 
+def _clean_object(cursor, table, column, key, conv):
+    cursor.execute('CREATE TABLE {0} (line integer, {1} text)'.format(table,
+                                                                      column))
+    cursor.execute("SELECT line, val FROM data WHERE key = '{0}'".format(key))
+    for row in cursor.fetchall():
+        line = row[0]
+        obj = row[1]
+        obj = conv(obj)
+        cursor.execute("INSERT INTO {0} VALUES (?, ?)".format(table),
+                       [line, obj])
+
 
 def _accept(input_stream):
     """accept the input stream."""
     line_num = 1
-    conn = sqlite3.connect("dump.db")
+    conn = sqlite3.connect(DB_NAME)
     c = conn.cursor()
     c.execute('''CREATE TABLE data
                 (date text,
@@ -43,6 +59,7 @@ def _accept(input_stream):
                  key text,
                  val text,
                  type text)''')
+    print "streaming text into database..."
     for line in input_stream:
         parts = line.split(replay.KEY)
         meta = parts[0]
@@ -58,11 +75,16 @@ def _accept(input_stream):
             row = entry.to_row()
             c.execute("INSERT INTO data VALUES (?, ?, ?, ?, ?, ?, ?)", row)
         line_num = line_num + 1
-    c.execute('CREATE TABLE users (line integer, user text)')
-    c.execute("""INSERT INTO users
-                 SELECT line, val FROM data WHERE key='User-Name'""")
+    print "cleaning up users..."
+    def _user_conv(user_name):
+        return wrapper.convert_user(user_name)[:20]
+    _clean_object(c, "users", "user", USER_NAME, _user_conv)
+    print "cleaning up mac/calling station..."
+    def _mac_conv(mac):
+        return wrapper.convert_mac(mac)
+    _clean_object(c, "macs", "mac", CALLING_STATION, _mac_conv)
     conn.commit()
     conn.close()
 
-
-_accept(sys.stdin)
+if __name__ == "__main__":
+    _accept(sys.stdin)

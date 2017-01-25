@@ -3,17 +3,15 @@
 
 import argparse
 import sqlite3
-import wrapper
 import uuid
+import store
 
 # key/vals
 OUT_PACKETS = 'Acct-Output-Packets'
 IN_PACKETS = 'Acct-Input-Packets'
 IN_OCTET = "Acct-Input-Octets"
 OUT_OCTET = 'Acct-Output-Octets'
-USER_NAME = 'User-Name'
 ACCT_SESS_TIME = "Acct-Session-Time"
-CALLING_STATION = 'Calling-Station-Id'
 
 # queries
 USERS_BY_KEY = """
@@ -31,8 +29,10 @@ ACCOUNTING_SUM_AGGR = """
 AUTHORIZES = """
     select user, date, sum(authorizes) as total
     from (
-        select date, val as user, 1 as authorizes
-        from data where type = 'AUTHORIZE' 
+        select date, user, 1 as authorizes
+        from data
+        inner join users on users.line = data.line
+        where type = 'AUTHORIZE' 
         and key = '{0}'
     ) as X
     group by date, user order by date, user
@@ -62,9 +62,10 @@ SESSION_TIME_AGGR = """
 USER_MACS = """
     select max(date) as date, user, mac from
     (
-        select date, user, val as mac
+        select date, user, mac
         from data
         inner join users on users.line = data.line
+        inner join macs on macs.line = data.line
         where key = '{0}'
     ) group by user, mac order by date
 """
@@ -79,10 +80,12 @@ USER_MAC_REPORT = """
 ALL_USERS = """
     select user, max(date) as date
     from (
-        select val as user, date from data
-        where key = '{0}' order by date desc
+        select user, date from data
+        inner join users on users.line = data.line
+        where key = '{0}'
+        order by date desc
     ) group by user order by date
-""".format(USER_NAME)
+""".format(store.USER_NAME)
 
 ALL_USERS_REPORT = "select user from ({0}) group by user"
 
@@ -144,38 +147,21 @@ def _print_data(cat, curs):
     def _gen():
         for row in curs.fetchall():
             yield row
-    user_idx = -1
-    mac_idx = -1
     format_str = []
-    idx = 0
     for col in cols:
         use_format = "15"
         if col == "user":
             use_format = "25"
-            user_idx = idx
         if col == "attr":
             use_format = "25"
         if col == "mac":
-            mac_idx = idx
             use_format = "20"
         format_str.append("{:>" + use_format + "}")
-        idx = idx + 1
     formatter = "".join(format_str)
     print "{0} - ({1})".format(cat, ", ".join(cols))
     print "==="
     for row in _gen():
-        data = row
-        use_data = []
-        idx = 0
-        for item in data:
-            val = item
-            if idx == user_idx:
-                val = wrapper.convert_user(val)[0:20]
-            if idx == mac_idx:
-                val = wrapper.convert_mac(val)
-            use_data.append(val)
-            idx = idx + 1
-        print formatter.format(*use_data)
+        print formatter.format(*row)
     print
 
 
@@ -196,7 +182,7 @@ def _session_time(cursor, aggr):
 
 def _authorizes(cursor, aggr):
     """get the number of authorizes by user by day."""
-    query = AUTHORIZES.format(USER_NAME)
+    query = AUTHORIZES.format(store.USER_NAME)
     if aggr:
         query = AUTHORIZES_AGGR.format(query)
     cursor.execute(query)
@@ -238,7 +224,7 @@ def _user_mac_full(cursor):
     _user_mac_last(cursor, True)
 
 def _user_mac_last(cursor, aggr):
-    query = USER_MACS.format(CALLING_STATION)
+    query = USER_MACS.format(store.CALLING_STATION)
     if aggr:
         query = USER_MAC_REPORT.format(query)
     cursor.execute(query)
@@ -263,7 +249,10 @@ available["user-macs"] = _user_mac_full
 def main():
     """main entry."""
     parser = argparse.ArgumentParser()
-    parser.add_argument("--database", required=True, type=str)
+    parser.add_argument("--database",
+                        required=True,
+                        type=str,
+                        default=store.DB_NAME)
     parser.add_argument("--reports", nargs='*', choices=available.keys())
     args = parser.parse_args()
     if args.reports is None or len(args.reports) == 0:
