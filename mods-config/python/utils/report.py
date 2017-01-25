@@ -14,6 +14,20 @@ USER_NAME = 'User-Name'
 ACCT_SESS_TIME = "Acct-Session-Time"
 
 # queries
+ACCOUNTING_BY_KEY = """
+    select line, key, val from data where key = '{0}' or key = '{1}'
+"""
+ACCOUNT_BY_LINE_KEY = """
+    select date, val as user, {0} as datum from data
+    where line = {1} and key = '{2}'
+"""
+ACCOUNTING_SUM = """
+    select user, date, sum(datum) as datum from ({0}) as X
+    group by user, date order by user, date
+"""
+ACCOUNTING_SUM_AGGR = """
+    select user, sum(datum) as datum from ({0}) as Z group by user
+"""
 AUTHORIZES = """
     select user, date, sum(authorizes) as total
     from (
@@ -176,26 +190,23 @@ def _authorizes(cursor, aggr):
 
 
 def _accounting_stat(cursor, in_col, out_col, aggr):
-    cursor.execute("select line, key, val from data where key = '{0}' or key = '{1}'".format(out_col, in_col))
+    """accounting stats."""
+    cursor.execute(ACCOUNTING_BY_KEY.format(out_col, in_col))
     queries = {}
     for row in cursor.fetchall():
         num = row[0]
         key = row[1]
         val = row[2]
-        query = "select substr(date, 0, 11) as date, val, {0} as packets from data where line = {1} and key = 'User-Name'".format(val, num)
+        query = ACCOUNT_BY_LINE_KEY.format(val, num, USER_NAME)
         if key not in queries:
             queries[key] = []
         queries[key].append(query)
-    template = "select val, date, sum(packets) s from ({0}) as X group by val, date order by val, date"
     for q in queries:
-        query = template.format(" UNION ".join(queries[q]))
+        query = ACCOUNTING_SUM.format(" UNION ".join(queries[q]))
         if aggr:
-            query = "select val, 'all', sum(s) from (" + query + ") as Z group by val"
+            query = ACCOUNTING_SUM_AGGR.format(query)
         cursor.execute(query)
-        def _gen():
-            for row in cursor.fetchall():
-                yield "{:>20}{:>15}{:>15}".format(row[0], row[1], row[2])
-        _print_data(q, _gen)
+        _print_data(q, cursor)
 
 
 # available reports
