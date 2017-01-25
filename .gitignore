@@ -11,5 +11,5 @@ certs/serial*
 certs/index.txt*
 certs/passwords.mk
 certs/dh
-*.log
+*.log*
 *.db
