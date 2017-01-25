@@ -4,6 +4,7 @@
 import argparse
 import sqlite3
 import wrapper
+import uuid
 
 # key/vals
 OUT_PACKETS = 'Acct-Output-Packets'
@@ -12,21 +13,20 @@ IN_OCTET = "Acct-Input-Octets"
 OUT_OCTET = 'Acct-Output-Octets'
 USER_NAME = 'User-Name'
 ACCT_SESS_TIME = "Acct-Session-Time"
+CALLING_STATION = 'Calling-Station-Id'
 
 # queries
-ACCOUNTING_BY_KEY = """
-    select line, key, val from data where key = '{0}' or key = '{1}'
-"""
-ACCOUNT_BY_LINE_KEY = """
-    select date, val as user, {0} as datum from data
-    where line = {1} and key = '{2}'
+USERS_BY_KEY = """
+    select key as attr, val datum, user, date 
+    from data inner join users on users.line = data.line
+    where key in ({0})
 """
 ACCOUNTING_SUM = """
-    select user, date, sum(datum) as datum from ({0}) as X
-    group by user, date order by user, date
+    select user, date, attr, sum(datum) as datum
+    from ({0}) group by user, date, attr
 """
 ACCOUNTING_SUM_AGGR = """
-    select user, sum(datum) as datum from ({0}) as Z group by user
+    select user, attr, sum(datum) as datum from ({0}) group by user, attr
 """
 AUTHORIZES = """
     select user, date, sum(authorizes) as total
@@ -40,38 +40,51 @@ AUTHORIZES = """
 AUTHORIZES_AGGR = """
     select user, sum(total) as total from ({0}) as Z group by user
 """
-STOP_QUERY = """
-    select line from data
-    where key = 'Acct-Status-Type' and val = 'Stop'
-"""
 SESSION_TIME_STATS = """
     select date,
     user,
-    round(avg(val)) as avg_val,
-    max(val) as max_val,
-    min(val) as min_val,
-    sum(val) as sum_val
+    round(avg(datum)) as avg_val,
+    max(datum) as max_val,
+    min(datum) as min_val,
+    sum(datum) as sum_val
     from ({0}) as Y
     group by date, user order by date, user
 """
 SESSION_TIME_AGGR = """
     select user,
-           avg(avg_val) as avg_val,
+           round(avg(avg_val)) as avg_val,
            max(max_val) as max_val,
            min(min_val) as min_val,
            sum(sum_val) as sum_val
            from ({0}) as Z
            group by user
 """
-VAL_LINE_WHERE = """
-    select val, line from data where line = {0} and key = '{1}'
+USER_MACS = """
+    select max(date) as date, user, mac from
+    (
+        select date, user, val as mac
+        from data
+        inner join users on users.line = data.line
+        where key = '{0}'
+    ) group by user, mac order by date
 """
-SESSION_USER = """
-    select date, u.val as user, s.val
-    from (select date, line from data where line = {0}) as X
-    inner join ({1}) as u on u.line = X.line
-    inner join({2}) as s on s.line = X.line
+
+USER_MAC_REPORT = """
+    select user, mac from
+    ({0})
+    group by user, mac
+    order by user, mac
 """
+
+ALL_USERS = """
+    select user, max(date) as date
+    from (
+        select val as user, date from data
+        where key = '{0}' order by date desc
+    ) group by user order by date
+""".format(USER_NAME)
+
+ALL_USERS_REPORT = "select user from ({0}) group by user"
 
 
 def _packets_daily(cursor):
@@ -132,13 +145,19 @@ def _print_data(cat, curs):
         for row in curs.fetchall():
             yield row
     user_idx = -1
+    mac_idx = -1
     format_str = []
     idx = 0
     for col in cols:
         use_format = "15"
         if col == "user":
-            use_format = "20"
+            use_format = "25"
             user_idx = idx
+        if col == "attr":
+            use_format = "25"
+        if col == "mac":
+            mac_idx = idx
+            use_format = "20"
         format_str.append("{:>" + use_format + "}")
         idx = idx + 1
     formatter = "".join(format_str)
@@ -151,7 +170,9 @@ def _print_data(cat, curs):
         for item in data:
             val = item
             if idx == user_idx:
-                val = wrapper.convert_user(val)
+                val = wrapper.convert_user(val)[0:20]
+            if idx == mac_idx:
+                val = wrapper.convert_mac(val)
             use_data.append(val)
             idx = idx + 1
         print formatter.format(*use_data)
@@ -165,15 +186,8 @@ def _get_cols(cursor):
 
 def _session_time(cursor, aggr):
     """print information about session time."""
-    cursor.execute(STOP_QUERY)
-    stop_lines = [x[0] for x in cursor.fetchall()]
-    queries = []
-    for stop in stop_lines:
-        user = VAL_LINE_WHERE.format(stop, USER_NAME)
-        sess = VAL_LINE_WHERE.format(stop, ACCT_SESS_TIME)
-        q = SESSION_USER.format(stop, user, sess)
-        queries.append(q)
-    query = SESSION_TIME_STATS.format(" UNION ".join(queries))
+    query = USERS_BY_KEY.format("'" + ACCT_SESS_TIME + "'")
+    query = SESSION_TIME_STATS.format(query)
     if aggr:
         query = SESSION_TIME_AGGR.format(query)
     cursor.execute(query)
@@ -191,23 +205,44 @@ def _authorizes(cursor, aggr):
 
 def _accounting_stat(cursor, in_col, out_col, aggr):
     """accounting stats."""
-    cursor.execute(ACCOUNTING_BY_KEY.format(out_col, in_col))
-    queries = {}
-    for row in cursor.fetchall():
-        num = row[0]
-        key = row[1]
-        val = row[2]
-        query = ACCOUNT_BY_LINE_KEY.format(val, num, USER_NAME)
-        if key not in queries:
-            queries[key] = []
-        queries[key].append(query)
-    for q in queries:
-        query = ACCOUNTING_SUM.format(" UNION ".join(queries[q]))
-        if aggr:
-            query = ACCOUNTING_SUM_AGGR.format(query)
-        cursor.execute(query)
-        _print_data(q, cursor)
+    query = USERS_BY_KEY.format("'" + "','".join([out_col, in_col]) + "'")
+    query = ACCOUNTING_SUM.format(query)
+    if aggr:
+        query = ACCOUNTING_SUM_AGGR.format(query)
+    cursor.execute(query)
+    _print_data("accounting", cursor)
 
+
+def _user_last(cursor):
+    """all user report."""
+    _user_last_full(cursor, True)
+
+def _user_last_daily(cursor):
+    """user last logged time."""
+    _user_last_full(cursor, False)
+
+def _user_last_full(cursor, aggr):
+    query = ALL_USERS
+    if aggr:
+        query = ALL_USERS_REPORT.format(query)
+    cursor.execute(query)
+    _print_data("users", cursor)
+
+
+def _user_mac_last_daily(cursor):
+    """user+mac last logged time."""
+    _user_mac_last(cursor, False)
+
+def _user_mac_full(cursor):
+    """user+mac list detected."""
+    _user_mac_last(cursor, True)
+
+def _user_mac_last(cursor, aggr):
+    query = USER_MACS.format(CALLING_STATION)
+    if aggr:
+        query = USER_MAC_REPORT.format(query)
+    cursor.execute(query)
+    _print_data("user/mac report", cursor)
 
 # available reports
 available = {}
@@ -219,6 +254,10 @@ available["packets-daily"] = _packets_daily
 available["octets-daily"] = _octets_daily
 available["authorizes-daily"] = _authorizes_daily
 available["session-time-daily"] = _session_time_daily
+available["users-daily"] = _user_last_daily
+available["users"] = _user_last
+available["user-macs-daily"] = _user_mac_last_daily
+available["user-macs"] = _user_mac_full
 
 
 def main():

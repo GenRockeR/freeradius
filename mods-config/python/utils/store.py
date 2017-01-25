@@ -58,6 +58,9 @@ def _accept(input_stream):
             row = entry.to_row()
             c.execute("INSERT INTO data VALUES (?, ?, ?, ?, ?, ?, ?)", row)
         line_num = line_num + 1
+    c.execute('CREATE TABLE users (line integer, user text)')
+    c.execute("""INSERT INTO users
+                 SELECT line, val FROM data WHERE key='User-Name'""")
     conn.commit()
     conn.close()
 
