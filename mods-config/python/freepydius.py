@@ -111,10 +111,10 @@ def _get_vlan(user_name, macs):
           return vlan
 
 
-def _convert_mac(mac)
+def _convert_mac(mac):
   """convert a mac to a lower, cleansed value."""
   using = mac.lower()
-  for c in [":", "-"]
+  for c in [":", "-"]:
     using = using.replace(c, "")
   return using
 
