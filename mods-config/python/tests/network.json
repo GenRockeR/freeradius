@@ -2,6 +2,7 @@
     "blacklist": ["112233445566", "vlan1", "vlan2.user1", "user2", "aabbccddeeff"],
     "bypass":
     {
+        "aabbccddee11": "vlan2",
         "112233445566": "vlan2",
         "112233aabbcc": "vlan1",
         "aabbcc112233": "vlan2",
