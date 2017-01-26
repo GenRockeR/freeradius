@@ -57,6 +57,7 @@ function test-all()
     test-objs vlan2.user2 $valid_mac
     test-objs vlan2.user3 $valid_mac
     test-objs vlan2.user6 $valid_mac
+    test-objs "AABBCCDDEE11" "aabbccddee11"
 }
 
 test-all > $OUT
