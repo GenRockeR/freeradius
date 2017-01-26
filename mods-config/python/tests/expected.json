@@ -1,0 +1,38 @@
+{
+    "blacklist": [
+        "user1"
+    ],
+    "bypass": {
+        "112233445566": "dev"
+    },
+    "users": {
+        "dev.user1": {
+            "macs": [
+                "001122334455"
+            ],
+            "pass": "12345678910aaaaaaaaaaaaaaa111213141516etc"
+        },
+        "dev.user2": {
+            "macs": [
+                "001122334455"
+            ],
+            "pass": "12345678910aaaaaaaaaaaaaaa111213141516user2"
+        },
+        "prod.user1": {
+            "macs": [
+                "001122334455"
+            ],
+            "pass": "12345678910aaaaaaaaaaaaaaa111213141516etcadmin"
+        },
+        "prod.user2": {
+            "macs": [
+                "001122334455"
+            ],
+            "pass": "12345678910aaaaaaaaaaaaaaa111213141516user2user2"
+        }
+    },
+    "vlans": {
+        "dev": "10",
+        "prod": "11"
+    }
+}

@@ -63,6 +63,15 @@ function test-all()
 test-all > $OUT
 diff expected.log $OUT
 if [ $? -ne 0 ]; then
-    echo "different results..."
+    echo "different freepydius results..."
+    exit -1
+fi
+
+cp *.py ../utils/users/
+OUT_JSON="actual.json"
+python2.7 ../utils/config_compose.py --output $OUT_JSON
+diff expected.json $OUT_JSON
+if [ $? -ne 0 ]; then
+    echo "different composed results..."
     exit -1
 fi
