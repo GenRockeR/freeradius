@@ -4,7 +4,20 @@ users
 Users defined here and composed via config_compose.py should produce a viable configuration.
 
 The important things in the following examples:
-1. File names **MUST** match the format "type_whatever.py"
+
+### Naming
+
+File names **MUST** match the format "type_whatever.py"
+* user -> "user_<name>.py"
+* vlan -> "vlan_<whatever>.py"
+* blacklist -> "blacklist_<whatever.py>"
+
+### Objects
+
+Make sure to define objects accordingly in python such-that it will load them into the config
+* user->vlan assignments = `__config__.Assignment`
+* vlan = `__config__.VLAN`
+* blacklist = `__config__.Blacklist`
 
 ## users
 
