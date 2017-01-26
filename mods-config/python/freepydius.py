@@ -17,7 +17,6 @@ MAC_KEY = "macs"
 USER_KEY = "users"
 VLAN_KEY = "vlans"
 BLCK_KEY = "blacklist"
-FORCE_VLAN = "vlan"
 BYPASS_KEY = "bypass"
 rlock = threading.RLock()
 logger = None
@@ -48,9 +47,6 @@ def _convert_user_name(name):
   return user_name
 
 
-def _create_bypass_user(name):
-  """create a bypass user from an input."""
-  return { PASS_KEY: name, MAC_KEY: [name] }
 
 
 def _blacklist_objects(objs, blacklist, sep=None, sub_key=None, value=False):
@@ -112,7 +108,8 @@ def _config(input_name):
         if valid and lowered in bypass:
             vlan_name = bypass[lowered]
             if vlan_name in vlans:
-                user_obj = _create_bypass_user(lowered)
+                # input_name (User-Name) HAS to == "pass"
+                user_obj = { PASS_KEY: input_name, MAC_KEY: [lowered] }
                 vlan_obj = vlans[vlan_name]
     return (user_obj, vlan_obj)
 
