@@ -47,8 +47,6 @@ def _convert_user_name(name):
   return user_name
 
 
-
-
 def _blacklist_objects(objs, blacklist, sep=None, sub_key=None, value=False):
   """cleanse blacklisted objects from the config."""
   cleansed = {}
