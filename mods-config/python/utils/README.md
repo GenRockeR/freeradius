@@ -35,3 +35,7 @@ cat trace.log | python2.7 store.py
 ## wrapper
 
 helpers for the other utils
+
+## config_compose
+
+composes the configuration file from a subset of python definition, review the README in users/README.md
