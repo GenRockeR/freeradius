@@ -62,6 +62,7 @@ class Assignment(object):
         self.password = ""
         self.bypass = []
         self.vlan = None
+        self.disable = {}
 
     def report(self, cause):
         """report an issue."""
@@ -87,4 +88,26 @@ class Assignment(object):
                     return self.report("invalid bypass mac")
         if len(self.macs) != len(set(self.macs)):
             return self.report("macs not unique")
+        if self.disable is not None and len(self.disable) > 0:
+            import re
+            from datetime import datetime
+            today = datetime.now()
+            today = datetime(today.year, today.month, today.day)
+            regex = re.compile(r'\d{4}[-/]\d{2}[-/]\d{2}')
+            if isinstance(self.disable, dict):
+                for key in self.disable.keys():
+                    val = self.disable[key]
+                    matches = regex.findall(val)
+                    matched = False
+                    for match in matches:
+                        matched = True
+                        as_date = datetime.strptime(match, '%Y-%m-%d')
+                        if as_date < today:
+                            print("{0} has been time-disabled".format(key))
+                            if key in self.bypass:
+                                self.bypass.remove(key)
+                            if key in self.macs:
+                                self.macs.remove(key)
+                    if not matched:
+                        return self.report("invalid date")
         return True
