@@ -63,6 +63,7 @@ class Assignment(object):
         self.bypass = []
         self.vlan = None
         self.disable = {}
+        self.no_login = False
 
     def report(self, cause):
         """report an issue."""

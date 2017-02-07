@@ -150,7 +150,8 @@ def _process(output):
             if fqdn in user_objs:
                 raise Exception(fqdn + " previously defined")
             # use config definitions here
-            user_objs[fqdn] = _create_obj(macs, password)
+            if not obj.no_login:
+                user_objs[fqdn] = _create_obj(macs, password)
             if bypass is not None and len(bypass) > 0:
                 for mac_bypass in bypass:
                     if mac_bypass in bypass_objs:
