@@ -89,6 +89,32 @@ ALL_USERS = """
 
 ALL_USERS_REPORT = "select user from ({0}) group by user"
 
+SIGNATURES = """
+    select distinct user, mac,
+    ifnull(nasipaddr.val, 'n/a') as nip,
+    ifnull(nasport.val, 'n/a') as np,
+    ifnull(nasporttype.val, 'n/a') as npt
+    from data
+    inner join users on users.line = data.line
+    inner join macs on macs.line = data.line
+    left join
+    (
+        select line, val from data where key = 'NAS-IP-Address'
+    ) as nasipaddr
+    on nasipaddr.line = data.line
+    left join
+    (
+        select line, val from data where key = 'NAS-Port'
+    ) as nasport
+    on nasport.line = data.line
+    left outer join
+    (
+        select line, val from data where key = 'NAS-Port-Type'
+    ) as nasporttype
+    on nasporttype.line = data.line
+    order by user, mac, nip, np, npt
+"""
+
 
 def _packets_daily(cursor, opts):
     """packet report daily."""
@@ -140,21 +166,29 @@ def _octets(cursor, aggr, opts):
     _accounting_stat(cursor, IN_OCTET, OUT_OCTET, aggr, opts)
 
 
-def _print_data(cat, curs, opts):
+def _print_data(cat, curs, opts, converter=None):
     """output data."""
     print
-    cols = _get_cols(curs)
+    if converter is None:
+        cols = _get_cols(curs)
+    else:
+        cols = converter(None, True)
 
     def _gen():
         for row in curs.fetchall():
-            yield row
+            if converter is None:
+                yield row
+            else:
+                row_res = converter(row, False)
+                if row_res:
+                    yield row_res
     format_str = []
     for col in cols:
         use_format = "15"
-        if col == "user":
+        if col in ["attr", "user"]:
             use_format = "25"
-        if col == "attr":
-            use_format = "25"
+        if col == "signature":
+            use_format = "50"
         if col == "mac":
             use_format = "20"
         format_str.append("{:>" + use_format + "}")
@@ -245,6 +279,19 @@ def _user_mac_last(cursor, aggr, opts):
     cursor.execute(query)
     _print_data("user/mac report", cursor, opts)
 
+
+def _signatures(cursor, opts):
+    """signature output."""
+    cursor.execute(SIGNATURES)
+
+    def _conv(row, get_columns):
+        if get_columns:
+            return ["user", "mac", "signature"]
+        else:
+            return [row[0], row[1], ":::".join(row[2:])]
+    _print_data("signatures", cursor, opts, converter=_conv)
+
+
 # available reports
 available = {}
 available["packets"] = _packets_all
@@ -259,10 +306,12 @@ available["users-daily"] = _user_last_daily
 available["users"] = _user_last
 available["user-macs-daily"] = _user_mac_last_daily
 available["user-macs"] = _user_mac_full
+available["signatures"] = _signatures
 
 
 class Options(object):
     """Options for reports."""
+
     markdown = False
 
 
