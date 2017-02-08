@@ -207,7 +207,7 @@ def _print_data(cat, curs, opts, converter=None):
     if opts.markdown:
         formatter = "| " + formatter + " |"
         print formatter.format(*cols)
-        print formatter.format(*["-" for x in cols])
+        print formatter.format(*["--" for x in cols])
     else:
         print "{0} - ({1})".format(cat, ", ".join(cols))
         print "==="
