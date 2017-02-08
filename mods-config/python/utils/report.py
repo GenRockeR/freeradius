@@ -5,6 +5,8 @@ import argparse
 import sqlite3
 import uuid
 import store
+import csv
+import sys
 
 # key/vals
 OUT_PACKETS = 'Acct-Output-Packets'
@@ -168,7 +170,6 @@ def _octets(cursor, aggr, opts):
 
 def _print_data(cat, curs, opts, converter=None):
     """output data."""
-    print
     if converter is None:
         cols = _get_cols(curs)
     else:
@@ -182,6 +183,13 @@ def _print_data(cat, curs, opts, converter=None):
                 row_res = converter(row, False)
                 if row_res:
                     yield row_res
+    if opts.csv:
+        writer = csv.writer(sys.stdout)
+        writer.writerow(cols)
+        for r in _gen():
+            writer.writerow(r)
+        return
+    print
     format_str = []
     for col in cols:
         use_format = "15"
@@ -312,7 +320,11 @@ available["signatures"] = _signatures
 class Options(object):
     """Options for reports."""
 
+    MARKDOWN = "markdown"
+    CSV = "csv"
+
     markdown = False
+    csv = False
 
 
 def main():
@@ -323,7 +335,7 @@ def main():
                         type=str,
                         default=store.DB_NAME)
     parser.add_argument("--reports", nargs='*', choices=available.keys())
-    parser.add_argument("--markdown", action="store_true")
+    parser.add_argument("--output", choices=[Options.MARKDOWN, Options.CSV])
     args = parser.parse_args()
     if args.reports is None or len(args.reports) == 0:
         execute = available.keys()
@@ -332,7 +344,10 @@ def main():
     conn = sqlite3.connect(args.database)
     curs = conn.cursor()
     opts = Options()
-    opts.markdown = args.markdown
+    if args.output == Options.MARKDOWN:
+        opts.markdown = True
+    elif args.output == Options.CSV:
+        opts.csv = True
     for item in execute:
         if item in available:
             available[item](curs, opts)
