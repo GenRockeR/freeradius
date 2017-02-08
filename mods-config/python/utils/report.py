@@ -91,36 +91,13 @@ ALL_USERS = """
 
 ALL_USERS_REPORT = "select user from ({0}) group by user"
 
-FAILED_AUTHS = """
-select user as userfqdn, max(date) as date from
-(
-    select date, val as user from data
-    where
-    instance not in
-    (
-        select distinct instance from data
-        where key = 'Tunnel-Type'
-    )
-    and type = 'AUTHORIZE'
-    and instance not in
-    (
-        select distinct instance from data
-        where key = 'FreeRADIUS-Proxied-To'
-    )
-    and key = '{0}'
-) as auths
-group by user
-order by date
-""".format(store.USER_NAME)
-
-SIGNATURES = """
-    select distinct user, mac,
+NAS_INFO_COLS = """
     ifnull(nasipaddr.val, 'n/a') as nip,
     ifnull(nasport.val, 'n/a') as np,
     ifnull(nasporttype.val, 'n/a') as npt
-    from data
-    inner join users on users.line = data.line
-    inner join macs on macs.line = data.line
+"""
+
+NAS_INFO = """
     left join
     (
         select line, val from data where key = 'NAS-IP-Address'
@@ -136,8 +113,41 @@ SIGNATURES = """
         select line, val from data where key = 'NAS-Port-Type'
     ) as nasporttype
     on nasporttype.line = data.line
-    order by user, mac, nip, np, npt
 """
+
+FAILED_AUTHS = """
+select user as user, max(date) as date, nip as IP, np as Port, npt as Method
+from
+(
+    select date, user, {0} from data
+    inner join users on users.line = data.line
+    {1}
+    where
+    instance not in
+    (
+        select distinct instance from data
+        where key = 'Tunnel-Type'
+    )
+    and type = 'AUTHORIZE'
+    and instance not in
+    (
+        select distinct instance from data
+        where key = 'FreeRADIUS-Proxied-To'
+    )
+    and key = '{2}'
+) as auths
+group by user, np, npt, nip
+order by date
+""".format(NAS_INFO_COLS, NAS_INFO, store.USER_NAME)
+
+SIGNATURES = """
+    select distinct user, mac, {0}
+    from data
+    inner join users on users.line = data.line
+    inner join macs on macs.line = data.line
+    {1}
+    order by user, mac, nip, np, npt
+""".format(NAS_INFO_COLS, NAS_INFO)
 
 
 def _packets_daily(cursor, opts):
@@ -214,9 +224,9 @@ def _print_data(cat, curs, opts, converter=None):
     format_str = []
     for col in cols:
         use_format = "15"
-        if col in ["attr", "userfqdn"]:
+        if col in ["attr", "user"]:
             use_format = "25"
-        if col in ["signature", "userfqdn"]:
+        if col in ["signature"]:
             use_format = "50"
         if col == "mac":
             use_format = "20"
