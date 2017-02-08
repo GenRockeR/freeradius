@@ -90,57 +90,57 @@ ALL_USERS = """
 ALL_USERS_REPORT = "select user from ({0}) group by user"
 
 
-def _packets_daily(cursor):
+def _packets_daily(cursor, opts):
     """packet report daily."""
-    _packets(cursor, False)
+    _packets(cursor, False, opts)
 
 
-def _packets_all(cursor):
+def _packets_all(cursor, opts):
     """packet report all."""
-    _packets(cursor, True)
+    _packets(cursor, True, opts)
 
 
-def _octets_all(cursor):
+def _octets_all(cursor, opts):
     """octet report all."""
-    _octets(cursor, True)
+    _octets(cursor, True, opts)
 
 
-def _octets_daily(cursor):
+def _octets_daily(cursor, opts):
     """octet report daily."""
-    _octets(cursor, False)
+    _octets(cursor, False, opts)
 
 
-def _session_time_all(cursor):
+def _session_time_all(cursor, opts):
     """session time all."""
-    _session_time(cursor, True)
+    _session_time(cursor, True, opts)
 
 
-def _session_time_daily(cursor):
+def _session_time_daily(cursor, opts):
     """session time daily."""
-    _session_time(cursor, False)
+    _session_time(cursor, False, opts)
 
 
-def _authorizes_all(cursor):
+def _authorizes_all(cursor, opts):
     """all authorizes."""
-    _authorizes(cursor, True)
+    _authorizes(cursor, True, opts)
 
 
-def _authorizes_daily(cursor):
+def _authorizes_daily(cursor, opts):
     """daily authorizes."""
-    _authorizes(cursor, False)
+    _authorizes(cursor, False, opts)
 
 
-def _packets(cursor, aggr):
+def _packets(cursor, aggr, opts):
     """print information about packet throughput."""
-    _accounting_stat(cursor, IN_PACKETS, OUT_PACKETS, aggr)
+    _accounting_stat(cursor, IN_PACKETS, OUT_PACKETS, aggr, opts)
 
 
-def _octets(cursor, aggr):
+def _octets(cursor, aggr, opts):
     """print information about octet throughput."""
-    _accounting_stat(cursor, IN_OCTET, OUT_OCTET, aggr)
+    _accounting_stat(cursor, IN_OCTET, OUT_OCTET, aggr, opts)
 
 
-def _print_data(cat, curs):
+def _print_data(cat, curs, opts):
     """output data."""
     print
     cols = _get_cols(curs)
@@ -158,9 +158,17 @@ def _print_data(cat, curs):
         if col == "mac":
             use_format = "20"
         format_str.append("{:>" + use_format + "}")
-    formatter = "".join(format_str)
-    print "{0} - ({1})".format(cat, ", ".join(cols))
-    print "==="
+    join_fmt = ""
+    if opts.markdown:
+        join_fmt = " | "
+    formatter = join_fmt.join(format_str)
+    if opts.markdown:
+        formatter = "| " + formatter + " |"
+        print formatter.format(*cols)
+        print formatter.format(*["-" for x in cols])
+    else:
+        print "{0} - ({1})".format(cat, ", ".join(cols))
+        print "==="
     for row in _gen():
         print formatter.format(*row)
     print
@@ -171,71 +179,71 @@ def _get_cols(cursor):
     return list(map(lambda x: x[0], cursor.description))
 
 
-def _session_time(cursor, aggr):
+def _session_time(cursor, aggr, opts):
     """print information about session time."""
     query = USERS_BY_KEY.format("'" + ACCT_SESS_TIME + "'")
     query = SESSION_TIME_STATS.format(query)
     if aggr:
         query = SESSION_TIME_AGGR.format(query)
     cursor.execute(query)
-    _print_data("sessions", cursor)
+    _print_data("sessions", cursor, opts)
 
 
-def _authorizes(cursor, aggr):
+def _authorizes(cursor, aggr, opts):
     """get the number of authorizes by user by day."""
     query = AUTHORIZES.format(store.USER_NAME)
     if aggr:
         query = AUTHORIZES_AGGR.format(query)
     cursor.execute(query)
-    _print_data("authorizes", cursor)
+    _print_data("authorizes", cursor, opts)
 
 
-def _accounting_stat(cursor, in_col, out_col, aggr):
+def _accounting_stat(cursor, in_col, out_col, aggr, opts):
     """accounting stats."""
     query = USERS_BY_KEY.format("'" + "','".join([out_col, in_col]) + "'")
     query = ACCOUNTING_SUM.format(query)
     if aggr:
         query = ACCOUNTING_SUM_AGGR.format(query)
     cursor.execute(query)
-    _print_data("accounting", cursor)
+    _print_data("accounting", cursor, opts)
 
 
-def _user_last(cursor):
+def _user_last(cursor, opts):
     """all user report."""
-    _user_last_full(cursor, True)
+    _user_last_full(cursor, True, opts)
 
 
-def _user_last_daily(cursor):
+def _user_last_daily(cursor, opts):
     """user last logged time."""
-    _user_last_full(cursor, False)
+    _user_last_full(cursor, False, opts)
 
 
-def _user_last_full(cursor, aggr):
+def _user_last_full(cursor, aggr, opts):
     """user last full query."""
     query = ALL_USERS
     if aggr:
         query = ALL_USERS_REPORT.format(query)
     cursor.execute(query)
-    _print_data("users", cursor)
+    _print_data("users", cursor, opts)
 
 
-def _user_mac_last_daily(cursor):
+def _user_mac_last_daily(cursor, opts):
     """user+mac last logged time."""
-    _user_mac_last(cursor, False)
+    _user_mac_last(cursor, False, opts)
 
 
-def _user_mac_full(cursor):
+def _user_mac_full(cursor, opts):
     """user+mac list detected."""
-    _user_mac_last(cursor, True)
+    _user_mac_last(cursor, True, opts)
 
 
-def _user_mac_last(cursor, aggr):
+def _user_mac_last(cursor, aggr, opts):
     """user mac querying."""
     query = USER_MACS.format(store.CALLING_STATION)
     if aggr:
         query = USER_MAC_REPORT.format(query)
     cursor.execute(query)
-    _print_data("user/mac report", cursor)
+    _print_data("user/mac report", cursor, opts)
 
 # available reports
 available = {}
@@ -253,6 +261,11 @@ available["user-macs-daily"] = _user_mac_last_daily
 available["user-macs"] = _user_mac_full
 
 
+class Options(object):
+    """Options for reports."""
+    markdown = False
+
+
 def main():
     """main entry."""
     parser = argparse.ArgumentParser()
@@ -261,6 +274,7 @@ def main():
                         type=str,
                         default=store.DB_NAME)
     parser.add_argument("--reports", nargs='*', choices=available.keys())
+    parser.add_argument("--markdown", action="store_true")
     args = parser.parse_args()
     if args.reports is None or len(args.reports) == 0:
         execute = available.keys()
@@ -268,10 +282,11 @@ def main():
         execute = args.reports
     conn = sqlite3.connect(args.database)
     curs = conn.cursor()
+    opts = Options()
+    opts.markdown = args.markdown
     for item in execute:
-        print "executing " + item
         if item in available:
-            available[item](curs)
+            available[item](curs, opts)
         else:
             print "unknown report..." + item
     conn.close()
