@@ -91,6 +91,28 @@ ALL_USERS = """
 
 ALL_USERS_REPORT = "select user from ({0}) group by user"
 
+FAILED_AUTHS = """
+select user as userfqdn, max(date) as date from
+(
+    select date, val as user from data
+    where
+    instance not in
+    (
+        select distinct instance from data
+        where key = 'Tunnel-Type'
+    )
+    and type = 'AUTHORIZE'
+    and instance not in
+    (
+        select distinct instance from data
+        where key = 'FreeRADIUS-Proxied-To'
+    )
+    and key = '{0}'
+) as auths
+group by user
+order by date
+""".format(store.USER_NAME)
+
 SIGNATURES = """
     select distinct user, mac,
     ifnull(nasipaddr.val, 'n/a') as nip,
@@ -174,7 +196,6 @@ def _print_data(cat, curs, opts, converter=None):
         cols = _get_cols(curs)
     else:
         cols = converter(None, True)
-
     def _gen():
         for row in curs.fetchall():
             if converter is None:
@@ -193,9 +214,9 @@ def _print_data(cat, curs, opts, converter=None):
     format_str = []
     for col in cols:
         use_format = "15"
-        if col in ["attr", "user"]:
+        if col in ["attr", "userfqdn"]:
             use_format = "25"
-        if col == "signature":
+        if col in ["signature", "userfqdn"]:
             use_format = "50"
         if col == "mac":
             use_format = "20"
@@ -300,6 +321,12 @@ def _signatures(cursor, opts):
     _print_data("signatures", cursor, opts, converter=_conv)
 
 
+def _failed_auths(cursor, opts):
+    """failed auths."""
+    cursor.execute(FAILED_AUTHS)
+    _print_data("failures", cursor, opts)
+
+
 # available reports
 available = {}
 available["packets"] = _packets_all
@@ -315,6 +342,7 @@ available["users"] = _user_last
 available["user-macs-daily"] = _user_mac_last_daily
 available["user-macs"] = _user_mac_full
 available["signatures"] = _signatures
+available["failures"] = _failed_auths
 
 
 class Options(object):
