@@ -63,12 +63,16 @@ def _blacklist_objects(objs, blacklist, sep=None, sub_key=None, value=False):
           break
       if not valid:
         continue
-      if sub_key is not None and sub_key in objs[item]:
+      if sub_key is not None and len(sub_key) > 0: 
         valid = True
-        for sub in objs[item][sub_key]:
-          if sub in blacklist:
-            valid = False
+        for sk in sub_key:
+          if not valid:
             break
+          if sk in objs[item]:
+            for sub in objs[item][sk]:
+              if sub in blacklist:
+                valid = False
+                break
         if not valid:
           continue
     if value:
@@ -84,7 +88,7 @@ def _config(input_name):
   with open(_CONFIG_FILE) as f:
     obj = byteify(json.loads(f.read()))
     blacklist = obj[BLCK_KEY]
-    users = _blacklist_objects(obj[USER_KEY], blacklist, sep=".", sub_key=MAC_KEY)
+    users = _blacklist_objects(obj[USER_KEY], blacklist, sep=".", sub_key=[MAC_KEY, ATTR_KEY])
     vlans = _blacklist_objects(obj[VLAN_KEY], blacklist)
     bypass = _blacklist_objects(obj[BYPASS_KEY], blacklist, value=True)
     user_obj = None
