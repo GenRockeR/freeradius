@@ -59,6 +59,16 @@ import __config__
 obj = __config__.Blacklist("112233445566")
 ```
 
+## common
+
+by providing a `common.py` file definition in the users folder, that will be loaded in as a module during composing
+```
+vim common.py
+---
+VLAN_NAME_ONE = "vlan1"
+# now in vlan_one.py, common.VLAN_NAME_ONE can be used
+```
+
 ## composing
 
 navigate up to the utils folder and run
