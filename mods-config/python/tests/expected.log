@@ -190,3 +190,27 @@ AABBCCDDEE11 - aabbccddee11
 
 (2, (('Tunnel-Type', 'VLAN'), ('Tunnel-Medium-Type', 'IEEE-802'), ('Tunnel-Private-Group-Id', '11')), (('Cleartext-Password', 'AABBCCDDEE11'),))
 
+vlan2.usera - 001122334455
+===
+# network.json
+*** authorize ***
+
+*** radlog call in authorize ***
+
+(('User-Name', 'vlan2.usera'), ('Calling-Station-Id', '001122334455'))
+
+()
+
+(2, (), ())
+
+# alt.json
+*** authorize ***
+
+*** radlog call in authorize ***
+
+(('User-Name', 'vlan2.usera'), ('Calling-Station-Id', '001122334455'))
+
+()
+
+(2, (('Tunnel-Type', 'VLAN'), ('Tunnel-Medium-Type', 'IEEE-802'), ('Tunnel-Private-Group-Id', '11')), (('Cleartext-Password', 'pass6'),))
+

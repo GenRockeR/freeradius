@@ -1,5 +1,5 @@
 {
-    "blacklist": ["112233445566", "vlan1", "vlan2.user1", "user2", "aabbccddeeff"],
+    "blacklist": ["112233445566", "vlan1", "vlan2.user1", "user2", "aabbccddeeff", "test"],
     "bypass":
     {
         "aabbccddee11": "vlan2",
@@ -38,13 +38,22 @@
             "macs": [
                 "001122334455"
             ],
-            "pass": "pass4"
+            "pass": "pass4",
+            "attr": []
         },
         "vlan2.user2": {
             "macs": [
                 "001122334455"
             ],
-            "pass": "pass5"
+            "pass": "pass5",
+            "attr": ["other"]
+        },
+        "vlan2.usera": {
+            "attr": ["test"],
+            "macs": [
+                "001122334455"
+            ],
+            "pass": "pass6"
         }
     },
     "vlans": {
