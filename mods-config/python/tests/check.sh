@@ -8,6 +8,7 @@ user=""
 mac_multi=""
 ALT="alt.json"
 OUT="actual.log"
+USRS="../utils/users/"
 cat network.json | grep -v "blacklist" | head -n -1 > $ALT
 echo ',"blacklist":[]}' >> $ALT
 for b in $(echo $blacklist); do
@@ -68,7 +69,10 @@ if [ $? -ne 0 ]; then
     exit -1
 fi
 
-cp *.py ../utils/users/
+for f in $(echo "b c u v"); do
+    rm -f ${USRS}$f*
+done
+cp *.py $USRS
 OUT_JSON="actual.json"
 python2.7 ../utils/config_compose.py --output $OUT_JSON
 diff expected.json $OUT_JSON
