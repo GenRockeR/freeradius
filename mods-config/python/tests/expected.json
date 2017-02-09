@@ -1,11 +1,21 @@
 {
     "blacklist": [
+        "blah",
         "user1"
     ],
     "bypass": {
         "112233445566": "dev"
     },
     "users": {
+        "dev.attr": {
+            "attr": [
+                "blah"
+            ],
+            "macs": [
+                "001122334455"
+            ],
+            "pass": "12345678910aaaaaaaaaaaaaaa111213141516etcabc"
+        },
         "dev.user1": {
             "attr": [],
             "macs": [
