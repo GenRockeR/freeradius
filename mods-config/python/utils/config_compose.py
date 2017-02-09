@@ -109,6 +109,11 @@ def _get_by_indicator(indicator):
 
 def _process(output):
     """process the composition of users."""
+    try:
+        _get_mod("common")
+        print "loaded common definitions..."
+    except:
+        print "defaults only..."
     user_objs = {}
     vlans = None
     blacklist = []
