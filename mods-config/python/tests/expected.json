@@ -7,24 +7,28 @@
     },
     "users": {
         "dev.user1": {
+            "attr": [],
             "macs": [
                 "001122334455"
             ],
             "pass": "12345678910aaaaaaaaaaaaaaa111213141516etc"
         },
         "dev.user2": {
+            "attr": [],
             "macs": [
                 "001122334455"
             ],
             "pass": "12345678910aaaaaaaaaaaaaaa111213141516user2"
         },
         "prod.user1": {
+            "attr": [],
             "macs": [
                 "001122334455"
             ],
             "pass": "12345678910aaaaaaaaaaaaaaa111213141516etcadmin"
         },
         "prod.user2": {
+            "attr": [],
             "macs": [
                 "001122334455"
             ],
