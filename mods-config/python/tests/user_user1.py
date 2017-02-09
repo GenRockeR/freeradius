@@ -1,6 +1,7 @@
 import __config__
+import common
 normal = __config__.Assignment()
-normal.macs = ["001122334455"]
+normal.macs = [common.VALID_MAC]
 normal.password = "12345678910aaaaaaaaaaaaaaa111213141516etc"
 normal.bypass = ["112233445566"]
 normal.vlan = "dev"
