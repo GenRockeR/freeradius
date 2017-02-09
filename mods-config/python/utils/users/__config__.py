@@ -64,6 +64,7 @@ class Assignment(object):
         self.vlan = None
         self.disable = {}
         self.no_login = False
+        self.attrs = None
 
     def report(self, cause):
         """report an issue."""

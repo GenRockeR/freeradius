@@ -18,6 +18,7 @@ USER_KEY = "users"
 VLAN_KEY = "vlans"
 BLCK_KEY = "blacklist"
 BYPASS_KEY = "bypass"
+ATTR_KEY = "attr"
 rlock = threading.RLock()
 logger = None
 _CONFIG_FILE = "/etc/raddb/mods-config/python/network.json"

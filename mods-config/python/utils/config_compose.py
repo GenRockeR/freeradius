@@ -25,6 +25,7 @@ class ConfigMeta(object):
         self.blacklist = []
         self.user_name = []
         self.vlan_users = []
+        self.attrs = []
 
     def password(self, password):
         """password group validation(s)."""
@@ -45,6 +46,10 @@ class ConfigMeta(object):
         """user+mac combos."""
         self.macs = self.macs + macs
         self.macs = list(set(self.macs))
+
+    def attributes(self, attrs):
+        self.attrs = self.attrs + attrs
+        self.attrs = list(set(self.attrs))
 
     def verify(self):
         """verify meta data."""
@@ -67,7 +72,8 @@ class ConfigMeta(object):
                item not in self.macs and \
                item not in self.vlans and \
                item not in self.bypasses and \
-               item not in self.vlan_users:
+               item not in self.vlan_users and \
+               item not in self.attrs:
                    print "unknown entity to blacklist: " + item
                    exit(-1)
 
@@ -77,10 +83,11 @@ class ConfigMeta(object):
         self.vlan_users.append(vlan + "." + user)
         self.user_name.append(user)
 
-def _create_obj(macs, password):
+def _create_obj(macs, password, attrs):
     """create a user definition."""
     return {wrapper.freepydius.MAC_KEY: macs,
-            wrapper.freepydius.PASS_KEY: password}
+            wrapper.freepydius.PASS_KEY: password,
+            wrapper.freepydius.ATTR_KEY: attrs}
 
 def _get_mod(name):
     """import the module dynamically."""
@@ -143,6 +150,10 @@ def _process(output):
             macs = sorted(obj.macs)
             password = obj.password
             bypass = sorted(obj.bypass)
+            attrs = []
+            if obj.attrs:
+                attrs = sorted(obj.attrs)
+                meta.attributes(attrs)
             # meta checks
             meta.user_macs(macs)
             meta.password(password)
@@ -151,7 +162,7 @@ def _process(output):
                 raise Exception(fqdn + " previously defined")
             # use config definitions here
             if not obj.no_login:
-                user_objs[fqdn] = _create_obj(macs, password)
+                user_objs[fqdn] = _create_obj(macs, password, attrs)
             if bypass is not None and len(bypass) > 0:
                 for mac_bypass in bypass:
                     if mac_bypass in bypass_objs:
