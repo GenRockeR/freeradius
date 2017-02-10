@@ -182,7 +182,8 @@ vim /etc/raddb/mods-config/python/network.json
                 "4fff3a7e7a11",
                 "50009d1ea6cc",
                 "6600991144dd"
-            ]
+            ],
+            "attr": []
         },
         "prod.user2":
         {
@@ -191,7 +192,8 @@ vim /etc/raddb/mods-config/python/network.json
             [
                 "4fff3a7e7a11",
                 "7fff3a777a11"
-            ]
+            ],
+            "attr": ["temp"]
         },
         "dev.user1":
         {
@@ -222,6 +224,7 @@ the blacklist section is a list of strings where a string can be:
 * vlan.user (e.g. prod.user1)
 * MAC-based auth MAC
 * MAC (for a user set) which will blacklist all users with that mac assigned to them
+* An attribute ("attr" array) on users
 
 ---
 
