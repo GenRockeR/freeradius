@@ -35,7 +35,7 @@
             "macs": [
                 "001122334455"
             ],
-            "pass": "12345678910aaaaaaaaaaaaaaa111213141516etcadmin"
+            "pass": "12345678910aaaaaaaaaaaaaaa111213141516etcadmi"
         },
         "prod.user2": {
             "attr": [],
