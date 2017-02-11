@@ -109,8 +109,9 @@ def _get_by_indicator(indicator):
 
 def _process(output):
     """process the composition of users."""
+    common_mod = None
     try:
-        _get_mod("common")
+        common_mod = _get_mod("common")
         print "loaded common definitions..."
     except:
         print "defaults only..."
@@ -140,6 +141,9 @@ def _process(output):
     for f_name in _get_by_indicator(USER_INDICATOR):
         print "composing..." + f_name
         for obj in _load_objs(f_name, users.__config__.Assignment):
+            if common_mod is not None:
+                ready_mod = getattr(common_mod, 'ready')
+                obj = ready_mod(obj)
             key = f_name.replace(USER_INDICATOR, "")
             if not key.isalnum():
                 print "does not meet naming requirements..."
