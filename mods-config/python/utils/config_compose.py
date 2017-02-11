@@ -107,6 +107,16 @@ def _get_by_indicator(indicator):
     return [x for x in sorted(users.__all__) if x.startswith(indicator)]
 
 
+def _common_call(common, method, entity):
+    """make a common mod call."""
+    obj = entity
+    if common is not None:
+        call = getattr(common, method)
+        if call is not None:
+            entity = call(entity)
+    return obj
+
+
 def _process(output):
     """process the composition of users."""
     common_mod = None
@@ -141,9 +151,7 @@ def _process(output):
     for f_name in _get_by_indicator(USER_INDICATOR):
         print "composing..." + f_name
         for obj in _load_objs(f_name, users.__config__.Assignment):
-            if common_mod is not None:
-                ready_mod = getattr(common_mod, 'ready')
-                obj = ready_mod(obj)
+            obj = _common_call(common_mod, 'ready', obj)
             key = f_name.replace(USER_INDICATOR, "")
             if not key.isalnum():
                 print "does not meet naming requirements..."
