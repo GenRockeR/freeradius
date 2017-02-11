@@ -110,7 +110,7 @@ def _get_by_indicator(indicator):
 def _common_call(common, method, entity):
     """make a common mod call."""
     obj = entity
-    if common is not None:
+    if common is not None and method in dir(common):
         call = getattr(common, method)
         if call is not None:
             entity = call(entity)
