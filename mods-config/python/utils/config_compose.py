@@ -113,7 +113,7 @@ def _common_call(common, method, entity):
     if common is not None and method in dir(common):
         call = getattr(common, method)
         if call is not None:
-            entity = call(entity)
+            obj = call(obj)
     return obj
 
 
