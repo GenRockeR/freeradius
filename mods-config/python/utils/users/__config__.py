@@ -1,5 +1,7 @@
 #!/usr/bin/python
 """configuration base."""
+from datetime import datetime
+import re
 
 PASSWORD_LENGTH = 32
 
@@ -65,6 +67,16 @@ class Assignment(object):
         self.disable = {}
         self.no_login = False
         self.attrs = None
+        self.expires = None
+        self.expired = False
+
+    def _compare_date(self, value, regex, today):
+        """compare date."""
+        matches = regex.findall(value)
+        for match in matches:
+            as_date = datetime.strptime(match, '%Y-%m-%d')
+            return as_date < today
+        return None
 
     def report(self, cause):
         """report an issue."""
@@ -73,6 +85,15 @@ class Assignment(object):
 
     def check(self):
         """check the assignment definition."""
+        today = datetime.now()
+        today = datetime(today.year, today.month, today.day)
+        regex = re.compile(r'\d{4}[-/]\d{2}[-/]\d{2}')
+        if self.expires is not None:
+            res = self._compare_date(self.expires, regex, today)
+            if res is not None:
+                self.expired = res
+            else:
+                return self.report("invalid expiration")
         if self.vlan is None or len(self.vlan) == 0:
             return self.report("no vlan assigned")
         if self.macs is None or len(self.macs) == 0:
@@ -91,25 +112,17 @@ class Assignment(object):
         if len(self.macs) != len(set(self.macs)):
             return self.report("macs not unique")
         if self.disable is not None and len(self.disable) > 0:
-            import re
-            from datetime import datetime
-            today = datetime.now()
-            today = datetime(today.year, today.month, today.day)
-            regex = re.compile(r'\d{4}[-/]\d{2}[-/]\d{2}')
             if isinstance(self.disable, dict):
                 for key in self.disable.keys():
                     val = self.disable[key]
-                    matches = regex.findall(val)
-                    matched = False
-                    for match in matches:
-                        matched = True
-                        as_date = datetime.strptime(match, '%Y-%m-%d')
-                        if as_date < today:
+                    res = self._compare_date(val, regex, today)
+                    if res is not None:
+                        if res:
                             print("{0} has been time-disabled".format(key))
                             if key in self.bypass:
                                 self.bypass.remove(key)
                             if key in self.macs:
                                 self.macs.remove(key)
-                    if not matched:
-                        return self.report("invalid date")
+                    else:
+                        return self.report("invalid MAC date")
         return True
