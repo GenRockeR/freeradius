@@ -16,6 +16,13 @@
             ],
             "pass": "12345678910aaaaaaaaaaaaaaa111213141516etcabc"
         },
+        "dev.disable": {
+            "attr": [],
+            "macs": [
+                "001122334455"
+            ],
+            "pass": "12345d678910aaaaaaaaaaaaaaa111213141516etc"
+        },
         "dev.user1": {
             "attr": [],
             "macs": [
