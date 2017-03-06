@@ -111,9 +111,10 @@ PYTHONPATH=/etc/raddb/mods-config/python/
 
 need to update the freeradius systemd script to include the environment setting for python
 ```
-vim /usr/lib/systemd/system/freeradius.service
+sudo systemctl edit freeradius.service
 ---
 # add to the [Service] section
+[Service]
 EnvironmentFile=/etc/environment
 ```
 
