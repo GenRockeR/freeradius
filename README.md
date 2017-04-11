@@ -296,3 +296,32 @@ if everything is configured properly this should result in
 ```
 rad_recv: Access-Accept packet from host 127.0.0.1 port 1812, length=20
 ```
+
+## remotely
+
+this requires that:
+* the radius server is configured to listen/accept on the given ip below (e.g. iptables and client.conf setup)
+* MAC is formatted as 00:11:22:aa:bb:cc
+
+start with installing wpa_supplicant to get eapol_test
+```
+pacman -S wpa_supplicant
+```
+
+setup a test config
+```
+vim test.conf
+---
+network={
+        key_mgmt=WPA-EAP
+        eap=PEAP
+        identity="<vlan.user>"
+        password="<password>"
+        phase2="autheap=MSCHAPV2"
+}
+```
+
+to run
+```
+eapol_test -a <radius_server_ip> -c test.conf -s <secret_key> -M <mac>
+```
