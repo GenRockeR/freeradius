@@ -69,6 +69,7 @@ class Assignment(object):
         self.attrs = None
         self.expires = None
         self.expired = False
+        self.inherits = None
 
     def _compare_date(self, value, regex, today):
         """compare date."""
@@ -83,8 +84,16 @@ class Assignment(object):
         print cause
         return False
 
+    def copy(self, other):
+        """copy/inherit from another entity."""
+        self.password = other.password
+        self.attrs = other.attrs
+        self.macs = set(self.macs + other.macs)
+
     def check(self):
         """check the assignment definition."""
+        if self.inherits:
+            self.copy(self.inherits)
         today = datetime.now()
         today = datetime(today.year, today.month, today.day)
         regex = re.compile(r'\d{4}[-/]\d{2}[-/]\d{2}')

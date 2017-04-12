@@ -176,7 +176,8 @@ def _process(output):
                 meta.attributes(attrs)
             # meta checks
             meta.user_macs(macs)
-            meta.password(password)
+            if not obj.inherits:
+                meta.password(password)
             meta.bypassed(bypass)
             if fqdn in user_objs:
                 raise Exception(fqdn + " previously defined")
