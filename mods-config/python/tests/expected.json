@@ -37,6 +37,15 @@
             ],
             "pass": "12345678910aaaaaaaaaaaaaaa111213141516user2"
         },
+        "dev.user3": {
+            "attr": [
+                "test"
+            ],
+            "macs": [
+                "001122334455"
+            ],
+            "pass": "12345678910aaaaaaaaaaaaaaa111213141516user3"
+        },
         "prod.user1": {
             "attr": [],
             "macs": [
@@ -50,6 +59,15 @@
                 "001122334455"
             ],
             "pass": "12345678910aaaaaaaaaaaaaaa111213141516user2user2"
+        },
+        "prod.user3": {
+            "attr": [
+                "test"
+            ],
+            "macs": [
+                "001122334455"
+            ],
+            "pass": "12345678910aaaaaaaaaaaaaaa111213141516user3"
         }
     },
     "vlans": {
