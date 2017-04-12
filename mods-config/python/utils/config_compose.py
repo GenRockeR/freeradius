@@ -137,7 +137,12 @@ def _process(output):
                 vlans = {}
             if not obj.check():
                 exit(-1)
-            vlans[obj.name] = str(obj.num)
+            num_str = str(obj.num)
+            for vk in vlans.keys():
+                if num_str == vlans[vk]:
+                    print "vlan number defined multiple times..."
+                    exit(-1)
+            vlans[obj.name] = num_str
     for b_name in _get_by_indicator(BLKL_INDICATOR):
         print "loading blacklist..." + b_name
         for obj in _load_objs(b_name, users.__config__.Blacklist):
