@@ -20,7 +20,7 @@ FreeRadius is a server that provides the following three things:
 
 - Authentication (Your driver's license proves that you're the person you say you are)
 - Authorization (Your driver's license lets you drive your car, motorcycle, or CDL)
-- Accounting (A log shows tat you've driven on these roads at a certain date)
+- Accounting (A log shows that you've driven on these roads at a certain date)
 
 ### our goals
 
