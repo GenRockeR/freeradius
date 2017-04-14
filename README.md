@@ -237,23 +237,25 @@ to connect a headless system using systemd-networkd & wpa_supplicant check [here
 
 ### android
 
-EAP method: PEAP
-Phase 2: MSCHAPV2
-CA Cert: Do not validate
-Identity: vlan.user
-Password: <pass>
+* EAP method: PEAP
+* Phase 2: MSCHAPV2
+* CA Cert: Do not validate
+* Identity: <vlan.user>
+* Password: <pass>
 
 ### network-manager (nm-applet)
 
 Create a connection and go to the "802.1X Security" tab
 
-Check the "Use 802.1X" box
-Auth: Protected EAP (PEAP)
-Check the "No CA certificate is required"
-PEAP version: Automatic
-Inner authentication: MSCHAPv2
-Username: vlan.user
-Password: <password>
+* Check the "Use 802.1X" box
+* Auth: Protected EAP (PEAP)
+* Check the "No CA certificate is required"
+* PEAP version: Automatic
+* Inner authentication: MSCHAPv2
+* Username: <vlan.user>
+* Password: <password>
+
+---
 
 ## debugging
 
