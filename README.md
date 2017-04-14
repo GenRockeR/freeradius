@@ -229,6 +229,32 @@ the blacklist section is a list of strings where a string can be:
 
 ---
 
+## connecting
+
+### headless/server
+
+to connect a headless system using systemd-networkd & wpa_supplicant check [here](https://wiki.archlinux.org/index.php/User:Enckse/TipsAndTricks#802.1x_.26_systemd-networkd)
+
+### android
+
+EAP method: PEAP
+Phase 2: MSCHAPV2
+CA Cert: Do not validate
+Identity: vlan.user
+Password: <pass>
+
+### network-manager (nm-applet)
+
+Create a connection and go to the "802.1X Security" tab
+
+Check the "Use 802.1X" box
+Auth: Protected EAP (PEAP)
+Check the "No CA certificate is required"
+PEAP version: Automatic
+Inner authentication: MSCHAPv2
+Username: vlan.user
+Password: <password>
+
 ## debugging
 
 there are a few utilities in the mods-config/python/utils folder associated with freepydius.py. It is _very_ difficult to debug certain problems in a python module by allowing freeradius to execute it (information is eaten alive...). The harness and replay allow for using logs and/or manual input to test cases against the module. Regardless of feeling about python 2 vs. 3 - freeradius currently (at least here) is using 2 and so all tooling has been built to both match that requirement but some...styling decisions from the radiusd & example.py installed by freeradius
