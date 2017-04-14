@@ -233,7 +233,7 @@ the blacklist section is a list of strings where a string can be:
 
 ### headless/server
 
-to connect a headless system using systemd-networkd & wpa_supplicant check [here](https://wiki.archlinux.org/index.php/User:Enckse/TipsAndTricks#802.1x_.26_systemd-networkd)
+to connect a headless system using systemd-network and wpa_supplicant check [here](https://wiki.archlinux.org/index.php/WPA_supplicant#802.1x.2Fradius)
 
 ### android
 
