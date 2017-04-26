@@ -159,8 +159,20 @@ u_obj.vlan = None
 def build():
     """ Build and apply a user configuration. """
     env =_get_vars("/etc/environment")
+    os.chdir(env.net_config)
     compose(env)
-
+    if os.path.exists(env.send_file):
+        os.remove(env.send_file)
+    diff = filecmp.cmp(new_config, FILE_NAME)
+    if diff:
+        print('change detected')
+        shutil.copyfile(FILE_NAME, PREV_FILE)
+        shutil.copyfile(new_config, FILE_NAME)
+        shutil.chown(FILE_NAME, user="radiusd", group="radiusd")
+        update_wiki(env)
+        hashed = get_file_hash(FILE_NAME)
+        send_to_matrix(env, "ready -> {}".format(hashed))
+    daily_report(env)
 
 def check():
     """ Check composition. """
