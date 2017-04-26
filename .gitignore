@@ -1,6 +1,6 @@
 clients.conf
 *.pyc
-mods-config/python/network.json
+mods-config/python/network.json*
 mods-config/python/tests/alt.json
 mods-config/python/tests/actual.json
 mods-config/python/utils/users/*
