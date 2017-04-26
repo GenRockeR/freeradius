@@ -10,6 +10,8 @@ import subprocess
 import wrapper
 import random
 import string
+import filecmp
+import pwd
 
 # user setup
 CHARS = string.ascii_uppercase + string.ascii_lowercase + string.digits
@@ -23,10 +25,13 @@ BUILD = "build"
 FILE_NAME = wrapper.CONFIG_NAME
 PREV_FILE = FILE_NAME + ".prev"
 USER_FOLDER = "users/"
+PYTHON_MODS = "mods-config/python"
 
 # env vars
 FREERADIUS_REPO = "FREERADIUS_REPO"
-
+NETCONFIG = "NETCONF"
+SENDFILE = "SYNAPSE_SEND_FILE"
+MBOT = "MATRIX_BOT"
 
 class Env(object):
     """ Environment definition. """
@@ -34,24 +39,40 @@ class Env(object):
         """ Init the instance. """
         self.freeradius_repo = None
         self.backing = {}
+        self.net_config = None
+        self.send_file = None
+        self.matrix_bot = None
 
     def add(self, key, value):
         """ Add a key, sets into environment. """
         os.environ[key] = value
         if key == FREERADIUS_REPO:
             self.freeradius_repo = value
+        elif key == NETCONFIG:
+            self.net_config = value
+        elif key == SENDFILE:
+            self.send_file = value
+        elif key == MBOT:
+            self.matrix_bot = value
 
-    def _error(self, key):
+    def _error(self, keys):
         """ Print an error. """
-        print("{} must be set".format(key))
+        print("{} must be set".format(", ".join(keys)))
 
     def validate(self, full=False):
         """ Validate the environment setup. """
-        validation_error = False
+        errors = []
         if self.freeradius_repo is None:
-            self._error(FREERADIUS_REPO)
-            validation_error = True
-        if validation_error:
+            errors.append(FREERADIUS_REPO)
+        if full:
+            if self.net_config is None:
+                errors.append(NETCONFIG)
+            if self.send_file is None:
+                errors.append(SENDFILE)
+            if self.matrix_bot is None:
+                errors.append(MBOT)
+        if len(errors) > 0:
+            self._error(errors)
             exit(1)
 
 
@@ -96,7 +117,7 @@ def call(cmd, error_text, working_dir=None):
 
 def compose(env):
     """Compose the configuration."""
-    offset = os.path.join(env.freeradius_repo, "mods-config/python/utils")
+    offset = os.path.join(env.freeradius_repo, PYTHON_MODS, "utils")
     rsync = ["rsync",
              "-aczv",
              USER_FOLDER,
@@ -158,6 +179,7 @@ u_obj.vlan = None
 
 def update_wiki(env):
     """ Update wiki pages with config information. """
+    pass
 
 def send_to_matrix(env, content):
     """ Send a change notification to matrix. """
@@ -168,12 +190,12 @@ def send_to_matrix(env, content):
         f.write("<html>")
         f.write(content)
         f.write("</html>")
-    call(cmd)
+    call(cmd, "sending to matrix")
     os.remove(env.send_file)
 
 def daily_report(env):
     """ Write daily reports. """
-
+    pass
 
 def build():
     """ Build and apply a user configuration. """
@@ -183,12 +205,15 @@ def build():
     compose(env)
     if os.path.exists(env.send_file):
         os.remove(env.send_file)
-    diff = filecmp.cmp(new_config, FILE_NAME)
-    if diff:
+    new_config = os.path.join(env.net_config, FILE_NAME)
+    run_config = os.path.join(env.freeradius_repo, PYTHON_MODS, FILE_NAME)
+    diff = filecmp.cmp(new_config, run_config)
+    if not diff:
         print('change detected')
-        shutil.copyfile(FILE_NAME, PREV_FILE)
-        shutil.copyfile(new_config, FILE_NAME)
-        shutil.chown(FILE_NAME, user="radiusd", group="radiusd")
+        shutil.copyfile(run_config, run_config + ".prev")
+        shutil.copyfile(new_config, run_config)
+        u = pwd.getpwnam("radiusd")
+        os.chown(run_config, u.pw_uid, u.pw_gid)
         update_wiki(env)
         hashed = get_file_hash(FILE_NAME)
         send_to_matrix(env, "ready -> {}".format(hashed))
