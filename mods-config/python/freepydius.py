@@ -21,7 +21,8 @@ BYPASS_KEY = "bypass"
 ATTR_KEY = "attr"
 rlock = threading.RLock()
 logger = None
-_CONFIG_FILE = "/etc/raddb/mods-config/python/network.json"
+_CONFIG_FILE_NAME="network.json"
+_CONFIG_FILE = "/etc/raddb/mods-config/python/" + _CONFIG_FILE_NAME
 _LOG_FILE = "/var/log/radius/freepydius/trace.log"
 
 _DOMAIN_SLASH = "\\"

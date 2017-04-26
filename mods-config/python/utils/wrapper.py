@@ -18,3 +18,4 @@ def convert_mac(mac):
 
 LOG_NAME = freepydius._LOG_FILE
 CONFIG = freepydius._CONFIG_FILE
+CONFIG_NAME = freepydius._CONFIG_FILE_NAME
