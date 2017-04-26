@@ -159,8 +159,17 @@ u_obj.vlan = None
 def update_wiki(env):
     """ Update wiki pages with config information. """
 
-def send_to_matrix(env):
+def send_to_matrix(env, content):
     """ Send a change notification to matrix. """
+    cmd = []
+    cmd.append(env.matrix_bot)
+    cmd.append("oneshot")
+    with open(env.send_file, 'w') as f:
+        f.write("<html>")
+        f.write(content)
+        f.write("</html>")
+    call(cmd)
+    os.remove(env.send_file)
 
 def daily_report(env):
     """ Write daily reports. """
