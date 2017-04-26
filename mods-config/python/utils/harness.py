@@ -30,7 +30,8 @@ def main():
     parser = argparse.ArgumentParser(description="freepyidus test harness")
     parser.add_argument('method', choices=choices, help="method to execute")
     parser.add_argument('kv', nargs='*', help="key/value pairs")
-    parser.add_argument('--json', default="../network.json", help="network config")
+    parser.add_argument('--json', default="../network.json",
+                        help="network config")
     args = parser.parse_args()
     kv = []
     wrapper.radiusd.config = ()

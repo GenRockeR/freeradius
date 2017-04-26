@@ -1,5 +1,5 @@
 #!/usr/bin/python
-""" Provides configuration management/handling for managing freeradius."""
+"""Provides configuration management/handling for managing freeradius."""
 import argparse
 import os
 import shutil
@@ -39,10 +39,12 @@ PHAB_SLUG = "PHAB_SLUG"
 PHAB_TOKEN = "PHAB_TOKEN"
 PHAB_HOST = "PHAB_HOST"
 
+
 class Env(object):
-    """ Environment definition. """
+    """Environment definition."""
+
     def __init__(self):
-        """ Init the instance. """
+        """Init the instance."""
         self.freeradius_repo = None
         self.backing = {}
         self.net_config = None
@@ -54,7 +56,7 @@ class Env(object):
         self.phab = None
 
     def add(self, key, value):
-        """ Add a key, sets into environment. """
+        """Add a key, sets into environment."""
         os.environ[key] = value
         if key == FREERADIUS_REPO:
             self.freeradius_repo = value
@@ -74,11 +76,11 @@ class Env(object):
             self.phab = value
 
     def _error(self, keys):
-        """ Print an error. """
+        """Print an error."""
         print("{} must be set".format(", ".join(keys)))
 
     def validate(self, full=False):
-        """ Validate the environment setup. """
+        """Validate the environment setup."""
         errors = []
         if self.freeradius_repo is None:
             errors.append(FREERADIUS_REPO)
@@ -103,7 +105,7 @@ class Env(object):
 
 
 def _get_vars(env_file):
-    """ Get the environment setup. """
+    """Get the environment setup."""
     result = Env()
     with open(os.path.expandvars(env_file), 'r') as env:
         for line in env.readlines():
@@ -128,12 +130,12 @@ def get_file_hash(file_name):
 
 
 def _get_exclude(name):
-    """ Define an rsync exclude."""
+    """Define an rsync exclude."""
     return '--exclude={}'.format(name)
 
 
 def call(cmd, error_text, working_dir=None):
-    """ Call for subprocessing. """
+    """Call for subprocessing."""
     p = subprocess.Popen(cmd, cwd=working_dir)
     p.wait()
     if p.returncode != 0:
@@ -162,7 +164,7 @@ def compose(env):
 
 
 def _base_json(obj):
-    """ Convert 'pass' keys to base64 'pass64' keys. """
+    """Convert 'pass' keys to base64 'pass64' keys."""
     if isinstance(obj, dict):
         res = {}
         for key in obj.keys():
@@ -185,7 +187,7 @@ def _base_json(obj):
 
 
 def add_user():
-    """ Add a new user definition. """
+    """Add a new user definition."""
     print("please enter the user name:")
     named = raw_input()
     raw = ''.join(random.choice(CHARS) for _ in range(64))
@@ -204,17 +206,18 @@ u_obj.vlan = None
 
 
 def post_content(env, page, title, content):
-    """ Post content to a wiki page. """
-    data = { "api.token": env.phab_token,
-             "slug": env.phab_slug + page,
-             "title": title,
-             "content": content }
+    """Post content to a wiki page."""
+    data = {"api.token": env.phab_token,
+            "slug": env.phab_slug + page,
+            "title": title,
+            "content": content}
     payload = urllib.urlencode(data)
     r = urllib2.urlopen(env.phab + "/api/phriction.edit", data=payload)
     print(r.read())
 
+
 def update_wiki(env, running_config):
-    """ Updatie wiki pages with config information for VLANs. """
+    """Update wiki pages with config information for VLANs."""
     defs = {}
     with open(running_config, 'r') as f:
         defs = json.loads(f.read())
@@ -227,7 +230,8 @@ def update_wiki(env, running_config):
         if vlan not in vlans:
             vlans[vlan] = []
         vlans[vlan].append(user)
-    user_resolved = {x.split("=")[0]: x.split("=")[1] for x in env.user_lookups.split(",")}
+    user_resolved = {x.split("=")[0]: x.split("=")[1]
+                     for x in env.user_lookups.split(",")}
     first = True
     outputs = [("vlan", "user"), ("---", "---")]
     for vlan in sorted(vlans.keys()):
@@ -251,7 +255,7 @@ def update_wiki(env, running_config):
 
 
 def send_to_matrix(env, content):
-    """ Send a change notification to matrix. """
+    """Send a change notification to matrix."""
     cmd = []
     cmd.append(env.matrix_bot)
     cmd.append("oneshot")
@@ -262,13 +266,15 @@ def send_to_matrix(env, content):
     call(cmd, "sending to matrix")
     os.remove(env.send_file)
 
+
 def daily_report(env):
-    """ Write daily reports. """
+    """Write daily reports."""
     pass
 
+
 def build():
-    """ Build and apply a user configuration. """
-    env =_get_vars("/etc/environment")
+    """Build and apply a user configuration."""
+    env = _get_vars("/etc/environment")
     env.validate(full=True)
     os.chdir(env.net_config)
     compose(env)
@@ -290,8 +296,8 @@ def build():
 
 
 def check():
-    """ Check composition. """
-    env =_get_vars("$HOME/.config/epiphyte/env")
+    """Check composition."""
+    env = _get_vars("$HOME/.config/epiphyte/env")
     if os.path.exists(FILE_NAME):
         shutil.copyfile(FILE_NAME, PREV_FILE)
     compose(env)

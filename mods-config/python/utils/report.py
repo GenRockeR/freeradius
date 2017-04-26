@@ -206,6 +206,7 @@ def _print_data(cat, curs, opts, converter=None):
         cols = _get_cols(curs)
     else:
         cols = converter(None, True)
+
     def _gen():
         for row in curs.fetchall():
             if converter is None:

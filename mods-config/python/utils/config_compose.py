@@ -14,9 +14,12 @@ USER_INDICATOR = "user" + IND_DELIM
 VLAN_INDICATOR = "vlan" + IND_DELIM
 BLKL_INDICATOR = "blacklist" + IND_DELIM
 
+
 class ConfigMeta(object):
     """configuration meta information."""
+
     def __init__(self):
+        """init the instance."""
         self.passwords = []
         self.macs = []
         self.bypasses = []
@@ -48,6 +51,7 @@ class ConfigMeta(object):
         self.macs = list(set(self.macs))
 
     def attributes(self, attrs):
+        """set attributes."""
         self.attrs = self.attrs + attrs
         self.attrs = list(set(self.attrs))
 
@@ -74,14 +78,15 @@ class ConfigMeta(object):
                item not in self.bypasses and \
                item not in self.vlan_users and \
                item not in self.attrs:
-                   print "unknown entity to blacklist: " + item
-                   exit(-1)
+                    print "unknown entity to blacklist: " + item
+                    exit(-1)
 
     def vlan_user(self, vlan, user):
-        """indicates a vlan was used."""
+        """indicate a vlan was used."""
         self.vlans.append(vlan)
         self.vlan_users.append(vlan + "." + user)
         self.user_name.append(user)
+
 
 def _create_obj(macs, password, attrs):
     """create a user definition."""
@@ -89,9 +94,11 @@ def _create_obj(macs, password, attrs):
             wrapper.freepydius.PASS_KEY: password,
             wrapper.freepydius.ATTR_KEY: attrs}
 
+
 def _get_mod(name):
     """import the module dynamically."""
     return importlib.import_module("users." + name)
+
 
 def _load_objs(name, typed):
     mod = _get_mod(name)
@@ -201,7 +208,8 @@ def _process(output):
     full[wrapper.freepydius.BLCK_KEY] = blacklist
     full[wrapper.freepydius.BYPASS_KEY] = bypass_objs
     with open(output, 'w') as f:
-        f.write(json.dumps(full, sort_keys=True, indent=4, separators=[",", ": "]))
+        f.write(json.dumps(full, sort_keys=True,
+                           indent=4, separators=[",", ": "]))
 
 
 def main():
