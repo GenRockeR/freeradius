@@ -32,6 +32,7 @@ FREERADIUS_REPO = "FREERADIUS_REPO"
 NETCONFIG = "NETCONF"
 SENDFILE = "SYNAPSE_SEND_FILE"
 MBOT = "MATRIX_BOT"
+USER_LOOKUPS = "USER_LOOKUPS"
 
 class Env(object):
     """ Environment definition. """
@@ -42,6 +43,7 @@ class Env(object):
         self.net_config = None
         self.send_file = None
         self.matrix_bot = None
+        self.user_lookups = None
 
     def add(self, key, value):
         """ Add a key, sets into environment. """
@@ -54,6 +56,8 @@ class Env(object):
             self.send_file = value
         elif key == MBOT:
             self.matrix_bot = value
+        elif key == USER_LOOKUPS:
+            self.user_lookups = value
 
     def _error(self, keys):
         """ Print an error. """
@@ -71,6 +75,8 @@ class Env(object):
                 errors.append(SENDFILE)
             if self.matrix_bot is None:
                 errors.append(MBOT)
+            if self.user_lookups is None:
+                errors.append(USER_LOOKUPS)
         if len(errors) > 0:
             self._error(errors)
             exit(1)
@@ -177,9 +183,46 @@ u_obj.vlan = None
     print("{} was created with a password of {}".format(named, raw))
 
 
-def update_wiki(env):
-    """ Update wiki pages with config information. """
-    pass
+def post_content(env, content):
+    """ Post content to a wiki page. """
+
+
+def update_wiki(env, running_config):
+    """ Updatie wiki pages with config information for VLANs. """
+    defs = {}
+    with open(running_config, 'r') as f:
+        defs = json.loads(f.read())
+    users = defs["users"]
+    vlans = {}
+    for user in sorted(users.keys()):
+        vlan_parts = user.split(".")
+        vlan = vlan_parts[0].upper()
+        user = ".".join(vlan_parts[1:])
+        if vlan not in vlans:
+            vlans[vlan] = []
+        vlans[vlan].append(user)
+    user_resolved = {x.split("=")[0]: x.split("=")[1] for x in env.user_lookups.split(",")}
+    first = True
+    outputs = [("vlan", "user"), ("---", "---")]
+    for vlan in sorted(vlans.keys()):
+        if not first:
+            outputs.append(("-", "-"))
+        first = False
+        for user in vlans[vlan]:
+            user_name = user
+            if user in user_resolved:
+                user_name = user_resolved[user]
+            outputs.append((vlan, "@" + user_name))
+    content = """
+> this page is managed externally do NOT edit it here.
+> it is updated when the freeradius configuration changes.
+
+---
+"""
+    for output in outputs:
+        content = content + "| {} | {} |\n".format(output[0], output[1])
+    post_content(env, content)
+
 
 def send_to_matrix(env, content):
     """ Send a change notification to matrix. """
@@ -214,7 +257,7 @@ def build():
         shutil.copyfile(new_config, run_config)
         u = pwd.getpwnam("radiusd")
         os.chown(run_config, u.pw_uid, u.pw_gid)
-        update_wiki(env)
+        update_wiki(env, run_config)
         hashed = get_file_hash(FILE_NAME)
         send_to_matrix(env, "ready -> {}".format(hashed))
     daily_report(env)
