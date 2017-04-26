@@ -14,6 +14,7 @@ import filecmp
 import pwd
 import urllib2
 import urllib
+import datetime
 
 # user setup
 CHARS = string.ascii_uppercase + string.ascii_lowercase + string.digits
@@ -252,6 +253,22 @@ def update_wiki(env, running_config):
     for output in outputs:
         content = content + "| {} | {} |\n".format(output[0], output[1])
     post_content(env, "vlans", "VLANs", content)
+
+
+def _get_date_offset(days):
+    return datetime.date.today() - datetime.timedelta(days)
+
+
+def _report_header(is_rolling):
+    """Create a report header."""
+    yesterday = _get_date_offset(1).strftime("%Y-%m-%d")
+    rolling = ""
+    if is_rolling:
+        rolling = "\n> this is a rolling 10-day report"
+    return """
+> this page is maintained by a bot (starting from logs on {}){}
+> do NOT edit this page here""".format(yesterday, rolling)
+
 
 
 def send_to_matrix(env, content):
