@@ -45,7 +45,7 @@ class Env(object):
         """ Print an error. """
         print("{} must be set".format(key))
 
-    def validate(self):
+    def validate(self, full=False):
         """ Validate the environment setup. """
         validation_error = False
         if self.freeradius_repo is None:
@@ -156,9 +156,20 @@ u_obj.vlan = None
     print("{} was created with a password of {}".format(named, raw))
 
 
+def update_wiki(env):
+    """ Update wiki pages with config information. """
+
+def send_to_matrix(env):
+    """ Send a change notification to matrix. """
+
+def daily_report(env):
+    """ Write daily reports. """
+
+
 def build():
     """ Build and apply a user configuration. """
     env =_get_vars("/etc/environment")
+    env.validate(full=True)
     os.chdir(env.net_config)
     compose(env)
     if os.path.exists(env.send_file):
@@ -173,6 +184,7 @@ def build():
         hashed = get_file_hash(FILE_NAME)
         send_to_matrix(env, "ready -> {}".format(hashed))
     daily_report(env)
+
 
 def check():
     """ Check composition. """

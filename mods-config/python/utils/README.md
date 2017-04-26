@@ -52,7 +52,11 @@ mkdir users
 use this bash script at the level in which the "users" folder is defined
 ```
 #!/bin/bash
-source ~/.config/epiphyte/env
+LOCAL_CONF=~/.config/epiphyte/env
+source /etc/environment
+if [ -e $LOCAL_CONF ]; then
+    source $LOCAL_CONF
+fi
 git pull
 offset=$FREERADIUS_REPO/mods-config/python
 PYTHONPATH=$offset:$FREERADIUS_REPO:$PYTHONPATH python2.7 $offset/utils/manage.py $@
