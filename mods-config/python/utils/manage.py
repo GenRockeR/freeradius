@@ -8,6 +8,11 @@ import json
 import base64
 import subprocess
 import wrapper
+import random
+import string
+
+# user setup
+CHARS = string.ascii_uppercase + string.ascii_lowercase + string.digits
 
 # arguments
 CHECK = "check"
@@ -17,6 +22,7 @@ BUILD = "build"
 # file handling
 FILE_NAME = wrapper.CONFIG_NAME
 PREV_FILE = FILE_NAME + ".prev"
+USER_FOLDER = "users/"
 
 # env vars
 FREERADIUS_REPO = "FREERADIUS_REPO"
@@ -79,28 +85,33 @@ def _get_exclude(name):
     return '--exclude={}'.format(name)
 
 
+def call(cmd, error_text, working_dir=None):
+    """ Call for subprocessing. """
+    p = subprocess.Popen(cmd, cwd=working_dir)
+    p.wait()
+    if p.returncode != 0:
+        print("unable to {}".format(error_text))
+        exit(1)
+
+
 def compose(env):
     """Compose the configuration."""
     offset = os.path.join(env.freeradius_repo, "mods-config/python/utils")
     rsync = ["rsync",
              "-aczv",
-             "users/",
-             os.path.join(offset, "users/"),
+             USER_FOLDER,
+             os.path.join(offset, USER_FOLDER),
              "--delete-after",
              _get_exclude("*.pyc"),
              _get_exclude("README.md"),
              _get_exclude("__init__.py"),
              _get_exclude("__config__.py")]
-    subprocess.call(rsync)
+    call(rsync, "rsync user definitions")
     here = os.getcwd()
     composition = ["python2.7",
                    "config_compose.py",
                    "--output", os.path.join(here, FILE_NAME)]
-    p = subprocess.Popen(composition, cwd=offset)
-    p.wait()
-    if p.returncode != 0:
-        print("unable to compose configuration")
-        exit(1)
+    call(composition, "compose configuration", working_dir=offset)
 
 
 def _base_json(obj):
@@ -126,6 +137,24 @@ def _base_json(obj):
             return obj
 
 
+def add_user():
+    """ Add a new user definition. """
+    print("please enter the user name:")
+    named = raw_input()
+    raw = ''.join(random.choice(CHARS) for _ in range(64))
+    password = base64.b64encode(raw).decode("utf-8")
+    user_definition = """
+import __config__
+import common
+
+u_obj = __config__.Assignment()
+u_obj.password = '{}'
+u_obj.vlan = None
+""".format(password)
+    with open(os.path.join(USER_FOLDER, "user_" + named + ".py"), 'w') as f:
+        f.write(user_definition.strip())
+    print("{} was created with a password of {}".format(named, raw))
+
 def check():
     """ Check composition. """
     env =_get_vars()
@@ -148,7 +177,8 @@ def check():
 def main():
     """Main entry point."""
     parser = argparse.ArgumentParser()
-    parser.add_argument('--action',
+    parser.add_argument('action',
+                        nargs='?',
                         choices=[CHECK, ADD_USER, BUILD],
                         default=CHECK)
     args = parser.parse_args()
