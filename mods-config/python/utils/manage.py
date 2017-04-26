@@ -39,6 +39,8 @@ USER_LOOKUPS = "USER_LOOKUPS"
 PHAB_SLUG = "PHAB_SLUG"
 PHAB_TOKEN = "PHAB_TOKEN"
 PHAB_HOST = "PHAB_HOST"
+LOG_FILES = "LOG_FILES"
+WORK_DIR = "WORKING_DIR"
 
 
 class Env(object):
@@ -55,6 +57,8 @@ class Env(object):
         self.phab_token = None
         self.phab_slug = None
         self.phab = None
+        self.log_files = None
+        self.working_dir = None
 
     def add(self, key, value):
         """Add a key, sets into environment."""
@@ -75,33 +79,38 @@ class Env(object):
             self.phab_token = value
         elif key == PHAB_HOST:
             self.phab = value
+        elif key == LOG_FILES:
+            self.log_files = value
+        elif key == WORK_DIR:
+            self.working_dir = value
 
-    def _error(self, keys):
+    def _error(self, key):
         """Print an error."""
-        print("{} must be set".format(", ".join(keys)))
+        print("{} must be set".format(key))
+
+    def _in_error(self, key, value):
+        """Indicate on error."""
+        if value is None:
+            self._error(key)
+            return 1
+        else:
+            return 0
 
     def validate(self, full=False):
         """Validate the environment setup."""
-        errors = []
-        if self.freeradius_repo is None:
-            errors.append(FREERADIUS_REPO)
+        errors = 0
+        errors += self._in_error(FREERADIUS_REPO, self.freeradius_repo)
         if full:
-            if self.net_config is None:
-                errors.append(NETCONFIG)
-            if self.send_file is None:
-                errors.append(SENDFILE)
-            if self.matrix_bot is None:
-                errors.append(MBOT)
-            if self.user_lookups is None:
-                errors.append(USER_LOOKUPS)
-            if self.phab_slug is None:
-                errors.append(PHAB_SLUG)
-            if self.phab_token is None:
-                errors.append(PHAB_TOKEN)
-            if self.phab_token is None:
-                errors.append(PHAB_HOST)
-        if len(errors) > 0:
-            self._error(errors)
+            errors += self._in_error(NETCONFIG, self.net_config)
+            errors += self._in_error(SENDFILE, self.send_file)
+            errors += self._in_error(MBOT, self.matrix_bot)
+            errors += self._in_error(USER_LOOKUPS, self.user_lookups)
+            errors += self._in_error(PHAB_SLUG, self.phab_slug)
+            errors += self._in_error(PHAB_TOKEN, self.phab_token)
+            errors += self._in_error(PHAB_HOST, self.phab)
+            errors += self._in_error(LOG_FILES, self.log_files)
+            errors += self._in_error(WORK_DIR, self.working_dir)
+        if errors > 0:
             exit(1)
 
 
