@@ -1,3 +1,4 @@
+"""User with attributes."""
 import __config__
 normal = __config__.Assignment()
 normal.macs = ["001122334455"]

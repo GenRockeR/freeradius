@@ -40,8 +40,11 @@ class VLAN(object):
         """init the instance."""
         self.name = name
         self.num = number
+
     def check(self):
-        if self.name is None or len(self.name) == 0 or not isinstance(self.num, int):
+        """Check the definition."""
+        if self.name is None or len(self.name) == 0 \
+           or not isinstance(self.num, int):
             return False
         return True
 
@@ -50,8 +53,11 @@ class Blacklist(object):
     """Blacklist object."""
 
     def __init__(self, obj):
+        """init the instance."""
         self.obj = obj
+
     def check(self):
+        """check the blacklist definition."""
         if self.obj is None or len(self.obj) == 0:
             return False
         return True

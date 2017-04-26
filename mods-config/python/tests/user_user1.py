@@ -1,3 +1,4 @@
+"""User with admin and dev and various macs."""
 import __config__
 import common
 normal = __config__.Assignment()

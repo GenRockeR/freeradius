@@ -270,7 +270,6 @@ def _report_header(is_rolling):
 > do NOT edit this page here""".format(yesterday, rolling)
 
 
-
 def send_to_matrix(env, content):
     """Send a change notification to matrix."""
     cmd = []

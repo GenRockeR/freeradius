@@ -1,3 +1,4 @@
+"""Expired user."""
 import __config__
 import common
 normal = __config__.Assignment()
