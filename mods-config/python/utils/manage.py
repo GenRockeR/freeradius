@@ -55,10 +55,10 @@ class Env(object):
             exit(1)
 
 
-def _get_vars():
+def _get_vars(env_file):
     """ Get the environment setup. """
     result = Env()
-    with open(os.path.expandvars("$HOME/.config/epiphyte/env"), 'r') as env:
+    with open(os.path.expandvars(env_file), 'r') as env:
         for line in env.readlines():
             if line.startswith("#"):
                 continue
@@ -155,9 +155,16 @@ u_obj.vlan = None
         f.write(user_definition.strip())
     print("{} was created with a password of {}".format(named, raw))
 
+
+def build():
+    """ Build and apply a user configuration. """
+    env =_get_vars("/etc/environment")
+    compose(env)
+
+
 def check():
     """ Check composition. """
-    env =_get_vars()
+    env =_get_vars("$HOME/.config/epiphyte/env")
     if os.path.exists(FILE_NAME):
         shutil.copyfile(FILE_NAME, PREV_FILE)
     compose(env)

@@ -53,6 +53,7 @@ use this bash script at the level in which the "users" folder is defined
 ```
 #!/bin/bash
 source ~/.config/epiphyte/env
+git pull
 offset=$FREERADIUS_REPO/mods-config/python
 PYTHONPATH=$offset:$FREERADIUS_REPO:$PYTHONPATH python2.7 $offset/utils/manage.py $@
 ```
