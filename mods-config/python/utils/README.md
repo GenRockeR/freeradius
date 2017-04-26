@@ -39,3 +39,20 @@ helpers for the other utils
 ## config_compose
 
 composes the configuration file from a subset of python definition, review the README in users/README.md
+
+## manage
+
+supports managing configurations from another (private) repo with user definitions _actually_ in it
+
+in the other repo, put your users in a "users" folder
+```
+mkdir users
+```
+
+use this bash script at the level in which the "users" folder is defined
+```
+#!/bin/bash
+source ~/.config/epiphyte/env
+offset=$FREERADIUS_REPO/mods-config/python
+PYTHONPATH=$offset:$FREERADIUS_REPO:$PYTHONPATH python2.7 $offset/utils/manage.py $@
+```
