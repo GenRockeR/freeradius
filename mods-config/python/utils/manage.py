@@ -144,9 +144,14 @@ def call(cmd, error_text, working_dir=None):
         exit(1)
 
 
+def _get_utils(env):
+    """Get utils location."""
+    return os.path.join(env.freeradius_repo, PYTHON_MODS, "utils")
+
+
 def compose(env):
     """Compose the configuration."""
-    offset = os.path.join(env.freeradius_repo, PYTHON_MODS, "utils")
+    offset = _get_utils(env)
     rsync = ["rsync",
              "-aczv",
              USER_FOLDER,
@@ -268,6 +273,17 @@ def _report_header(is_rolling):
     return """
 > this page is maintained by a bot (starting from logs on {}){}
 > do NOT edit this page here""".format(yesterday, rolling)
+
+
+def execute_report(env, report, output_type, skip_lines, output_file):
+    """Execute a report."""
+    base = _get_utils(env)
+    cmd = [os.path.join(base, "report-wrapper.sh"),
+           report,
+           output_type,
+           str(skip_lines),
+           output_file]
+    call(cmd, "report wrapper", working_dir=base)
 
 
 def send_to_matrix(env, content):
