@@ -12,6 +12,8 @@ import random
 import string
 import filecmp
 import pwd
+import urllib2
+import urllib
 
 # user setup
 CHARS = string.ascii_uppercase + string.ascii_lowercase + string.digits
@@ -33,6 +35,9 @@ NETCONFIG = "NETCONF"
 SENDFILE = "SYNAPSE_SEND_FILE"
 MBOT = "MATRIX_BOT"
 USER_LOOKUPS = "USER_LOOKUPS"
+PHAB_SLUG = "PHAB_SLUG"
+PHAB_TOKEN = "PHAB_TOKEN"
+PHAB_HOST = "PHAB_HOST"
 
 class Env(object):
     """ Environment definition. """
@@ -44,6 +49,9 @@ class Env(object):
         self.send_file = None
         self.matrix_bot = None
         self.user_lookups = None
+        self.phab_token = None
+        self.phab_slug = None
+        self.phab = None
 
     def add(self, key, value):
         """ Add a key, sets into environment. """
@@ -58,6 +66,12 @@ class Env(object):
             self.matrix_bot = value
         elif key == USER_LOOKUPS:
             self.user_lookups = value
+        elif key == PHAB_SLUG:
+            self.phab_slug = value
+        elif key == PHAB_TOKEN:
+            self.phab_token = value
+        elif key == PHAB_HOST:
+            self.phab = value
 
     def _error(self, keys):
         """ Print an error. """
@@ -77,6 +91,12 @@ class Env(object):
                 errors.append(MBOT)
             if self.user_lookups is None:
                 errors.append(USER_LOOKUPS)
+            if self.phab_slug is None:
+                errors.append(PHAB_SLUG)
+            if self.phab_token is None:
+                errors.append(PHAB_TOKEN)
+            if self.phab_token is None:
+                errors.append(PHAB_HOST)
         if len(errors) > 0:
             self._error(errors)
             exit(1)
@@ -183,9 +203,15 @@ u_obj.vlan = None
     print("{} was created with a password of {}".format(named, raw))
 
 
-def post_content(env, content):
+def post_content(env, page, title, content):
     """ Post content to a wiki page. """
-
+    data = { "api.token": env.phab_token,
+             "slug": env.phab_slug + page,
+             "title": title,
+             "content": content }
+    payload = urllib.urlencode(data)
+    r = urllib2.urlopen(env.phab + "/api/phriction.edit", data=payload)
+    print(r.read())
 
 def update_wiki(env, running_config):
     """ Updatie wiki pages with config information for VLANs. """
@@ -221,7 +247,7 @@ def update_wiki(env, running_config):
 """
     for output in outputs:
         content = content + "| {} | {} |\n".format(output[0], output[1])
-    post_content(env, content)
+    post_content(env, "vlans", "VLANs", content)
 
 
 def send_to_matrix(env, content):
