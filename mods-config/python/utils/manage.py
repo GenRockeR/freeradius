@@ -295,11 +295,18 @@ def execute_report(env, report, output_type, skip_lines, output_file):
         return f.read()
 
 
+def delete_if_exists(file_name):
+    """Delete a file if it exists."""
+    if os.path.exists(file_name):
+        os.remove(file_name)
+
+
 def send_to_matrix(env, content):
     """Send a change notification to matrix."""
     cmd = []
     cmd.append(env.matrix_bot)
     cmd.append("oneshot")
+    delete_if_exists(env.send_file)
     with open(env.send_file, 'w') as f:
         f.write("<html>")
         f.write(content)
@@ -320,8 +327,7 @@ def daily_report(env):
     hour = datetime.datetime.now().hour
     report_indicator = env.working_dir + "indicator"
     if hour != 9:
-        if os.path.exists(report_indicator):
-            os.remove(report_indicator)
+        delete_if_exists(report_indicator)
         return
     if os.path.exists(report_indicator):
         return
