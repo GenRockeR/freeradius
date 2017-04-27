@@ -293,6 +293,7 @@ def execute_report(env, report, output_type, skip_lines, output_file):
            output_file])
     with open(output_file, 'r') as f:
         return f.read()
+    os.remove(output_file)
 
 
 def send_to_matrix(env, content):
@@ -333,12 +334,13 @@ def daily_report(env):
     titles = {}
     all_signs = os.path.join(env.log_files, "signatures.csv")
     signs = "signatures"
-    for item in reversed(range(1, 11)):
+    for item in range(1, 11):
         date_offset = _get_date_offset(item)
         path = os.path.join(env.log_files,
                             wrapper.LOG_FILE) + "." + date_offset
         if not os.path.exists(path):
             continue
+        print(date_offset)
         call_wrapper(env, "store", [path])
         for report in [("users-daily", "Auths"),
                        ("failures", "Rejections"),
@@ -349,8 +351,11 @@ def daily_report(env):
             if report_name not in reports:
                 reports[report_name] = _create_header()
             use_markdown = """
+
 ### {}
----""".format(date_offset)
+---
+
+""".format(date_offset)
             if report_name == signs:
                 csv = [x.strip() + "," + date_offset for x
                        in execute_report(env,
@@ -386,7 +391,7 @@ def daily_report(env):
     for report in reports:
         html = reports[report]
         title = titles[report]
-        post_content(env, report, title, html)
+        post_content(env, report.lower(), title, html)
 
 
 def build():
