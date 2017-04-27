@@ -270,15 +270,13 @@ def update_wiki(env, running_config):
 
 
 def _get_date_offset(days):
-    return (datetime.date.today() - datetime.timedelta(days)).strftime("%Y-%m-%d")
-
-
-
-    """Create a report header."""
-    yesterday = _get_date_offset(1)
+    """Create a date-offset with formatting."""
+    return (datetime.date.today() -
+            datetime.timedelta(days)).strftime("%Y-%m-%d")
 
 
 def call_wrapper(env, method, added):
+    """Call the report-wrapper implementation."""
     base = _get_utils(env)
     cmd = [os.path.join(base, "report-wrapper.sh"), method]
     for x in added:
@@ -337,11 +335,14 @@ def daily_report(env):
     signs = "signatures"
     for item in reversed(range(1, 11)):
         date_offset = _get_date_offset(item)
-        path = os.path.join(env.log_files, wrapper.LOG_FILE) + "." + date_offset
+        path = os.path.join(env.log_files,
+                            wrapper.LOG_FILE) + "." + date_offset
         if not os.path.exists(path):
             continue
         call_wrapper(env, "store", [path])
-        for report in [("users-daily", "Auths"), ("failures", "Rejections"), (signs, "Signatures")]:
+        for report in [("users-daily", "Auths"),
+                       ("failures", "Rejections"),
+                       (signs, "Signatures")]:
             output_file = env.working_dir + report[0]
             report_name = report[0]
             titles[report_name] = report[1]
@@ -351,7 +352,13 @@ def daily_report(env):
 ### {}
 ---""".format(date_offset)
             if report_name == signs:
-                csv = [x.strip() + "," + date_offset for x in execute_report(env, report_name, "csv", 2, output_file + ".csv").split("\n") if len(x.strip()) > 0]
+                csv = [x.strip() + "," + date_offset for x
+                       in execute_report(env,
+                                         report_name,
+                                         "csv",
+                                         2,
+                                         output_file + ".csv").split("\n")
+                       if len(x.strip()) > 0]
                 lines = []
                 new_lines = []
                 if not os.path.exists(all_signs):
@@ -365,7 +372,11 @@ def daily_report(env):
                 with open(all_signs, 'a') as f:
                     for line in new_lines:
                         f.write(line + "\n")
-            use_markdown += execute_report(env, report_name, "markdown", 1, output_file)
+            use_markdown += execute_report(env,
+                                           report_name,
+                                           "markdown",
+                                           1,
+                                           output_file)
             reports[report_name] += use_markdown
 
     with open(all_signs, 'r') as f:
