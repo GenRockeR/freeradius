@@ -258,12 +258,7 @@ def update_wiki(env, running_config):
             if user in user_resolved:
                 user_name = user_resolved[user]
             outputs.append((vlan, "@" + user_name))
-    content = """
-> this page is managed externally do NOT edit it here.
-> it is updated when the freeradius configuration changes.
-
----
-"""
+    content = _create_header()
     for output in outputs:
         content = content + "| {} | {} |\n".format(output[0], output[1])
     post_content(env, "vlans", "VLANs", content)
