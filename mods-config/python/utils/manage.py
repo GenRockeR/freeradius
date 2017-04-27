@@ -357,7 +357,7 @@ def daily_report(env):
 
 """.format(date_offset)
             if report_name == signs:
-                csv = [x.strip() + "," + date_offset for x
+                csv = [x.strip() for x
                        in execute_report(env,
                                          report_name,
                                          "csv",
@@ -370,13 +370,14 @@ def daily_report(env):
                     open(all_signs, 'a').close()
                 with open(all_signs, 'r') as f:
                     for line in f:
-                        lines.append(line.strip())
+                        not_date = line.strip().split(",")
+                        lines.append(",".join(not_date[:-1]))
                 for line in csv:
                     if line not in lines and line not in new_lines:
                         new_lines.append(line)
                 with open(all_signs, 'a') as f:
                     for line in new_lines:
-                        f.write(line + "\n")
+                        f.write(line + "," + date_offset + "\n")
             use_markdown += execute_report(env,
                                            report_name,
                                            "markdown",
