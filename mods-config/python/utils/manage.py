@@ -305,7 +305,6 @@ def send_to_matrix(env, content):
         f.write(content)
         f.write("</html>")
     call(cmd, "sending to matrix")
-    os.remove(env.send_file)
 
 
 def _create_header():
