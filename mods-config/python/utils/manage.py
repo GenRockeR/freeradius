@@ -385,7 +385,13 @@ def daily_report(env):
             reports[report_name] += use_markdown
 
     with open(all_signs, 'r') as f:
-        reports[signs] += "| signature |\n| -- |\n"
+        reports[signs] += """
+
+### All
+
+---
+
+| signature |\n| -- |\n"""
         for line in f:
             reports[signs] += "| {} |\n".format(line.strip())
     for report in reports:
