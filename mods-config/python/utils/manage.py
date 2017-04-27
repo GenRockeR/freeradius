@@ -393,7 +393,7 @@ def daily_report(env):
 ---
 
 | signature |\n| -- |\n"""
-        for line in f:
+        for line in sorted(f):
             reports[signs] += "| {} |\n".format(line.strip())
     for report in reports:
         html = reports[report]
