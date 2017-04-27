@@ -429,7 +429,7 @@ def build():
         git_indicator = env.working_dir + "git"
         if os.path.exists(git_indicator):
             with open(git_indicator, 'r') as f:
-                git_indicator = f.read().strip()
+                git = f.read().strip()
         send_to_matrix(env, "ready -> {} ({})".format(git, hashed))
     daily_report(env)
 
