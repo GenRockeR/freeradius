@@ -2,6 +2,7 @@
 TMPDB=dump.db
 case $1 in
     "report")
+        rm -f $5
         python2.7 report.py --database $TMPDB --report $2 --output $3 | tail -n +$4 >> $5
         ;;
     "store")

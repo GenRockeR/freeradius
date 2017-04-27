@@ -293,7 +293,6 @@ def execute_report(env, report, output_type, skip_lines, output_file):
            output_file])
     with open(output_file, 'r') as f:
         return f.read()
-    os.remove(output_file)
 
 
 def send_to_matrix(env, content):
@@ -353,6 +352,7 @@ def daily_report(env):
             use_markdown = """
 
 ### {}
+
 ---
 
 """.format(date_offset)
@@ -391,7 +391,7 @@ def daily_report(env):
     for report in reports:
         html = reports[report]
         title = titles[report]
-        post_content(env, report.lower(), title, html)
+        post_content(env, title.lower(), title, html)
 
 
 def build():
