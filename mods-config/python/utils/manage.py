@@ -425,7 +425,12 @@ def build():
         os.chown(run_config, u.pw_uid, u.pw_gid)
         update_wiki(env, run_config)
         hashed = get_file_hash(FILE_NAME)
-        send_to_matrix(env, "ready -> {}".format(hashed))
+        git = "latest commit"
+        git_indicator = env.working_dir + "git"
+        if os.path.exists(git_indicator):
+            with open(git_indicator, 'r') as f:
+                git_indicator = f.read().strip()
+        send_to_matrix(env, "ready -> {} ({})".format(git, hashed))
     daily_report(env)
 
 
