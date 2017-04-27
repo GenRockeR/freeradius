@@ -270,29 +270,31 @@ def update_wiki(env, running_config):
 
 
 def _get_date_offset(days):
-    return datetime.date.today() - datetime.timedelta(days)
+    return (datetime.date.today() - datetime.timedelta(days)).strftime("%Y-%m-%d")
 
 
-def _report_header(is_rolling):
+
     """Create a report header."""
-    yesterday = _get_date_offset(1).strftime("%Y-%m-%d")
-    rolling = ""
-    if is_rolling:
-        rolling = "\n> this is a rolling 10-day report"
-    return """
-> this page is maintained by a bot (starting from logs on {}){}
-> do NOT edit this page here""".format(yesterday, rolling)
+    yesterday = _get_date_offset(1)
+
+
+def call_wrapper(env, method, added):
+    base = _get_utils(env)
+    cmd = [os.path.join(base, "report-wrapper.sh"), method]
+    for x in added:
+        cmd.append(x)
+    call(cmd, "report wrapper", working_dir=base)
 
 
 def execute_report(env, report, output_type, skip_lines, output_file):
     """Execute a report."""
-    base = _get_utils(env)
-    cmd = [os.path.join(base, "report-wrapper.sh"),
+    call_wrapper(env, "report", [
            report,
            output_type,
            str(skip_lines),
-           output_file]
-    call(cmd, "report wrapper", working_dir=base)
+           output_file])
+    with open(output_file, 'r') as f:
+        return f.read()
 
 
 def send_to_matrix(env, content):
@@ -308,9 +310,72 @@ def send_to_matrix(env, content):
     os.remove(env.send_file)
 
 
+def _create_header():
+    """Create a report header."""
+    return """
+> this page is maintained by a bot
+> do _NOT_ edit it here
+"""
+
+
 def daily_report(env):
     """Write daily reports."""
-    pass
+    hour = datetime.datetime.now().hour
+    report_indicator = env.working_dir + "indicator"
+    if hour != 9:
+        if os.path.exists(report_indicator):
+            os.remove(report_indicator)
+        return
+    if os.path.exists(report_indicator):
+        return
+    print('completing daily reports')
+    with open(report_indicator, 'w') as f:
+        f.write("")
+    reports = {}
+    titles = {}
+    all_signs = os.path.join(env.log_files, "signatures.csv")
+    signs = "signatures"
+    for item in reversed(range(1, 11)):
+        date_offset = _get_date_offset(item)
+        path = os.path.join(env.log_files, wrapper.LOG_FILE) + "." + date_offset
+        if not os.path.exists(path):
+            continue
+        call_wrapper(env, "store", [path])
+        for report in [("users-daily", "Auths"), ("failures", "Rejections"), (signs, "Signatures")]:
+            output_file = env.working_dir + report[0]
+            report_name = report[0]
+            titles[report_name] = report[1]
+            if report_name not in reports:
+                reports[report_name] = _create_header()
+            use_markdown = """
+### {}
+---""".format(date_offset)
+            if report_name == signs:
+                csv = [x.strip() + "," + date_offset for x in execute_report(env, report_name, "csv", 2, output_file + ".csv").split("\n") if len(x.strip()) > 0]
+                lines = []
+                new_lines = []
+                if not os.path.exists(all_signs):
+                    open(all_signs, 'a').close()
+                with open(all_signs, 'r') as f:
+                    for line in f:
+                        lines.append(line.strip())
+                for line in csv:
+                    if line not in lines and line not in new_lines:
+                        new_lines.append(line)
+                with open(all_signs, 'a') as f:
+                    for line in new_lines:
+                        f.write(line + "\n")
+            use_markdown += execute_report(env, report_name, "markdown", 1, output_file)
+            reports[report_name] += use_markdown
+
+    with open(all_signs, 'r') as f:
+        reports[signs] += "| signature |\n| -- |\n"
+        for line in f:
+            reports[signs] += "| {} |\n".format(line.strip())
+    for report in reports:
+        html = reports[report]
+        title = titles[report]
+        post_content(env, report, title, html)
 
 
 def build():
