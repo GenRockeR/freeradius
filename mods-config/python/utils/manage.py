@@ -308,11 +308,14 @@ def update_leases(env, running_config):
                 mac = wrapper.convert_mac(parts[1])
                 ip = parts[2]
                 init = [ip]
+                is_static = "dynamic"
                 if time == "static":
-                    init.append(time)
+                    is_static = "static"
                 else:
                     lease_unknown[mac] = parts[3]
-                leases[mac] = init
+                if mac not in leases:
+                    leases[mac] = {}
+                leases[mac][ip] = " ({})".format(is_static)
             except Exception as e:
                 print("error parsing line: " + line)
                 print(str(e))
@@ -329,19 +332,21 @@ def update_leases(env, running_config):
         macs = conf[user][wrapper.MACS]
         for mac in macs:
             if mac in leases:
-                leases[mac].append(user_name)
+                leases[mac][user_name] = ""
+                if mac in lease_unknown:
+                    lease_unknown.pop(mac)
     outputs = []
-    outputs.append(["mac", "ip", "attributes"])
-    outputs.append(["---", "--", "---"])
+    outputs.append(["mac", "attributes"])
+    outputs.append(["---", "---"])
     for lease in sorted(leases.keys()):
         cur_out = [lease]
         current = leases[lease]
-        cur_out.append(current[0])
-        attrs = " ".join(current[1:])
-        if attrs is None or len(attrs.strip()) == 0:
-            if lease in lease_unknown:
-                attrs = lease_unknown[lease]
-        cur_out.append(attrs)
+        attrs = []
+        for key in sorted(current.keys()):
+            attrs.append("{}{}".format(key, current[key]))
+        if lease in lease_unknown:
+            attrs.append(lease_unknown[lease])
+        cur_out.append(" ".join(attrs))
         outputs.append(cur_out)
     content = _create_header()
     for output in outputs:
