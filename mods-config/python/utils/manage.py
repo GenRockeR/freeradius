@@ -264,6 +264,12 @@ def update_wiki(env, running_config):
     post_content(env, "vlans", "VLANs", content)
 
 
+def update_leases(env, running_config):
+    """Update the wiki with lease information."""
+    content = _create_header()
+    post_content(env, "leases", "Leases", content)
+
+
 def _get_date_offset(days):
     """Create a date-offset with formatting."""
     return (datetime.date.today() -
@@ -317,7 +323,7 @@ def _create_header():
 """
 
 
-def daily_report(env):
+def daily_report(env, running_config):
     """Write daily reports."""
     hour = datetime.datetime.now().hour
     report_indicator = env.working_dir + "indicator"
@@ -399,6 +405,7 @@ def daily_report(env):
         html = reports[report]
         title = titles[report]
         post_content(env, title.lower(), title, html)
+    update_leases(env, running_config)
 
 
 def build():
@@ -426,7 +433,7 @@ def build():
             with open(git_indicator, 'r') as f:
                 git = f.read().strip()
         send_to_matrix(env, "ready -> {} ({})".format(git, hashed))
-    daily_report(env)
+    daily_report(env, run_config)
 
 
 def check():
