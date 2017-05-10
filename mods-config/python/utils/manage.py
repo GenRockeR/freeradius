@@ -350,9 +350,8 @@ def update_leases(env, running_config):
         outputs.append(cur_out)
     content = _create_header()
     for output in outputs:
-        content = content + "| {} | {} | {} |\n".format(output[0],
-                                                        output[1],
-                                                        output[2])
+        content = content + "| {} | {} |\n".format(output[0],
+                                                   output[1])
     post_content(env, "leases", "Leases", content)
 
 
