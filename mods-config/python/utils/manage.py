@@ -315,7 +315,7 @@ def update_leases(env, running_config):
                     lease_unknown[mac] = "name? {}".format(parts[3])
                 if mac not in leases:
                     leases[mac] = []
-                leases[mac].append("{} ({})".format(ip is_static))
+                leases[mac].append("{} ({})".format(ip, is_static))
             except Exception as e:
                 print("error parsing line: " + line)
                 print(str(e))
