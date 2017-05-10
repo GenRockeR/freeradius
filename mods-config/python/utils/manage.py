@@ -290,6 +290,7 @@ def update_wiki(env, running_config):
 def update_leases(env, running_config):
     """Update the wiki with lease information."""
     leases = {}
+    lease_unknown = {}
     try:
         data = {
                 "constraints[phids][0]": env.phab_leases,
@@ -309,6 +310,8 @@ def update_leases(env, running_config):
                 init = [ip]
                 if time == "static":
                     init.append(time)
+                else:
+                    lease_unknown[mac] = parts[3]
                 leases[mac] = init
             except Exception as e:
                 print("error parsing line: " + line)
@@ -334,7 +337,11 @@ def update_leases(env, running_config):
         cur_out = [lease]
         current = leases[lease]
         cur_out.append(current[0])
-        cur_out.append(" ".join(current[1:]))
+        attrs = " ".join(current[1:])
+        if attrs is None or len(attrs.strip()) == 0:
+            if lease in lease_unknown:
+                attrs = lease_unknown[lease]
+        cur_out.append(attrs)
         outputs.append(cur_out)
     content = _create_header()
     for output in outputs:
