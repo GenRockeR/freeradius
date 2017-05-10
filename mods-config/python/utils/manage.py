@@ -220,15 +220,22 @@ u_obj.vlan = None
     print("{} was created with a password of {}".format(named, raw))
 
 
+def post_get_data(env, endpoint, data):
+    """Post to get data."""
+    data["api.token"] = env.phab_token
+    payload = urllib.urlencode(data)
+    r = urllib2.urlopen(env.phab + "/api/" + endpoint, data=payload)
+    resp = r.read()
+    print(resp)
+    return resp
+
+
 def post_content(env, page, title, content):
     """Post content to a wiki page."""
-    data = {"api.token": env.phab_token,
-            "slug": env.phab_slug + page,
+    data = {"slug": env.phab_slug + page,
             "title": title,
             "content": content}
-    payload = urllib.urlencode(data)
-    r = urllib2.urlopen(env.phab + "/api/phriction.edit", data=payload)
-    print(r.read())
+    post_get_data(env, "phriction.edit", data)
 
 
 def update_wiki(env, running_config):
