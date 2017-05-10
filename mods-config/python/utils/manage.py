@@ -341,13 +341,15 @@ def update_leases(env, running_config):
     outputs.append(["mac", "attributes"])
     outputs.append(["---", "---"])
     for lease in sorted(leases.keys()):
-        cur_out = [lease]
         current = leases[lease]
         attrs = []
+        lease_value = lease
         for obj in sorted(current):
             attrs.append(obj)
         if lease in lease_unknown and lease not in statics:
+            lease_value = "**{}**".format(lease_value)
             attrs.append(lease_unknown[lease])
+        cur_out = [lease_value]
         cur_out.append(" ".join(attrs))
         outputs.append(cur_out)
     content = _create_header()
