@@ -290,7 +290,7 @@ def update_wiki(env, running_config):
 def update_leases(env, running_config):
     """Update the wiki with lease information."""
     leases = {}
-    lease_unknown = {}
+    lease_unknown = []
     statics = []
     try:
         data = {
@@ -314,7 +314,7 @@ def update_leases(env, running_config):
                     is_static = "static"
                     statics.append(mac)
                 else:
-                    lease_unknown[mac] = "name: {}".format(parts[3])
+                    lease_unknown.append(mac)
                 if mac not in leases:
                     leases[mac] = []
                 leases[mac].append("{} ({})".format(ip, is_static))
@@ -336,7 +336,7 @@ def update_leases(env, running_config):
             if mac in leases:
                 leases[mac].append(user_name)
                 if mac in lease_unknown:
-                    lease_unknown.pop(mac)
+                    lease_unknown.remove(mac)
     outputs = []
     outputs.append(["mac", "attributes"])
     outputs.append(["---", "---"])
@@ -348,7 +348,6 @@ def update_leases(env, running_config):
             attrs.append(obj)
         if lease in lease_unknown and lease not in statics:
             lease_value = "**{}**".format(lease_value)
-            attrs.append(lease_unknown[lease])
         cur_out = [lease_value]
         cur_out.append(" ".join(attrs))
         outputs.append(cur_out)
