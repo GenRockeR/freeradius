@@ -42,7 +42,6 @@ PHAB_HOST = "PHAB_HOST"
 LOG_FILES = "LOG_FILES"
 WORK_DIR = "WORKING_DIR"
 LEASE_PASTE = "PHAB_LEASE_PASTE"
-LEASE_IPS = "LEASE_IPS"
 
 
 class Env(object):
@@ -61,7 +60,6 @@ class Env(object):
         self.phab = None
         self.log_files = None
         self.working_dir = None
-        self.ignore_ips = None
         self.phab_leases = None
 
     def add(self, key, value):
@@ -89,8 +87,6 @@ class Env(object):
             self.working_dir = value
         elif key == LEASE_PASTE:
             self.phab_leases = value
-        elif key == LEASE_IPS:
-            self.ignore_ips = value
 
     def _error(self, key):
         """Print an error."""
@@ -119,7 +115,6 @@ class Env(object):
             errors += self._in_error(LOG_FILES, self.log_files)
             errors += self._in_error(WORK_DIR, self.working_dir)
             errors += self._in_error(LEASE_PASTE, self.phab_leases)
-            errors += self._in_error(LEASE_IPS, self.ignore_ips)
         if errors > 0:
             exit(1)
 
@@ -310,8 +305,6 @@ def update_leases(env, running_config):
                 parts = line.split(" ")
                 mac = wrapper.convert_mac(parts[1])
                 ip = parts[2]
-                if ip.startswith(env.ignore_ips):
-                    continue
                 leases[mac] = [ip]
             except Exception as e:
                 print("error parsing line: " + line)
