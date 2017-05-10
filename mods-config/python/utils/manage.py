@@ -291,6 +291,7 @@ def update_leases(env, running_config):
     """Update the wiki with lease information."""
     leases = {}
     lease_unknown = {}
+    statics = []
     try:
         data = {
                 "constraints[phids][0]": env.phab_leases,
@@ -311,6 +312,7 @@ def update_leases(env, running_config):
                 is_static = "dynamic"
                 if time == "static":
                     is_static = "static"
+                    statics.append(mac)
                 else:
                     lease_unknown[mac] = "name: {}".format(parts[3])
                 if mac not in leases:
@@ -344,7 +346,7 @@ def update_leases(env, running_config):
         attrs = []
         for obj in sorted(current):
             attrs.append(obj)
-        if lease in lease_unknown:
+        if lease in lease_unknown and lease not in statics:
             attrs.append(lease_unknown[lease])
         cur_out.append(" ".join(attrs))
         outputs.append(cur_out)
