@@ -303,9 +303,13 @@ def update_leases(env, running_config):
                 continue
             try:
                 parts = line.split(" ")
+                time = parts[0]
                 mac = wrapper.convert_mac(parts[1])
                 ip = parts[2]
-                leases[mac] = [ip]
+                init = [ip]
+                if time == "static":
+                    init.append(time)
+                leases[mac] = init
             except Exception as e:
                 print("error parsing line: " + line)
                 print(str(e))
@@ -324,7 +328,7 @@ def update_leases(env, running_config):
             if mac in leases:
                 leases[mac].append(user_name)
     outputs = []
-    outputs.append(["mac", "ip", "users"])
+    outputs.append(["mac", "ip", "attributes"])
     outputs.append(["---", "--", "---"])
     for lease in sorted(leases.keys()):
         cur_out = [lease]
