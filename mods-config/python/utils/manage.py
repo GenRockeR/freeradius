@@ -332,7 +332,7 @@ def update_leases(env, running_config):
         macs = conf[user][wrapper.MACS]
         for mac in macs:
             if mac in leases:
-                leases[mac]append.(user_name)
+                leases[mac].append(user_name)
                 if mac in lease_unknown:
                     lease_unknown.pop(mac)
     outputs = []
