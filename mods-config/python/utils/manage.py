@@ -312,10 +312,10 @@ def update_leases(env, running_config):
                 if time == "static":
                     is_static = "static"
                 else:
-                    lease_unknown[mac] = parts[3]
+                    lease_unknown[mac] = "name? {}".format(parts[3])
                 if mac not in leases:
-                    leases[mac] = {}
-                leases[mac][ip] = " ({})".format(is_static)
+                    leases[mac] = []
+                leases[mac].append("{} ({})".format(ip is_static))
             except Exception as e:
                 print("error parsing line: " + line)
                 print(str(e))
@@ -332,7 +332,7 @@ def update_leases(env, running_config):
         macs = conf[user][wrapper.MACS]
         for mac in macs:
             if mac in leases:
-                leases[mac][user_name] = ""
+                leases[mac]append.(user_name)
                 if mac in lease_unknown:
                     lease_unknown.pop(mac)
     outputs = []
@@ -342,8 +342,8 @@ def update_leases(env, running_config):
         cur_out = [lease]
         current = leases[lease]
         attrs = []
-        for key in sorted(current.keys()):
-            attrs.append("{}{}".format(key, current[key]))
+        for obj in sorted(current):
+            attrs.append(obj)
         if lease in lease_unknown:
             attrs.append(lease_unknown[lease])
         cur_out.append(" ".join(attrs))
