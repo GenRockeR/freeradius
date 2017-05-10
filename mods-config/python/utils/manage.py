@@ -312,7 +312,7 @@ def update_leases(env, running_config):
                 if time == "static":
                     is_static = "static"
                 else:
-                    lease_unknown[mac] = "name? {}".format(parts[3])
+                    lease_unknown[mac] = "name: {}".format(parts[3])
                 if mac not in leases:
                     leases[mac] = []
                 leases[mac].append("{} ({})".format(ip, is_static))
