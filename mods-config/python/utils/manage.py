@@ -238,12 +238,26 @@ def post_content(env, page, title, content):
     post_get_data(env, "phriction.edit", data)
 
 
+def get_user_resolutions(env):
+    """Get user resolutions."""
+    return {x.split("=")[0]: x.split("=")[1] for x in
+            env.user_lookups.split(",")}
+
+
+def resolve_user(user_name, user_resolutions):
+    """Resolve user names."""
+    user = user_name
+    if user in user_resolutions:
+        user = user_resolutions[user]
+    return "@" + user
+
+
 def update_wiki(env, running_config):
     """Update wiki pages with config information for VLANs."""
     defs = {}
     with open(running_config, 'r') as f:
         defs = json.loads(f.read())
-    users = defs["users"]
+    users = defs[wrapper.USERS]
     vlans = {}
     for user in sorted(users.keys()):
         vlan_parts = user.split(".")
@@ -252,19 +266,16 @@ def update_wiki(env, running_config):
         if vlan not in vlans:
             vlans[vlan] = []
         vlans[vlan].append(user)
-    user_resolved = {x.split("=")[0]: x.split("=")[1]
-                     for x in env.user_lookups.split(",")}
     first = True
     outputs = [("vlan", "user"), ("---", "---")]
+    user_resolved = get_user_resolutions(env)
     for vlan in sorted(vlans.keys()):
         if not first:
             outputs.append(("-", "-"))
         first = False
         for user in vlans[vlan]:
-            user_name = user
-            if user in user_resolved:
-                user_name = user_resolved[user]
-            outputs.append((vlan, "@" + user_name))
+            user_name = resolve_user(user, user_resolved)
+            outputs.append((vlan, user_name))
     content = _create_header()
     for output in outputs:
         content = content + "| {} | {} |\n".format(output[0], output[1])
@@ -273,7 +284,56 @@ def update_wiki(env, running_config):
 
 def update_leases(env, running_config):
     """Update the wiki with lease information."""
+    leases = {}
+    try:
+        data = {
+                "constraints[phids][0]": env.phab_leases,
+                "attachments[content]": 1
+                }
+        resp = post_get_data(env, "paste.search", data)
+        data = json.loads(resp)["result"]["data"][0]
+        raw = data["attachments"]["content"]["content"]
+        for line in raw.split("\n"):
+            if len(line.strip()) == 0:
+                continue
+            try:
+                parts = line.split(" ")
+                mac = wrapper.convert_mac(parts[1])
+                ip = parts[2]
+                if ip.startswith(env.ignore_ips):
+                    continue
+                leases[mac] = [ip]
+            except Exception as e:
+                print("error parsing line: " + line)
+                print(str(e))
+                continue
+    except Exception as e:
+        print("error parsing leases.")
+        print(str(e))
+    conf = None
+    with open(running_config, 'r') as f:
+        conf = json.loads(f.read())[wrapper.USERS]
+    user_resolutions = get_user_resolutions(env)
+    for user in conf:
+        user_name = resolve_user(user.split(".")[1], user_resolutions)
+        macs = conf[user][wrapper.MACS]
+        for mac in macs:
+            if mac in leases:
+                leases[mac].append(user_name)
+    outputs = []
+    outputs.append(["mac", "ip", "users"])
+    outputs.append(["---", "--", "---"])
+    for lease in sorted(leases.keys()):
+        cur_out = [lease]
+        current = leases[lease]
+        cur_out.append(current[0])
+        cur_out.append(" ".join(current[1:]))
+        outputs.append(cur_out)
     content = _create_header()
+    for output in outputs:
+        content = content + "| {} | {} | {} |\n".format(output[0],
+                                                        output[1],
+                                                        output[2])
     post_content(env, "leases", "Leases", content)
 
 
