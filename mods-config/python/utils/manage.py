@@ -42,6 +42,7 @@ PHAB_HOST = "PHAB_HOST"
 LOG_FILES = "LOG_FILES"
 WORK_DIR = "WORKING_DIR"
 LEASE_PASTE = "PHAB_LEASE_PASTE"
+FLAG_MGMT_LEASE = "LEASE_MGMT"
 
 
 class Env(object):
@@ -61,6 +62,7 @@ class Env(object):
         self.log_files = None
         self.working_dir = None
         self.phab_leases = None
+        self.mgmt_ips = None
 
     def add(self, key, value):
         """Add a key, sets into environment."""
@@ -87,6 +89,8 @@ class Env(object):
             self.working_dir = value
         elif key == LEASE_PASTE:
             self.phab_leases = value
+        elif key == FLAG_MGMT_LEASE:
+            self.mgmt_ips = value
 
     def _error(self, key):
         """Print an error."""
@@ -115,6 +119,7 @@ class Env(object):
             errors += self._in_error(LOG_FILES, self.log_files)
             errors += self._in_error(WORK_DIR, self.working_dir)
             errors += self._in_error(LEASE_PASTE, self.phab_leases)
+            errors += self._in_errors(FLAG_MGMT_LEASE, self.mgmt_ips)
         if errors > 0:
             exit(1)
 
@@ -292,6 +297,7 @@ def update_leases(env, running_config):
     leases = {}
     lease_unknown = []
     statics = []
+    mgmts = []
     try:
         data = {
                 "constraints[phids][0]": env.phab_leases,
@@ -315,6 +321,8 @@ def update_leases(env, running_config):
                     statics.append(mac)
                 else:
                     lease_unknown.append(mac)
+                if ip.startswith(env.mgmt_ips):
+                    mgmts.append(mac)
                 if mac not in leases:
                     leases[mac] = []
                 leases[mac].append("{} ({})".format(ip, is_static))
@@ -336,26 +344,53 @@ def update_leases(env, running_config):
             if mac in leases:
                 leases[mac].append(user_name)
                 if mac in lease_unknown:
-                    lease_unknown.remove(mac)
+                    while mac in lease_unknown:
+                        lease_unknown.remove(mac)
+
+    def is_mgmt(lease):
+        """Check if a management ip."""
+        return lease in mgmts
+
+    def is_normal(lease):
+        """Check if a 'normal' ip."""
+        return not is_mgmt(lease)
+    content = _create_header()
+    content = content + _create_lease_table(leases,
+                                            lease_unknown,
+                                            statics,
+                                            "normal",
+                                            is_normal)
+    content = content + _create_lease_table(leases,
+                                            lease_unknown,
+                                            statics,
+                                            "management",
+                                            is_mgmt)
+    post_content(env, "leases", "Leases", content)
+
+
+def _create_lease_table(leases, unknowns, statics, header, filter_fxn):
+    """Create a lease wiki table output."""
     outputs = []
     outputs.append(["mac", "attributes"])
     outputs.append(["---", "---"])
     for lease in sorted(leases.keys()):
+        if not filter_fxn(lease):
+            continue
         current = leases[lease]
         attrs = []
         lease_value = lease
         for obj in sorted(current):
             attrs.append(obj)
-        if lease in lease_unknown and lease not in statics:
+        if lease in unknowns and lease not in statics:
             lease_value = "**{}**".format(lease_value)
         cur_out = [lease_value]
         cur_out.append(" ".join(attrs))
         outputs.append(cur_out)
-    content = _create_header()
+    content = "\n\n# " + header + "\n\n----\n\n"
     for output in outputs:
         content = content + "| {} | {} |\n".format(output[0],
                                                    output[1])
-    post_content(env, "leases", "Leases", content)
+    return content
 
 
 def _get_date_offset(days):
