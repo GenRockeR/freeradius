@@ -19,6 +19,7 @@ VLAN_KEY = "vlans"
 BLCK_KEY = "blacklist"
 BYPASS_KEY = "bypass"
 ATTR_KEY = "attr"
+PORT_BYPASS_KEY = "port"
 rlock = threading.RLock()
 logger = None
 _CONFIG_FILE_NAME="network.json"

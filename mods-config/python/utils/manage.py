@@ -340,13 +340,16 @@ def update_leases(env, running_config):
     for user in conf:
         user_name = resolve_user(user.split(".")[1], user_resolutions)
         macs = conf[user][wrapper.MACS]
+        port = conf[user][wrapper.PORT]
         for mac in macs:
-            if mac in leases:
+            port_by = mac in port
+            if mac in leases or port_by:
                 leases[mac].append(user_name)
+                if port_by:
+                    leases[mac].append("port-bypass")
                 if mac in lease_unknown:
                     while mac in lease_unknown:
                         lease_unknown.remove(mac)
-
     def is_mgmt(lease):
         """Check if a management ip."""
         return lease in mgmts
