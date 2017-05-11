@@ -119,7 +119,7 @@ class Env(object):
             errors += self._in_error(LOG_FILES, self.log_files)
             errors += self._in_error(WORK_DIR, self.working_dir)
             errors += self._in_error(LEASE_PASTE, self.phab_leases)
-            errors += self._in_errors(FLAG_MGMT_LEASE, self.mgmt_ips)
+            errors += self._in_error(FLAG_MGMT_LEASE, self.mgmt_ips)
         if errors > 0:
             exit(1)
 
