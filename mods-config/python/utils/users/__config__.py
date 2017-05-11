@@ -130,6 +130,8 @@ class Assignment(object):
             if self.bypass is not None:
                 already_set = already_set + self.bypass
             for mac in self.port_bypass:
+                if not is_mac(mac):
+                    return self.report("invalid mac")
                 if mac in already_set:
                     return self.report("invalid port bypass mac")
         if len(self.macs) != len(set(self.macs)):
