@@ -14,28 +14,32 @@
             "macs": [
                 "001122334455"
             ],
-            "pass": "12345678910aaaaaaaaaaaaaaa111213141516etcabc"
+            "pass": "12345678910aaaaaaaaaaaaaaa111213141516etcabc",
+            "port": []
         },
         "dev.disable": {
             "attr": [],
             "macs": [
                 "001122334455"
             ],
-            "pass": "12345d678910aaaaaaaaaaaaaaa111213141516etc"
+            "pass": "12345d678910aaaaaaaaaaaaaaa111213141516etc",
+            "port": []
         },
         "dev.user1": {
             "attr": [],
             "macs": [
                 "001122334455"
             ],
-            "pass": "12345678910aaaaaaaaaaaaaaa111213141516etc"
+            "pass": "12345678910aaaaaaaaaaaaaaa111213141516etc",
+            "port": []
         },
         "dev.user2": {
             "attr": [],
             "macs": [
                 "001122334455"
             ],
-            "pass": "12345678910aaaaaaaaaaaaaaa111213141516user2"
+            "pass": "12345678910aaaaaaaaaaaaaaa111213141516user2",
+            "port": []
         },
         "dev.user3": {
             "attr": [
@@ -44,21 +48,26 @@
             "macs": [
                 "001122334455"
             ],
-            "pass": "12345678910aaaaaaaaaaaaaaa111213141516user3"
+            "pass": "12345678910aaaaaaaaaaaaaaa111213141516user3",
+            "port": [
+                "001122221100"
+            ]
         },
         "prod.user1": {
             "attr": [],
             "macs": [
                 "001122334455"
             ],
-            "pass": "12345678910aaaaaaaaaaaaaaa111213141516etcadmi"
+            "pass": "12345678910aaaaaaaaaaaaaaa111213141516etcadmi",
+            "port": []
         },
         "prod.user2": {
             "attr": [],
             "macs": [
                 "001122334455"
             ],
-            "pass": "12345678910aaaaaaaaaaaaaaa111213141516user2user2"
+            "pass": "12345678910aaaaaaaaaaaaaaa111213141516user2user2",
+            "port": []
         },
         "prod.user3": {
             "attr": [
@@ -67,7 +76,8 @@
             "macs": [
                 "001122334455"
             ],
-            "pass": "12345678910aaaaaaaaaaaaaaa111213141516user3"
+            "pass": "12345678910aaaaaaaaaaaaaaa111213141516user3",
+            "port": []
         }
     },
     "vlans": {

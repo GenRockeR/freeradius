@@ -351,6 +351,7 @@ def update_leases(env, running_config):
                         lease_unknown.remove(lease)
             if port_by:
                 leases[mac].append("port-bypass")
+
     def is_mgmt(lease):
         """Check if a management ip."""
         return lease in mgmts
