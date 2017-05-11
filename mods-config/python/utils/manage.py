@@ -346,11 +346,11 @@ def update_leases(env, running_config):
             leased = lease in macs
             if leased or port_by:
                 leases[lease].append(user_name)
+                if lease in lease_unknown:
+                    while lease in lease_unknown:
+                        lease_unknown.remove(lease)
             if port_by:
                 leases[mac].append("port-bypass")
-            if lease in lease_unknown:
-                while lease in lease_unknown:
-                    lease_unknown.remove(lease)
     def is_mgmt(lease):
         """Check if a management ip."""
         return lease in mgmts
