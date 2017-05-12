@@ -451,19 +451,18 @@ def _create_header():
 """
 
 
-def optimize_config(env, running_config):
+def optimize_config(env, optimized_configs, running_config):
     """Check any configuration optimizations."""
-    opt_file = env.working_dir + "optimized.json"
-    optimized_config = execute_report(env,
-                                      "optimized",
-                                      "n/a",
-                                      0,
-                                      opt_file,
-                                      "optimize")
-    opt_conf = None
+    opt_conf = {}
+    # need to merge these into a single configuration
+    for optimized in optimized_configs:
+        for user in optimized:
+            if user not in opt_conf:
+                opt_conf[user] = []
+            for mac in optimized[user]:
+                if mac not in opt_conf[user]:
+                    opt_conf[user].append(mac)
     run_conf = None
-    with open(opt_file, 'r') as f:
-        opt_conf = json.loads(f.read())
     with open(running_config, 'r') as f:
         run_conf = json.loads(f.read())
     suggestions = []
@@ -497,6 +496,7 @@ def daily_report(env, running_config):
         f.write("")
     reports = {}
     titles = {}
+    optimized_confs = []
     all_signs = os.path.join(env.log_files, "signatures.csv")
     signs = "signatures"
     for item in range(1, 11):
@@ -550,6 +550,15 @@ def daily_report(env, running_config):
                                            1,
                                            output_file)
             reports[report_name] += use_markdown
+            opt_file = env.working_dir + "optimized.json"
+            optimized_config = execute_report(env,
+                                              "optimized",
+                                              "n/a",
+                                              0,
+                                              opt_file,
+                                              "optimize")
+            opt_conf = json.loads(optimized_config)
+            optimized_confs.append(opt_conf)
 
     with open(all_signs, 'r') as f:
         reports[signs] += """
@@ -566,7 +575,7 @@ def daily_report(env, running_config):
         title = titles[report]
         post_content(env, title.lower(), title, html)
     update_leases(env, running_config)
-    optimize_config(env, running_config)
+    optimize_config(env, optimized_confs, running_config)
 
 
 def build():
