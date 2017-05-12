@@ -413,14 +413,14 @@ def call_wrapper(env, method, added):
     call(cmd, "report wrapper", working_dir=base)
 
 
-def execute_report(env, report, output_type, skip_lines, output_file):
+def execute_report(env, report, out_type, skip_lines, out_file, fxn="report"):
     """Execute a report."""
-    call_wrapper(env, "report", [
+    call_wrapper(env, fxn, [
            report,
-           output_type,
+           out_type,
            str(skip_lines),
-           output_file])
-    with open(output_file, 'r') as f:
+           out_file])
+    with open(out_file, 'r') as f:
         return f.read()
 
 
@@ -449,6 +449,38 @@ def _create_header():
 > this page is maintained by a bot
 > do _NOT_ edit it here
 """
+
+
+def optimize_config(env, running_config):
+    """Check any configuration optimizations."""
+    opt_file = env.working_dir + "optimized.json"
+    optimized_config = execute_report(env,
+                                      "optimized",
+                                      "n/a",
+                                      0,
+                                      opt_file,
+                                      "optimize")
+    opt_conf = None
+    run_conf = None
+    with open(opt_file, 'r') as f:
+        opt_conf = json.loads(f.read())
+    with open(running_config, 'r') as f:
+        run_conf = json.loads(f.read())
+    suggestions = []
+    users = run_conf[wrapper.USERS]
+    for user in users:
+        if user not in opt_conf:
+            suggestions.append("drop user {}".format(user))
+    for user in opt_conf:
+        if user not in users:
+            continue
+        macs = users[user][wrapper.MACS]
+        for mac in opt_conf[user]:
+            if mac in macs:
+                macs.remove(mac)
+        suggestions += ["drop user+mac {} -> {}".format(user, x) for x in macs]
+    send_to_matrix(env,
+                   "<body>" + "<br />".join(sorted(suggestions)) + "</body>")
 
 
 def daily_report(env, running_config):
@@ -534,6 +566,7 @@ def daily_report(env, running_config):
         title = titles[report]
         post_content(env, title.lower(), title, html)
     update_leases(env, running_config)
+    optimize_config(env, running_config)
 
 
 def build():
