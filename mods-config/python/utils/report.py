@@ -7,6 +7,7 @@ import uuid
 import store
 import csv
 import sys
+import json
 
 # key/vals
 OUT_PACKETS = 'Acct-Output-Packets'
@@ -16,6 +17,14 @@ OUT_OCTET = 'Acct-Output-Octets'
 ACCT_SESS_TIME = "Acct-Session-Time"
 
 # queries
+OPTIMIZE_CONF = """
+select distinct user, mac
+from users
+inner join macs
+on users.line = macs.line
+where user like '%.%'
+"""
+
 USERS_BY_KEY = """
     select key as attr, val datum, user, date
     from data inner join users on users.line = data.line
@@ -263,6 +272,20 @@ def _session_time(cursor, aggr, opts):
     _print_data("sessions", cursor, opts)
 
 
+def _optimized(cursor, opts):
+    """Optimized network configuration."""
+    query = OPTIMIZE_CONF
+    cursor.execute(query)
+    users = {}
+    for row in cursor.fetchall():
+        user = row[0]
+        mac = row[1]
+        if user not in users:
+            users[user] = []
+        users[user].append(mac)
+    print(json.dumps(users, sort_keys=True, indent=4, separators=(',', ': ')))
+
+
 def _authorizes(cursor, aggr, opts):
     """get the number of authorizes by user by day."""
     query = AUTHORIZES.format(store.USER_NAME)
@@ -337,6 +360,7 @@ def _failed_auths(cursor, opts):
     cursor.execute(FAILED_AUTHS)
     _print_data("failures", cursor, opts)
 
+OPTIMIZED = "optimized"
 
 # available reports
 available = {}
@@ -354,6 +378,10 @@ available["user-macs-daily"] = _user_mac_last_daily
 available["user-macs"] = _user_mac_full
 available["signatures"] = _signatures
 available["failures"] = _failed_auths
+available[OPTIMIZED] = _optimized
+
+# maintainance reports
+maintaining = [OPTIMIZED]
 
 
 class Options(object):
@@ -373,20 +401,27 @@ def main():
                         required=True,
                         type=str,
                         default=store.DB_NAME)
-    parser.add_argument("--reports", nargs='*', choices=available.keys())
+    rprts = [x for x in available.keys() if x not in maintaining]
+    parser.add_argument("--reports", nargs='*', choices=rprts)
     parser.add_argument("--output", choices=[Options.MARKDOWN, Options.CSV])
+    parser.add_argument("--" + OPTIMIZED, action="store_true")
     args = parser.parse_args()
-    if args.reports is None or len(args.reports) == 0:
-        execute = available.keys()
+    maintain = args.optimized
+    if maintain or args.reports is None or len(args.reports) == 0:
+        if maintain:
+            execute = ["optimized"]
+        else:
+            execute = rprts
     else:
         execute = args.reports
     conn = sqlite3.connect(args.database)
     curs = conn.cursor()
     opts = Options()
-    if args.output == Options.MARKDOWN:
-        opts.markdown = True
-    elif args.output == Options.CSV:
-        opts.csv = True
+    if not maintain:
+        if args.output == Options.MARKDOWN:
+            opts.markdown = True
+        elif args.output == Options.CSV:
+            opts.csv = True
     for item in execute:
         if item in available:
             available[item](curs, opts)
