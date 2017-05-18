@@ -378,6 +378,7 @@ def _create_lease_table(leases, unknowns, statics, header, filter_fxn):
     outputs = []
     outputs.append(["mac", "attributes"])
     outputs.append(["---", "---"])
+    report_objs = []
     for lease in sorted(leases.keys()):
         if not filter_fxn(lease):
             continue
@@ -387,6 +388,7 @@ def _create_lease_table(leases, unknowns, statics, header, filter_fxn):
         for obj in sorted(current):
             attrs.append(obj)
         if lease in unknowns and lease not in statics:
+            report_objs.append(lease_value)
             lease_value = "**{}**".format(lease_value)
         cur_out = [lease_value]
         cur_out.append(" ".join(attrs))
@@ -395,6 +397,8 @@ def _create_lease_table(leases, unknowns, statics, header, filter_fxn):
     for output in outputs:
         content = content + "| {} | {} |\n".format(output[0],
                                                    output[1])
+    if len(report_objs) > 0:
+        send_to_matrix(env, "unknown leases: " + ", ".join(report_objs))
     return content
 
 
