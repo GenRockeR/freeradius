@@ -360,12 +360,14 @@ def update_leases(env, running_config):
         """Check if a 'normal' ip."""
         return not is_mgmt(lease)
     content = _create_header()
-    content = content + _create_lease_table(leases,
+    content = content + _create_lease_table(env,
+                                            leases,
                                             lease_unknown,
                                             statics,
                                             "normal",
                                             is_normal)
-    content = content + _create_lease_table(leases,
+    content = content + _create_lease_table(env,
+                                            leases,
                                             lease_unknown,
                                             statics,
                                             "management",
@@ -373,7 +375,7 @@ def update_leases(env, running_config):
     post_content(env, "leases", "Leases", content)
 
 
-def _create_lease_table(leases, unknowns, statics, header, filter_fxn):
+def _create_lease_table(env, leases, unknowns, statics, header, filter_fxn):
     """Create a lease wiki table output."""
     outputs = []
     outputs.append(["mac", "attributes"])
