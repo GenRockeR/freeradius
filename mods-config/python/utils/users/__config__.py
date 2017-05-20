@@ -74,7 +74,7 @@ class Assignment(object):
         self.no_login = False
         self.attrs = None
         self.expires = None
-        self.expired = False
+        self.disabled = False
         self.inherits = None
         self.port_bypass = []
 
@@ -107,7 +107,7 @@ class Assignment(object):
         if self.expires is not None:
             res = self._compare_date(self.expires, regex, today)
             if res is not None:
-                self.expired = res
+                self.disabled = res
             else:
                 return self.report("invalid expiration")
         if self.vlan is None or len(self.vlan) == 0:
