@@ -400,7 +400,7 @@ def _create_lease_table(env, leases, unknowns, statics, header, filter_fxn):
         content = content + "| {} | {} |\n".format(output[0],
                                                    output[1])
     if len(report_objs) > 0:
-        send_to_matrix(env, "unknown leases: " + ", ".join(report_objs))
+        write_to_matrix(env, "unknown leases: " + ", ".join(report_objs))
     return content
 
 
@@ -436,16 +436,32 @@ def delete_if_exists(file_name):
         os.remove(file_name)
 
 
-def send_to_matrix(env, content):
+def write_to_matrix(env, content, init=False):
+    """Write text to send to matrix."""
+    if init:
+        delete_if_exists(env.send_file)
+    if content is not None:
+        with open(env.send_file, 'a') as f:
+            f.write(content)
+            f.write("<br />")
+
+
+def send_to_matrix(env):
     """Send a change notification to matrix."""
+    if not os.path.exists(env.send_file):
+        return
+    current = None
+    with open(env.send_file, 'r') as f:
+        current = f.read()
+    if current is None or len(current.strip()) == 0:
+        return
+    with open(env.send_file, 'w') as f:
+        f.write("<html>")
+        f.write(current)
+        f.write("</html>")
     cmd = []
     cmd.append(env.matrix_bot)
     cmd.append("oneshot")
-    delete_if_exists(env.send_file)
-    with open(env.send_file, 'w') as f:
-        f.write("<html>")
-        f.write(content)
-        f.write("</html>")
     call(cmd, "sending to matrix")
 
 
@@ -484,8 +500,8 @@ def optimize_config(env, optimized_configs, running_config):
             if mac in macs:
                 macs.remove(mac)
         suggestions += ["drop user+mac {} -> {}".format(user, x) for x in macs]
-    send_to_matrix(env,
-                   "<body>" + "<br />".join(sorted(suggestions)) + "</body>")
+    write_to_matrix(env,
+                    "<body>" + "<br />".join(sorted(suggestions)) + "</body>")
 
 
 def daily_report(env, running_config):
@@ -590,8 +606,7 @@ def build():
     env.validate(full=True)
     os.chdir(env.net_config)
     compose(env)
-    if os.path.exists(env.send_file):
-        os.remove(env.send_file)
+    write_to_matrix(env, None, init=True)
     new_config = os.path.join(env.net_config, FILE_NAME)
     run_config = os.path.join(env.freeradius_repo, PYTHON_MODS, FILE_NAME)
     diff = filecmp.cmp(new_config, run_config)
@@ -608,7 +623,7 @@ def build():
         if os.path.exists(git_indicator):
             with open(git_indicator, 'r') as f:
                 git = f.read().strip()
-        send_to_matrix(env, "ready -> {} ({})".format(git, hashed))
+        write_to_matrix(env, "ready -> {} ({})".format(git, hashed))
     daily_report(env, run_config)
 
 
