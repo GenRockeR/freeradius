@@ -625,6 +625,7 @@ def build():
                 git = f.read().strip()
         write_to_matrix(env, "ready -> {} ({})".format(git, hashed))
     daily_report(env, run_config)
+    send_to_matrix(env)
 
 
 def check():
