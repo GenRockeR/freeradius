@@ -505,6 +505,7 @@ def optimize_config(env, optimized_configs, running_config):
     content = _create_header()
     content += "\n"
     if len(cruft) > 0:
+        cruft = sorted(cruft)
         cruft.insert(0, ("---", "---"))
         cruft.insert(0, ("user", "mac"))
         for item in cruft:
