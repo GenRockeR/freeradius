@@ -492,6 +492,7 @@ def optimize_config(env, optimized_configs, running_config):
     for user in users:
         if user not in opt_conf:
             suggestions.append("drop user {}".format(user))
+    cruft = []
     for user in opt_conf:
         if user not in users:
             continue
@@ -499,7 +500,18 @@ def optimize_config(env, optimized_configs, running_config):
         for mac in opt_conf[user]:
             if mac in macs:
                 macs.remove(mac)
-        suggestions += ["drop user+mac {} -> {}".format(user, x) for x in macs]
+        for m in macs:
+            cruft.append((user, m))
+    content = _create_header()
+    content += "\n"
+    if len(cruft) > 0:
+        cruft.insert(0, ("---", "---"))
+        cruft.insert(0, ("user", "mac"))
+        for item in cruft:
+            content += "| {} | {} |\n".format(item[0], item[1])
+    else:
+        content += "nothing to cleanup"
+    post_content(env, "cruft", "Cruft", content)
     write_to_matrix(env,
                     "<body>" + "<br />".join(sorted(suggestions)) + "</body>")
 
