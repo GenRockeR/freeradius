@@ -18,6 +18,7 @@ echo
 echo -n Verify:
 read -s verify
 if [[ "$password" != "$verify" ]]; then
+    echo
     echo "passwords did not match..."
     exit 1
 fi
