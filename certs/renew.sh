@@ -15,8 +15,8 @@ rm -f *.pem *.der *.csr *.crt *.key *.p12 serial* index.txt*
 echo -n Password:
 read -s password
 for f in $(ls *.cnf); do
-    sed -i "s/input_password =/input_password = $password/g" $f
-    sed -i "s/output_password =/output_password = $password/g" $f
+    sed -i "s/input_password =[[:blank:]]*$/input_password = $password/g" $f
+    sed -i "s/output_password =[[:blank:]]*$/output_password = $password/g" $f
 done
 echo "rebuilding certs"
 ./bootstrap

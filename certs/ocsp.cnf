@@ -43,7 +43,7 @@ emailAddress		= optional
 prompt			= no
 distinguished_name	= server
 default_bits		= 2048
-output_password = 
+output_password =
 input_password =
 
 [ server ]
