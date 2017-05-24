@@ -27,7 +27,12 @@ for f in $(ls *.cnf); do
 done
 echo "rebuilding certs"
 ./bootstrap
+run=$?
 for f in $(ls *.cnf); do
     git checkout -- $f
 done
-print-bar "before start/restarting radius, update the clients.conf and add [certprivkey = <password>]"
+if [ $run -ne 0 ]; then
+    print-bar "ERROR - unable to process certificate renewal!!!"
+else
+    print-bar "before start/restarting radius, update the clients.conf and add [certprivkey = <password>]"
+fi
