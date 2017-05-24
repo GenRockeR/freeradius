@@ -14,5 +14,6 @@ certs/serial*
 certs/index.txt*
 certs/passwords.mk
 certs/dh
+certs/random
 *.log*
 *.db
