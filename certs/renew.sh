@@ -9,7 +9,7 @@ Press <Enter> to continue"
     read
 }
 cd /etc/raddb/certs
-print-bar "this script assumes all passwords are the same, this is viable for a restricted area LAN at best. you will be prompted for each password (use the same one), make sure passwords.mk has already been updated."
+print-bar "this script assumes all passwords are the same, this is viable for a restricted area LAN at best. you will be prompted for a password (in all future cases - use the same one)."
 echo "removing previous certs"
 rm -f *.pem *.der *.csr *.crt *.key *.p12 serial* index.txt*
 echo -n Password:
