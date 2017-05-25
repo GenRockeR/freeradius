@@ -2,7 +2,7 @@
 #	Configuration file for the rlm_attr_filter module.
 #	Please see rlm_attr_filter(5) manpage for more information.
 #
-#	$Id: 3930fedfc0c638629198ff49f4bc3d5184261705 $
+#	$Id: 47b01266f44d0475261c6ea16f74ca17d8838749 $
 #
 #	This file contains security and configuration information
 #	for each realm. It can be used be an rlm_attr_filter module
@@ -60,4 +60,6 @@ DEFAULT
 	NAS-IP-Address =* ANY,
 	NAS-Identifier =* ANY,
 	Operator-Name =* ANY,
+	Calling-Station-Id =* ANY,
+	Chargeable-User-Identity =* ANY,
 	Proxy-State =* ANY
