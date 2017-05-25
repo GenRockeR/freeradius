@@ -3,5 +3,7 @@ python:
     - "2.7"
 
 script:
-    - cd upstream && make
-    - cd mods-config/python/tests/ && make
+    - cd upstream 
+    - make
+    - cd ../mods-config/python/tests/
+    - make
