@@ -43,6 +43,7 @@ LOG_FILES = "LOG_FILES"
 WORK_DIR = "WORKING_DIR"
 LEASE_PASTE = "PHAB_LEASE_PASTE"
 FLAG_MGMT_LEASE = "LEASE_MGMT"
+IS_SECONDARY = "IS_SECONDARY"
 
 
 class Env(object):
@@ -63,6 +64,7 @@ class Env(object):
         self.working_dir = None
         self.phab_leases = None
         self.mgmt_ips = None
+        self.is_secondary = None
 
     def add(self, key, value):
         """Add a key, sets into environment."""
@@ -91,6 +93,8 @@ class Env(object):
             self.phab_leases = value
         elif key == FLAG_MGMT_LEASE:
             self.mgmt_ips = value
+        elif key == IS_SECONDARY:
+            self.is_secondary = value
 
     def _error(self, key):
         """Print an error."""
@@ -120,6 +124,7 @@ class Env(object):
             errors += self._in_error(WORK_DIR, self.working_dir)
             errors += self._in_error(LEASE_PASTE, self.phab_leases)
             errors += self._in_error(FLAG_MGMT_LEASE, self.mgmt_ips)
+            errors += self._in_error(IS_SECONDARY, self.is_secondary)
         if errors > 0:
             exit(1)
 
@@ -616,6 +621,7 @@ def daily_report(env, running_config):
 def build():
     """Build and apply a user configuration."""
     env = _get_vars("/etc/environment")
+    secondary = env.is_secondary and os.path.exists(env.is_secondary)
     env.validate(full=True)
     os.chdir(env.net_config)
     compose(env)
@@ -636,8 +642,12 @@ def build():
         if os.path.exists(git_indicator):
             with open(git_indicator, 'r') as f:
                 git = f.read().strip()
-        write_to_matrix(env, "ready -> {} ({})".format(git, hashed))
-    daily_report(env, run_config)
+        status = "ready"
+        if secondary:
+            status = "secondary"
+        write_to_matrix(env, "{} -> {} ({})".format(status, git, hashed))
+    if not secondary:
+        daily_report(env, run_config)
     send_to_matrix(env)
 
 
