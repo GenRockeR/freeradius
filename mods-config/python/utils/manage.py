@@ -44,6 +44,7 @@ WORK_DIR = "WORKING_DIR"
 LEASE_PASTE = "PHAB_LEASE_PASTE"
 FLAG_MGMT_LEASE = "LEASE_MGMT"
 IS_SECONDARY = "IS_SECONDARY"
+OFF_DAYS = "OFF_DAYS"
 
 
 class Env(object):
@@ -65,6 +66,7 @@ class Env(object):
         self.phab_leases = None
         self.mgmt_ips = None
         self.is_secondary = None
+        self.off_days = None
 
     def add(self, key, value):
         """Add a key, sets into environment."""
@@ -95,6 +97,8 @@ class Env(object):
             self.mgmt_ips = value
         elif key == IS_SECONDARY:
             self.is_secondary = value
+        elif key == OFF_DAYS:
+            self.off_days = value
 
     def _error(self, key):
         """Print an error."""
@@ -125,6 +129,7 @@ class Env(object):
             errors += self._in_error(LEASE_PASTE, self.phab_leases)
             errors += self._in_error(FLAG_MGMT_LEASE, self.mgmt_ips)
             errors += self._in_error(IS_SECONDARY, self.is_secondary)
+            errors += self._in_error(OFF_DAYS, self.off_days)
         if errors > 0:
             exit(1)
 
@@ -524,7 +529,11 @@ def optimize_config(env, optimized_configs, running_config):
 
 def daily_report(env, running_config):
     """Write daily reports."""
-    hour = datetime.datetime.now().hour
+    today = datetime.datetime.now()
+    week = str(today.weekday())
+    if week in env.off_days.split(" "):
+        return
+    hour = today..hour
     report_indicator = env.working_dir + "indicator"
     if hour != 9:
         delete_if_exists(report_indicator)
