@@ -523,8 +523,11 @@ def optimize_config(env, optimized_configs, running_config):
     else:
         content += "nothing to cleanup"
     post_content(env, "cruft", "Cruft", content)
-    write_to_matrix(env,
-                    "<body>" + "<br />".join(sorted(suggestions)) + "</body>")
+    if len(suggestions) > 0:
+        write_to_matrix(env,
+                        "<body>" +
+                        "<br />".join(sorted(suggestions)) +
+                        "</body>")
 
 
 def daily_report(env, running_config):
