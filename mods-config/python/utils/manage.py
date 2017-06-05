@@ -536,7 +536,7 @@ def daily_report(env, running_config):
     week = str(today.weekday())
     if week in env.off_days.split(" "):
         return
-    hour = today..hour
+    hour = today.hour
     report_indicator = env.working_dir + "indicator"
     if hour != 9:
         delete_if_exists(report_indicator)
