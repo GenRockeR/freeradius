@@ -587,8 +587,8 @@ def daily_report(env, running_config):
             opt_conf = json.loads(optimized_config)
             optimized_confs.append(opt_conf)
 
-    signs = "Signatures"
-    titles[signs] = signs
+    signs = "signatures"
+    titles[signs] = "Signatures"
     signs = signs.lower()
     with open(all_signs, 'r') as f:
         reports[signs] = _create_header()
