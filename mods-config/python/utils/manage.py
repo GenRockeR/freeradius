@@ -165,7 +165,7 @@ def _get_exclude(name):
 
 
 def call(cmd, error_text, working_dir=None):
-    """Call for subprocessing."""
+    """Call for subproces/ing."""
     p = subprocess.Popen(cmd, cwd=working_dir)
     p.wait()
     if p.returncode != 0:
@@ -550,7 +550,6 @@ def daily_report(env, running_config):
     titles = {}
     optimized_confs = []
     all_signs = os.path.join(env.log_files, "signatures.csv")
-    signs = "signatures"
     for item in range(1, 11):
         date_offset = _get_date_offset(item)
         path = os.path.join(env.log_files,
@@ -559,9 +558,7 @@ def daily_report(env, running_config):
             continue
         print(date_offset)
         call_wrapper(env, "store", [path])
-        for report in [("users-daily", "Auths"),
-                       ("failures", "Rejections"),
-                       (signs, "Signatures")]:
+        for report in [("failures", "Rejections")]:
             output_file = env.working_dir + report[0]
             report_name = report[0]
             titles[report_name] = report[1]
@@ -574,28 +571,6 @@ def daily_report(env, running_config):
 ---
 
 """.format(date_offset)
-            if report_name == signs:
-                csv = [x.strip() for x
-                       in execute_report(env,
-                                         report_name,
-                                         "csv",
-                                         2,
-                                         output_file + ".csv").split("\n")
-                       if len(x.strip()) > 0]
-                lines = []
-                new_lines = []
-                if not os.path.exists(all_signs):
-                    open(all_signs, 'a').close()
-                with open(all_signs, 'r') as f:
-                    for line in f:
-                        not_date = line.strip().split(",")
-                        lines.append(",".join(not_date[:-1]))
-                for line in csv:
-                    if line not in lines and line not in new_lines:
-                        new_lines.append(line)
-                with open(all_signs, 'a') as f:
-                    for line in new_lines:
-                        f.write(line + "," + date_offset + "\n")
             use_markdown += execute_report(env,
                                            report_name,
                                            "markdown",
@@ -612,13 +587,12 @@ def daily_report(env, running_config):
             opt_conf = json.loads(optimized_config)
             optimized_confs.append(opt_conf)
 
+    signs = "Signatures"
+    titles[signs] = signs
+    signs = signs.lower()
     with open(all_signs, 'r') as f:
+        reports[signs] = _create_header()
         reports[signs] += """
-
-### All
-
----
-
 | signature |\n| -- |\n"""
         for line in sorted(f):
             reports[signs] += "| {} |\n".format(line.strip())
