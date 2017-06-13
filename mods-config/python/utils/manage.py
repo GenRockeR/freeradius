@@ -23,6 +23,7 @@ CHARS = string.ascii_uppercase + string.ascii_lowercase + string.digits
 CHECK = "check"
 ADD_USER = "useradd"
 BUILD = "build"
+GEN_PSWD = "password"
 
 # file handling
 FILE_NAME = wrapper.CONFIG_NAME
@@ -221,12 +222,26 @@ def _base_json(obj):
             return obj
 
 
+def gen_pass(dump):
+    """Generate password for a user account."""
+    raw = ''.join(random.choice(CHARS) for _ in range(64))
+    encoded = base64.b64encode(raw).decode("utf-8")
+    if dump:
+        print("password:")
+        print(raw)
+        print("config file encoded")
+        print(encoded)
+    else:
+        return (raw, encoded)
+
+
 def add_user():
     """Add a new user definition."""
     print("please enter the user name:")
     named = raw_input()
-    raw = ''.join(random.choice(CHARS) for _ in range(64))
-    password = base64.b64encode(raw).decode("utf-8")
+    passes = gen_pass(False)
+    raw = passes[0]
+    password = passes[1]
     user_definition = """
 import __config__
 import common
@@ -661,7 +676,7 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('action',
                         nargs='?',
-                        choices=[CHECK, ADD_USER, BUILD],
+                        choices=[CHECK, ADD_USER, BUILD, GEN_PSWD],
                         default=CHECK)
     args = parser.parse_args()
     if args.action == CHECK:
@@ -670,6 +685,8 @@ def main():
         build()
     elif args.action == ADD_USER:
         add_user()
+    elif args.action == GEN_PSWD:
+        gen_pass(True)
 
 if __name__ == "__main__":
     main()
