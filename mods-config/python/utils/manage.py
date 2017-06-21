@@ -36,7 +36,6 @@ FREERADIUS_REPO = "FREERADIUS_REPO"
 NETCONFIG = "NETCONF"
 SENDFILE = "SYNAPSE_SEND_FILE"
 MBOT = "MATRIX_BOT"
-USER_LOOKUPS = "USER_LOOKUPS"
 PHAB_SLUG = "PHAB_SLUG"
 PHAB_TOKEN = "PHAB_TOKEN"
 PHAB_HOST = "PHAB_HOST"
@@ -58,7 +57,6 @@ class Env(object):
         self.net_config = None
         self.send_file = None
         self.matrix_bot = None
-        self.user_lookups = None
         self.phab_token = None
         self.phab_slug = None
         self.phab = None
@@ -80,8 +78,6 @@ class Env(object):
             self.send_file = value
         elif key == MBOT:
             self.matrix_bot = value
-        elif key == USER_LOOKUPS:
-            self.user_lookups = value
         elif key == PHAB_SLUG:
             self.phab_slug = value
         elif key == PHAB_TOKEN:
@@ -121,7 +117,6 @@ class Env(object):
             errors += self._in_error(NETCONFIG, self.net_config)
             errors += self._in_error(SENDFILE, self.send_file)
             errors += self._in_error(MBOT, self.matrix_bot)
-            errors += self._in_error(USER_LOOKUPS, self.user_lookups)
             errors += self._in_error(PHAB_SLUG, self.phab_slug)
             errors += self._in_error(PHAB_TOKEN, self.phab_token)
             errors += self._in_error(PHAB_HOST, self.phab)
@@ -273,10 +268,14 @@ def post_content(env, page, title, content):
     post_get_data(env, "phriction.edit", data)
 
 
-def get_user_resolutions(env):
+def get_user_resolutions(user):
     """Get user resolutions."""
-    return {x.split("=")[0]: x.split("=")[1] for x in
-            env.user_lookups.split(",")}
+    aliases = {}
+    for u in user:
+        attrs = [x for x in u[wrapper.ATTR] if x.startswith("alias=")]
+        if len(attrs) == 1:
+            aliases[u] = attrs[0].split("=")[1]
+    return aliases
 
 
 def resolve_user(user_name, user_resolutions):
@@ -303,7 +302,7 @@ def update_wiki(env, running_config):
         vlans[vlan].append(user)
     first = True
     outputs = [("vlan", "user"), ("---", "---")]
-    user_resolved = get_user_resolutions(env)
+    user_resolved = get_user_resolutions(users)
     for vlan in sorted(vlans.keys()):
         if not first:
             outputs.append(("-", "-"))
@@ -361,7 +360,7 @@ def update_leases(env, running_config):
     conf = None
     with open(running_config, 'r') as f:
         conf = json.loads(f.read())[wrapper.USERS]
-    user_resolutions = get_user_resolutions(env)
+    user_resolutions = get_user_resolutions(conf)
     for user in conf:
         user_name = resolve_user(user.split(".")[1], user_resolutions)
         macs = conf[user][wrapper.MACS]

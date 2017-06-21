@@ -151,7 +151,12 @@ class Assignment(object):
                     else:
                         return self.report("invalid MAC date")
         if self.attrs and len(self.attrs) > 0:
+            uniq_attr = []
             for attr in self.attrs:
-                if "=" not in attr:
+                parts = attr.split("=")
+                if len(parts) != 2:
                     return self.report("attributes must be: key=value")
+                uniq_attr.append(parts[0])
+            if len(uniq_attr) != len(set(uniq_attr)):
+                return self.report("attribute keys must be unique")
         return True

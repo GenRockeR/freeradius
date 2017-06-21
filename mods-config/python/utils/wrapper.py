@@ -23,3 +23,4 @@ CONFIG = freepydius._CONFIG_FILE
 CONFIG_NAME = freepydius._CONFIG_FILE_NAME
 USERS = freepydius.USER_KEY
 MACS = freepydius.MAC_KEY
+ATTR = freepydius.ATTR_KEY
