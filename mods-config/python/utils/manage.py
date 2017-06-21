@@ -272,7 +272,7 @@ def get_user_resolutions(user):
     """Get user resolutions."""
     aliases = {}
     for u in user:
-        attrs = [x for x in u[wrapper.ATTR] if x.startswith("alias=")]
+        attrs = [x for x in user[u][wrapper.ATTR] if x.startswith("alias=")]
         if len(attrs) == 1:
             aliases[u] = attrs[0].split("=")[1]
     return aliases
