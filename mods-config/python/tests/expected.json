@@ -1,6 +1,6 @@
 {
     "blacklist": [
-        "blah",
+        "blah=test",
         "user1"
     ],
     "bypass": {
@@ -9,7 +9,7 @@
     "users": {
         "dev.attr": {
             "attr": [
-                "blah"
+                "blah=test"
             ],
             "macs": [
                 "001122334455"
@@ -43,7 +43,7 @@
         },
         "dev.user3": {
             "attr": [
-                "test"
+                "test=test"
             ],
             "macs": [
                 "001122334455"
@@ -71,7 +71,7 @@
         },
         "prod.user3": {
             "attr": [
-                "test"
+                "test=test"
             ],
             "macs": [
                 "001122334455"
