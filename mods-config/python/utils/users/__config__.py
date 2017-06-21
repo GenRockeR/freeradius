@@ -150,4 +150,8 @@ class Assignment(object):
                                 self.macs.remove(key)
                     else:
                         return self.report("invalid MAC date")
+        if self.attrs and len(self.attrs) > 0:
+            for attr in self.attrs:
+                if "=" not in attr:
+                    return self.report("attributes must be: key=value")
         return True
