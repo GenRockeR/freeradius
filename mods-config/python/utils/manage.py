@@ -283,6 +283,8 @@ def resolve_user(user_name, user_resolutions):
     user = user_name
     if user in user_resolutions:
         user = user_resolutions[user]
+    else:
+        user = user_name.split(".")[1]
     return "@" + user
 
 
@@ -296,7 +298,6 @@ def update_wiki(env, running_config):
     for user in sorted(users.keys()):
         vlan_parts = user.split(".")
         vlan = vlan_parts[0].upper()
-        user = ".".join(vlan_parts[1:])
         if vlan not in vlans:
             vlans[vlan] = []
         vlans[vlan].append(user)
@@ -362,7 +363,7 @@ def update_leases(env, running_config):
         conf = json.loads(f.read())[wrapper.USERS]
     user_resolutions = get_user_resolutions(conf)
     for user in conf:
-        user_name = resolve_user(user.split(".")[1], user_resolutions)
+        user_name = resolve_user(user, user_resolutions)
         macs = conf[user][wrapper.MACS]
         port = conf[user][wrapper.PORT]
         for lease in leases:
