@@ -234,6 +234,11 @@ def add_user():
     """Add a new user definition."""
     print("please enter the user name:")
     named = raw_input()
+    print("please enter the phabricator name to alias (blank to skip)")
+    aliased = raw_input()
+    alias = ""
+    if aliased is not None and len(aliased) > 0:
+        alias = "u_obj.attrs = [common.ALIASED + '{}']".format(aliased)
     passes = gen_pass(False)
     raw = passes[0]
     password = passes[1]
@@ -244,7 +249,8 @@ import common
 u_obj = __config__.Assignment()
 u_obj.password = '{}'
 u_obj.vlan = None
-""".format(password)
+{}
+""".format(password, alias)
     with open(os.path.join(USER_FOLDER, "user_" + named + ".py"), 'w') as f:
         f.write(user_definition.strip())
     print("{} was created with a password of {}".format(named, raw))
