@@ -158,6 +158,10 @@ def call(cmd, error_text, working_dir=None, ins=None):
     p = subprocess.Popen(cmd, cwd=working_dir, stdin=std_in)
     if ins != None:
         p.stdin.write(ins.encode('utf-8'))
+        out, err = p.communicate()
+        print(out.decode('utf-8'))
+        print(err.decode('utf-8'))
+        return
     p.wait()
     if p.returncode != 0:
         print("unable to {}".format(error_text))
