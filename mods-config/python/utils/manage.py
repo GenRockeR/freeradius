@@ -150,9 +150,14 @@ def _get_exclude(name):
     return '--exclude={}'.format(name)
 
 
-def call(cmd, error_text, working_dir=None):
+def call(cmd, error_text, working_dir=None, ins=None):
     """Call for subproces/ing."""
-    p = subprocess.Popen(cmd, cwd=working_dir)
+    std_in = None
+    if ins is not None:
+        std_in = subprocess.PIPE
+    p = subprocess.Popen(cmd, cwd=working_dir, stdin=std_in)
+    if ins != None:
+        p.stdin.write(ins.encode('utf-8'))
     p.wait()
     if p.returncode != 0:
         print("unable to {}".format(error_text))
@@ -427,7 +432,7 @@ def _create_lease_table(env, leases, unknowns, statics, header, filter_fxn):
 
 def _smirc(text):
     """Sending via smirc."""
-    call(["smirc", text], "sending to smirc")
+    call(["smirc"], "sending to smirc", ins=text)
 
 
 def _get_date_offset(days):
