@@ -159,8 +159,10 @@ def call(cmd, error_text, working_dir=None, ins=None):
     if ins != None:
         p.stdin.write(ins.encode('utf-8'))
         out, err = p.communicate()
-        print(out.decode('utf-8'))
-        print(err.decode('utf-8'))
+        if out is not None:
+            print(out.decode('utf-8'))
+        if err is not None:
+            print(err.decode('utf-8'))
         return
     p.wait()
     if p.returncode != 0:
