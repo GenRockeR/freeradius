@@ -34,8 +34,6 @@ PYTHON_MODS = "mods-config/python"
 # env vars
 FREERADIUS_REPO = "FREERADIUS_REPO"
 NETCONFIG = "NETCONF"
-SENDFILE = "SYNAPSE_SEND_FILE"
-MBOT = "MATRIX_BOT"
 PHAB_SLUG = "PHAB_SLUG"
 PHAB_TOKEN = "PHAB_TOKEN"
 PHAB_HOST = "PHAB_HOST"
@@ -55,8 +53,6 @@ class Env(object):
         self.freeradius_repo = None
         self.backing = {}
         self.net_config = None
-        self.send_file = None
-        self.matrix_bot = None
         self.phab_token = None
         self.phab_slug = None
         self.phab = None
@@ -74,10 +70,6 @@ class Env(object):
             self.freeradius_repo = value
         elif key == NETCONFIG:
             self.net_config = value
-        elif key == SENDFILE:
-            self.send_file = value
-        elif key == MBOT:
-            self.matrix_bot = value
         elif key == PHAB_SLUG:
             self.phab_slug = value
         elif key == PHAB_TOKEN:
@@ -115,8 +107,6 @@ class Env(object):
         errors += self._in_error(FREERADIUS_REPO, self.freeradius_repo)
         if full:
             errors += self._in_error(NETCONFIG, self.net_config)
-            errors += self._in_error(SENDFILE, self.send_file)
-            errors += self._in_error(MBOT, self.matrix_bot)
             errors += self._in_error(PHAB_SLUG, self.phab_slug)
             errors += self._in_error(PHAB_TOKEN, self.phab_token)
             errors += self._in_error(PHAB_HOST, self.phab)
@@ -431,8 +421,13 @@ def _create_lease_table(env, leases, unknowns, statics, header, filter_fxn):
         content = content + "| {} | {} |\n".format(output[0],
                                                    output[1])
     if len(report_objs) > 0:
-        write_to_matrix(env, "unknown leases: " + ", ".join(report_objs))
+        _smirc("unknown leases: " + ", ".join(report_objs))
     return content
+
+
+def _smirc(text):
+    """Sending via smirc."""
+    call(["smirc", text], "sending to smirc")
 
 
 def _get_date_offset(days):
@@ -465,35 +460,6 @@ def delete_if_exists(file_name):
     """Delete a file if it exists."""
     if os.path.exists(file_name):
         os.remove(file_name)
-
-
-def write_to_matrix(env, content, init=False):
-    """Write text to send to matrix."""
-    if init:
-        delete_if_exists(env.send_file)
-    if content is not None:
-        with open(env.send_file, 'a') as f:
-            f.write(content)
-            f.write("<br />")
-
-
-def send_to_matrix(env):
-    """Send a change notification to matrix."""
-    if not os.path.exists(env.send_file):
-        return
-    current = None
-    with open(env.send_file, 'r') as f:
-        current = f.read()
-    if current is None or len(current.strip()) == 0:
-        return
-    with open(env.send_file, 'w') as f:
-        f.write("<html>")
-        f.write(current)
-        f.write("</html>")
-    cmd = []
-    cmd.append(env.matrix_bot)
-    cmd.append("oneshot")
-    call(cmd, "sending to matrix")
 
 
 def _create_header():
@@ -545,10 +511,7 @@ def optimize_config(env, optimized_configs, running_config):
         content += "nothing to cleanup"
     post_content(env, "cruft", "Cruft", content)
     if len(suggestions) > 0:
-        write_to_matrix(env,
-                        "<body>" +
-                        "<br />".join(sorted(suggestions)) +
-                        "</body>")
+        _smirc("\n".join(sorted(suggestions)))
 
 
 def daily_report(env, running_config):
@@ -632,7 +595,6 @@ def build():
     env.validate(full=True)
     os.chdir(env.net_config)
     compose(env)
-    write_to_matrix(env, None, init=True)
     new_config = os.path.join(env.net_config, FILE_NAME)
     run_config = os.path.join(env.freeradius_repo, PYTHON_MODS, FILE_NAME)
     diff = filecmp.cmp(new_config, run_config)
@@ -652,10 +614,9 @@ def build():
         status = "ready"
         if secondary:
             status = "secondary"
-        write_to_matrix(env, "{} -> {} ({})".format(status, git, hashed))
+        _smirc("{} -> {} ({})".format(status, git, hashed))
     if not secondary:
         daily_report(env, run_config)
-    send_to_matrix(env)
 
 
 def check():
