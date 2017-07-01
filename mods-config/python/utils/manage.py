@@ -156,7 +156,7 @@ def call(cmd, error_text, working_dir=None, ins=None):
     if ins is not None:
         std_in = subprocess.PIPE
     p = subprocess.Popen(cmd, cwd=working_dir, stdin=std_in)
-    if ins != None:
+    if ins is not None:
         p.stdin.write(ins.encode('utf-8'))
         out, err = p.communicate()
         if out is not None:
