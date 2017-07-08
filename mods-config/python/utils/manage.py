@@ -292,7 +292,7 @@ def resolve_user(user_name, user_resolutions):
         user = user_resolutions[user]
     else:
         user = user_name.split(".")[1]
-    return "@" + user
+    return "[@{}](/p/{})".format(user, user)
 
 
 def update_wiki(env, running_config):
