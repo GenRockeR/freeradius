@@ -174,6 +174,7 @@ def _process(output):
         raise Exception("missing required config settings...")
     meta.all_vlans = vlans.keys()
     meta.blacklist = blacklist
+    vlans_with_users = {}
     for f_name in _get_by_indicator(USER_INDICATOR):
         print "composing..." + f_name
         for obj in _load_objs(f_name, users.__config__.Assignment):
@@ -185,6 +186,7 @@ def _process(output):
             vlan = obj.vlan
             if vlan not in vlans:
                 raise Exception("no vlan defined for " + key)
+            vlans_with_users[vlan] = vlans[vlan]
             meta.vlan_user(vlan, key)
             fqdn = vlan + "." + key
             if not obj.check():
@@ -222,7 +224,7 @@ def _process(output):
     meta.verify()
     full = {}
     full[wrapper.freepydius.USER_KEY] = user_objs
-    full[wrapper.freepydius.VLAN_KEY] = vlans
+    full[wrapper.freepydius.VLAN_KEY] = vlans_with_users
     full[wrapper.freepydius.BLCK_KEY] = blacklist
     full[wrapper.freepydius.BYPASS_KEY] = bypass_objs
     with open(output, 'w') as f:
