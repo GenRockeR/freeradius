@@ -43,6 +43,7 @@ LEASE_PASTE = "PHAB_LEASE_PASTE"
 FLAG_MGMT_LEASE = "LEASE_MGMT"
 IS_SECONDARY = "IS_SECONDARY"
 OFF_DAYS = "OFF_DAYS"
+NOT_CRUFT = "NOT_CRUFT"
 
 
 class Env(object):
@@ -62,6 +63,7 @@ class Env(object):
         self.mgmt_ips = None
         self.is_secondary = None
         self.off_days = None
+        self.not_cruft = None
 
     def add(self, key, value):
         """Add a key, sets into environment."""
@@ -88,6 +90,8 @@ class Env(object):
             self.is_secondary = value
         elif key == OFF_DAYS:
             self.off_days = value
+        elif key == NOT_CRUFT:
+            self.not_cruft = value
 
     def _error(self, key):
         """Print an error."""
@@ -116,6 +120,7 @@ class Env(object):
             errors += self._in_error(FLAG_MGMT_LEASE, self.mgmt_ips)
             errors += self._in_error(IS_SECONDARY, self.is_secondary)
             errors += self._in_error(OFF_DAYS, self.off_days)
+            errors += self._in_error(NOT_CRUFT, self.not_cruft)
         if errors > 0:
             exit(1)
 
@@ -497,9 +502,11 @@ def optimize_config(env, optimized_configs, running_config):
         run_conf = json.loads(f.read())
     suggestions = []
     users = run_conf[wrapper.USERS]
+    not_cruft = env.not_cruft.split(" ")
     for user in users:
         if user not in opt_conf:
-            suggestions.append("drop user {}".format(user))
+            if user not in not_cruft:
+                suggestions.append("drop user {}".format(user))
     cruft = []
     for user in opt_conf:
         if user not in users:
