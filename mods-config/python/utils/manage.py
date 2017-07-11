@@ -287,11 +287,11 @@ def post_content(env, page, title, content):
 
 def get_user_attr(user, key):
     """Get user attributes."""
-    attrs = {}
+    attributes = {}
     for u in user:
         attrs = [x for x in user[u][wrapper.ATTR] if x.startswith(key + "=")]
         if len(attrs) == 1:
-            attrs[u] = attrs[0].split("=")[1]
+            attributes[u] = attrs[0].split("=")[1]
     return attr
 
 
