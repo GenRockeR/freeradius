@@ -512,7 +512,7 @@ def optimize_config(env, optimized_configs, running_config):
         run_conf = json.loads(f.read())
     suggestions = []
     users = run_conf[wrapper.USERS]
-    not_cruft = get_not_cruft()
+    not_cruft = get_not_cruft(users)
     for user in users:
         if user not in opt_conf:
             if user not in not_cruft:
