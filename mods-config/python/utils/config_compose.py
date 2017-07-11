@@ -97,6 +97,7 @@ class ConfigMeta(object):
         """VLAN to VLAN mappings."""
         self.vlan_initiate.append(vlan_to)
 
+
 def _create_obj(macs, password, attrs, port_bypassed):
     """create a user definition."""
     return {wrapper.freepydius.MAC_KEY: macs,
