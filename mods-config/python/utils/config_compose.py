@@ -29,6 +29,7 @@ class ConfigMeta(object):
         self.user_name = []
         self.vlan_users = []
         self.attrs = []
+        self.vlan_initiate = []
 
     def password(self, password):
         """password group validation(s)."""
@@ -65,9 +66,14 @@ class ConfigMeta(object):
             if mac in self.macs:
                 print "mac is user assigned: " + mac
                 exit(-1)
-        if len(set(self.vlans)) != len(set(self.all_vlans)):
+        used_vlans = set(self.vlans + self.vlan_initiate)
+        if len(used_vlans) != len(set(self.all_vlans)):
             print "unused vlans detected"
             exit(-1)
+        for ref in used_vlans:
+            if ref not in self.all_vlans:
+                print "reference to unknown vlan: " + ref
+                exit(-1)
         if len(set(self.blacklist)) != len(self.blacklist):
             print "duplicate blacklisted items"
             exit(-1)
@@ -87,6 +93,9 @@ class ConfigMeta(object):
         self.vlan_users.append(vlan + "." + user)
         self.user_name.append(user)
 
+    def vlan_to_vlan(self, vlan_to):
+        """VLAN to VLAN mappings."""
+        self.vlan_initiate.append(vlan_to)
 
 def _create_obj(macs, password, attrs, port_bypassed):
     """create a user definition."""
@@ -151,6 +160,9 @@ def _process(output):
                     print "vlan number defined multiple times..."
                     exit(-1)
             vlans[obj.name] = num_str
+            if obj.initiate is not None and len(obj.initiate) > 0:
+                for init_to in obj.initiate:
+                    meta.vlan_to_vlan(init_to)
     for b_name in _get_by_indicator(BLKL_INDICATOR):
         print "loading blacklist..." + b_name
         for obj in _load_objs(b_name, users.__config__.Blacklist):

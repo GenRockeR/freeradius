@@ -40,6 +40,7 @@ class VLAN(object):
         """init the instance."""
         self.name = name
         self.num = number
+        self.initiate = None
 
     def check(self):
         """Check the definition."""
