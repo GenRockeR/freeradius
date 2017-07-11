@@ -516,8 +516,7 @@ def optimize_config(env, optimized_configs, running_config):
             if mac in macs:
                 macs.remove(mac)
         for m in macs:
-            if user not in not_cruft:
-                cruft.append((user, m))
+            cruft.append((user, m))
     content = _create_header()
     content += "\n"
     if len(cruft) > 0:
