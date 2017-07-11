@@ -144,7 +144,7 @@ def get_not_cruft(users):
     attrs = get_user_attr(users, "nocruft")
     for u in attrs:
         if attrs[u] == "1":
-            not_cruft.appent(u)
+            not_cruft.append(u)
     return not_cruft
 
 
