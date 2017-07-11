@@ -292,7 +292,7 @@ def get_user_attr(user, key):
         attrs = [x for x in user[u][wrapper.ATTR] if x.startswith(key + "=")]
         if len(attrs) == 1:
             attributes[u] = attrs[0].split("=")[1]
-    return attr
+    return attributes
 
 
 def get_user_resolutions(user):
