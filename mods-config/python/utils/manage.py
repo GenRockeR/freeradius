@@ -43,7 +43,6 @@ LEASE_PASTE = "PHAB_LEASE_PASTE"
 FLAG_MGMT_LEASE = "LEASE_MGMT"
 IS_SECONDARY = "IS_SECONDARY"
 OFF_DAYS = "OFF_DAYS"
-NOT_CRUFT = "NOT_CRUFT"
 
 
 class Env(object):
@@ -63,7 +62,6 @@ class Env(object):
         self.mgmt_ips = None
         self.is_secondary = None
         self.off_days = None
-        self.not_cruft = None
 
     def add(self, key, value):
         """Add a key, sets into environment."""
@@ -90,8 +88,6 @@ class Env(object):
             self.is_secondary = value
         elif key == OFF_DAYS:
             self.off_days = value
-        elif key == NOT_CRUFT:
-            self.not_cruft = value
 
     def _error(self, key):
         """Print an error."""
@@ -120,7 +116,6 @@ class Env(object):
             errors += self._in_error(FLAG_MGMT_LEASE, self.mgmt_ips)
             errors += self._in_error(IS_SECONDARY, self.is_secondary)
             errors += self._in_error(OFF_DAYS, self.off_days)
-            errors += self._in_error(NOT_CRUFT, self.not_cruft)
         if errors > 0:
             exit(1)
 
@@ -141,6 +136,16 @@ def _get_vars(env_file):
                 result.add(key, os.path.expandvars(val))
     result.validate()
     return result
+
+
+def get_not_cruft(users):
+    """Not-cruft users."""
+    not_cruft = []
+    attrs = get_user_attr(user, "nocruft")
+    for u in attrs:
+        if attrs[u] == "1":
+            not_cruft.appent(u)
+    return not_cruft
 
 
 def get_file_hash(file_name):
@@ -280,14 +285,19 @@ def post_content(env, page, title, content):
     post_get_data(env, "phriction.edit", data)
 
 
+def get_user_attr(user, key):
+    """Get user attributes."""
+    attrs = {}
+    for u in user:
+        attrs = [x for x in user[u][wrapper.ATTR] if x.startswith(key + "=")]
+        if len(attrs) == 1:
+            attrs[u] = attrs[0].split("=")[1]
+    return attr
+
+
 def get_user_resolutions(user):
     """Get user resolutions."""
-    aliases = {}
-    for u in user:
-        attrs = [x for x in user[u][wrapper.ATTR] if x.startswith("alias=")]
-        if len(attrs) == 1:
-            aliases[u] = attrs[0].split("=")[1]
-    return aliases
+    return get_user_attr(user, "alias")
 
 
 def resolve_user(user_name, user_resolutions):
@@ -502,7 +512,7 @@ def optimize_config(env, optimized_configs, running_config):
         run_conf = json.loads(f.read())
     suggestions = []
     users = run_conf[wrapper.USERS]
-    not_cruft = env.not_cruft.split(" ")
+    not_cruft = get_not_cruft()
     for user in users:
         if user not in opt_conf:
             if user not in not_cruft:
