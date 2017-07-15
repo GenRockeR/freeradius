@@ -141,10 +141,11 @@ def _get_vars(env_file):
 def get_not_cruft(users):
     """Not-cruft users."""
     not_cruft = []
-    attrs = get_user_attr(users, "nocruft")
-    for u in attrs:
-        if attrs[u] == "1":
-            not_cruft.append(u)
+    for flag in ["nocruft", "secondary"]:
+        attrs = get_user_attr(users, flag)
+        for u in attrs:
+            if attrs[u] == "1":
+                not_cruft.append(u)
     return not_cruft
 
 
