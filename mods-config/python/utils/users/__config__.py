@@ -6,9 +6,10 @@ import re
 PASSWORD_LENGTH = 32
 
 
-def is_mac(value):
+def is_mac(value, category=None):
     """validate if something appears to be a mac."""
     valid = False
+    reason = None
     if len(value) == 12:
         valid = True
         for c in value:
@@ -28,8 +29,16 @@ def is_mac(value):
                          'd',
                          'e',
                          'f']:
+                reason = 'character: ' + c
                 valid = False
                 break
+    else:
+        reason = 'too short'
+    if not valid:
+        cat = ''
+        if category is not None:
+            cat = " (" + category + ")"
+        print 'invalid mac: ' + reason + cat
     return valid
 
 
@@ -117,22 +126,22 @@ class Assignment(object):
             return self.report("no macs listed")
         for mac in self.macs:
             if not is_mac(mac):
-                return self.report("invalid mac")
+                return False
         if self.password is None or len(self.password) < 32:
             return self.report("no or short password")
         if not self.password.isalnum():
             return self.report("only alphanumerics supported in passwords")
         if self.bypass is not None and len(self.bypass) > 0:
             for mac in self.bypass:
-                if not is_mac(mac):
-                    return self.report("invalid bypass mac")
+                if not is_mac(mac, category='bypass'):
+                    return False 
         if self.port_bypass is not None and len(self.port_bypass):
             already_set = self.macs
             if self.bypass is not None:
                 already_set = already_set + self.bypass
             for mac in self.port_bypass:
                 if not is_mac(mac):
-                    return self.report("invalid mac")
+                    return False
                 if mac in already_set:
                     return self.report("invalid port bypass mac")
         if len(self.macs) != len(set(self.macs)):
