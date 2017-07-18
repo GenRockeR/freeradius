@@ -43,6 +43,7 @@ LEASE_PASTE = "PHAB_LEASE_PASTE"
 FLAG_MGMT_LEASE = "LEASE_MGMT"
 IS_SECONDARY = "IS_SECONDARY"
 OFF_DAYS = "OFF_DAYS"
+SYNAPSE_FEED="SYNAPSE_FEED"
 
 
 class Env(object):
@@ -62,6 +63,7 @@ class Env(object):
         self.mgmt_ips = None
         self.is_secondary = None
         self.off_days = None
+        self.synapse_feed = None
 
     def add(self, key, value):
         """Add a key, sets into environment."""
@@ -88,6 +90,8 @@ class Env(object):
             self.is_secondary = value
         elif key == OFF_DAYS:
             self.off_days = value
+        elif key == SYNAPSE_FEED:
+            self.synapse_feed = value
 
     def _error(self, key):
         """Print an error."""
@@ -116,6 +120,7 @@ class Env(object):
             errors += self._in_error(FLAG_MGMT_LEASE, self.mgmt_ips)
             errors += self._in_error(IS_SECONDARY, self.is_secondary)
             errors += self._in_error(OFF_DAYS, self.off_days)
+            errors += self._in_error(SYNAPSE_FFED, self.synapse_feed)
         if errors > 0:
             exit(1)
 
@@ -645,6 +650,10 @@ def build():
         if secondary:
             status = "secondary"
         _smirc("{} -> {} ({})".format(status, git, hashed))
+         post_get_data(env,
+                       "feed.publish",
+                       {"tag": env.synapse_feed,
+                        "title": "radius configured update."})
     if not secondary:
         daily_report(env, run_config)
 
