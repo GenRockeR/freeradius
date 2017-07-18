@@ -120,7 +120,7 @@ class Env(object):
             errors += self._in_error(FLAG_MGMT_LEASE, self.mgmt_ips)
             errors += self._in_error(IS_SECONDARY, self.is_secondary)
             errors += self._in_error(OFF_DAYS, self.off_days)
-            errors += self._in_error(SYNAPSE_FFED, self.synapse_feed)
+            errors += self._in_error(SYNAPSE_FEED, self.synapse_feed)
         if errors > 0:
             exit(1)
 
