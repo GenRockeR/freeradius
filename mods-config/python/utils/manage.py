@@ -650,10 +650,10 @@ def build():
         if secondary:
             status = "secondary"
         _smirc("{} -> {} ({})".format(status, git, hashed))
-         post_get_data(env,
-                       "feed.publish",
-                       {"tag": env.synapse_feed,
-                        "title": "radius configured update."})
+        post_get_data(env,
+                      "feed.publish",
+                      {"tag": env.synapse_feed,
+                       "title": "radius configured update."})
     if not secondary:
         daily_report(env, run_config)
 
