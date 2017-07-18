@@ -652,8 +652,9 @@ def build():
         _smirc("{} -> {} ({})".format(status, git, hashed))
         post_get_data(env,
                       "feed.publish",
-                      {"tag": env.synapse_feed,
-                       "title": "radius configured update."})
+                      {"type": "PhabricatorFeedTaggedStory",
+                       "data[tag]": env.synapse_feed,
+                       "data[title]": "radius configured update."})
     if not secondary:
         daily_report(env, run_config)
 
