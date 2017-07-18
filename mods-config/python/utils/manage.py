@@ -654,7 +654,7 @@ def build():
                       "feed.publish",
                       {"type": "PhabricatorFeedTaggedStory",
                        "data[tag]": env.synapse_feed,
-                       "data[title]": "radius configured update."})
+                       "data[title]": "radius configuration updated."})
     if not secondary:
         daily_report(env, run_config)
 
