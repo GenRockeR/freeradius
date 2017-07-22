@@ -50,6 +50,10 @@ class VLAN(object):
         self.name = name
         self.num = number
         self.initiate = None
+        self.route = None
+        self.net = None
+        self.owner = None
+        self.desc = None
 
     def check(self):
         """Check the definition."""
