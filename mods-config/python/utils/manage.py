@@ -568,7 +568,6 @@ def daily_report(env, running_config):
     reports = {}
     titles = {}
     optimized_confs = []
-    all_signs = os.path.join(env.log_files, "signatures.csv")
     for item in range(1, 11):
         date_offset = _get_date_offset(item)
         path = os.path.join(env.log_files,
@@ -606,15 +605,6 @@ def daily_report(env, running_config):
             opt_conf = json.loads(optimized_config)
             optimized_confs.append(opt_conf)
 
-    signs = "signatures"
-    titles[signs] = "Signatures"
-    signs = signs.lower()
-    with open(all_signs, 'r') as f:
-        reports[signs] = _create_header()
-        reports[signs] += """
-| signature |\n| -- |\n"""
-        for line in sorted(f):
-            reports[signs] += "| {} |\n".format(line.strip())
     for report in reports:
         html = reports[report]
         title = titles[report]
