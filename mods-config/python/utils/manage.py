@@ -440,7 +440,7 @@ def _create_lease_table(env, leases, unknowns, statics, header, filter_fxn):
         current = leases[lease]
         attrs = []
         lease_value = lease
-        for obj in sorted(current):
+        for obj in sorted(set(current)):
             attrs.append(obj)
         if lease in unknowns and lease not in statics:
             report_objs.append(lease_value)
