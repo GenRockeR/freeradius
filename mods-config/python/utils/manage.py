@@ -453,7 +453,7 @@ def _create_lease_table(env, leases, unknowns, statics, header, filter_fxn):
         content = content + "| {} | {} |\n".format(output[0],
                                                    output[1])
     if len(report_objs) > 0:
-        _smirc("unknown leases: " + ", ".join(report_objs))
+        _smirc("unknown leases (" + header + "): " + ", ".join(report_objs))
     return content
 
 
