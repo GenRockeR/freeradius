@@ -461,7 +461,7 @@ def _smirc(text):
     """Sending via smirc."""
     import smirc
     try:
-        smirc.run(added=[text])
+        smirc.run(arguments=[text])
     except Exception as e:
         print("unable to send via smirc")
         print(str(e))
