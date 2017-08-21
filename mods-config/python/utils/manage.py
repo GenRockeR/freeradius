@@ -459,12 +459,7 @@ def _create_lease_table(env, leases, unknowns, statics, header, filter_fxn):
 
 def _smirc(text):
     """Sending via smirc."""
-    import smirc
-    try:
-        smirc.run(added=[text])
-    except Exception as e:
-        print("unable to send via smirc")
-        print(str(e))
+    call(["smirc"], "sending to smirc", ins=text)
 
 
 def _get_date_offset(days):
