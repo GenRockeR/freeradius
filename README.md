@@ -143,6 +143,10 @@ at this point running the radius server should be possible, though nothing can a
 radiusd -X
 ```
 
+### additional
+
+for some management communications/reporting, install [smirc](https://mirror.epiphyte.network/repos/)
+
 ---
 
 ## configuration file (network.json)
