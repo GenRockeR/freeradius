@@ -180,8 +180,8 @@ class Log(object):
 
 
 def instantiate(p):
-  print "*** instantiate ***"
-  print p
+  print("*** instantiate ***")
+  print(p)
   with rlock:
     global logger
     logger = logging.getLogger("freepydius-logger")
@@ -202,10 +202,10 @@ def authenticate(p):
   log = Log("AUTHENTICATE")
   log.log(p)
   radiusd.radlog(radiusd.L_INFO, '*** radlog call in authenticate ***')
-  print
-  print p
-  print
-  print radiusd.config
+  print()
+  print(p)
+  print()
+  print(radiusd.config)
   return radiusd.RLM_MODULE_OK
 
 
@@ -216,14 +216,14 @@ def checksimul(p):
 def authorize(p):
   log = Log("AUTHORIZE")
   log.log(p)
-  print "*** authorize ***"
-  print
+  print("*** authorize ***")
+  print()
   radiusd.radlog(radiusd.L_INFO, '*** radlog call in authorize ***')
-  print
-  print p
-  print
-  print radiusd.config
-  print
+  print()
+  print(p)
+  print()
+  print(radiusd.config)
+  print()
   user_mac = _get_user_mac(p)
   user = user_mac[0]
   macs = user_mac[1]
@@ -245,38 +245,38 @@ def authorize(p):
 
 
 def preacct(p):
-  print "*** preacct ***"
-  print p
+  print("*** preacct ***")
+  print(p)
   return radiusd.RLM_MODULE_OK
 
 
 def accounting(p):
   log = Log("ACCOUNTING")
   log.log(p)
-  print "*** accounting ***"
+  print("*** accounting ***")
   radiusd.radlog(radiusd.L_INFO, '*** radlog call in accounting (0) ***')
-  print
-  print p
+  print()
+  print(p)
   return radiusd.RLM_MODULE_OK
 
 
 def pre_proxy(p):
-  print "*** pre_proxy ***"
-  print p
+  print("*** pre_proxy ***")
+  print(p)
   return radiusd.RLM_MODULE_OK
 
 
 def post_proxy(p):
-  print "*** post_proxy ***"
-  print p
+  print("*** post_proxy ***")
+  print(p)
   return radiusd.RLM_MODULE_OK
 
 
 def post_auth(p):
   log = Log("POSTAUTH")
   log.log(p)
-  print "*** post_auth ***"
-  print p
+  print("*** post_auth ***")
+  print(p)
   user_mac = _get_user_mac(p)
   response = radiusd.RLM_MODULE_REJECT
   user = user_mac[0]
@@ -289,17 +289,17 @@ def post_auth(p):
 
 
 def recv_coa(p):
-  print "*** recv_coa ***"
-  print p
+  print("*** recv_coa ***")
+  print(p)
   return radiusd.RLM_MODULE_OK
 
 
 def send_coa(p):
-  print "*** send_coa ***"
-  print p
+  print("*** send_coa ***")
+  print(p)
   return radiusd.RLM_MODULE_OK
 
 
 def detach():
-  print "*** goodbye from example.py ***"
+  print("*** goodbye from example.py ***")
   return radiusd.RLM_MODULE_OK
