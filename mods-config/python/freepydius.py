@@ -202,9 +202,9 @@ def authenticate(p):
   log = Log("AUTHENTICATE")
   log.log(p)
   radiusd.radlog(radiusd.L_INFO, '*** radlog call in authenticate ***')
-  print()
+  print("")
   print(p)
-  print()
+  print("")
   print(radiusd.config)
   return radiusd.RLM_MODULE_OK
 
@@ -217,13 +217,13 @@ def authorize(p):
   log = Log("AUTHORIZE")
   log.log(p)
   print("*** authorize ***")
-  print()
+  print("")
   radiusd.radlog(radiusd.L_INFO, '*** radlog call in authorize ***')
-  print()
+  print("")
   print(p)
-  print()
+  print("")
   print(radiusd.config)
-  print()
+  print("")
   user_mac = _get_user_mac(p)
   user = user_mac[0]
   macs = user_mac[1]
@@ -255,7 +255,7 @@ def accounting(p):
   log.log(p)
   print("*** accounting ***")
   radiusd.radlog(radiusd.L_INFO, '*** radlog call in accounting (0) ***')
-  print()
+  print("")
   print(p)
   return radiusd.RLM_MODULE_OK
 
