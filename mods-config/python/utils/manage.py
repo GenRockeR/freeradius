@@ -277,7 +277,8 @@ def post_get_data(env, endpoint, data):
     """Post to get data."""
     data["api.token"] = env.phab_token
     payload = urllib.parse.urlencode(data)
-    r = urllib.request.urlopen(env.phab + "/api/" + endpoint, data=payload)
+    r = urllib.request.urlopen(env.phab + "/api/" + endpoint,
+                               data=payload.encode("utf-8"))
     resp = r.read()
     print(resp)
     return resp
