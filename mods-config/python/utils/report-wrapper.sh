@@ -7,10 +7,10 @@ case $1 in
         if [ $1 == "optimize" ]; then
             reporting="--optimize"
         fi
-        python2.7 report.py --database $TMPDB $reporting | tail -n +$4 >> $5
+        python report.py --database $TMPDB $reporting | tail -n +$4 >> $5
         ;;
     "store")
         rm -f $TMPDB
-        cat $2 | python2.7 store.py
+        cat $2 | python store.py
         ;;
 esac
