@@ -38,7 +38,7 @@ class Entry(object):
 
 def _clean_object(cursor, table, column, key, conv):
     """clean an object."""
-    print "cleaning up: " + table
+    print("cleaning up: " + table)
     cursor.execute('CREATE TABLE {0} (line integer, {1} text)'.format(table,
                                                                       column))
     cursor.execute("SELECT line, val FROM data WHERE key = '{0}'".format(key))
