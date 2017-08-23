@@ -1,12 +1,3 @@
-/var/log/radius/radacct/*/detail {
-         notifempty
-         daily
-         missingok
-         rotate 3650
-         copytruncate
-         compress
-}
-
 /var/log/radius/radius.log {
          notifempty
          daily
