@@ -275,7 +275,7 @@ u_obj.vlan = None
 def post_get_data(env, endpoint, data):
     """Post to get data."""
     data["api.token"] = env.phab_token
-    payload = urllib.urlencode(data)
+    payload = urllib.parse.urlencode(data)
     r = urllib.request.urlopen(env.phab + "/api/" + endpoint, data=payload)
     resp = r.read()
     print(resp)
