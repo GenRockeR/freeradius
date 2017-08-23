@@ -143,6 +143,11 @@ at this point running the radius server should be possible, though nothing can a
 radiusd -X
 ```
 
+finally we can configure a log rotation
+```
+ln -s /etc/raddb/radius.logrotate /etc/logrotate.d/radius
+```
+
 ### additional
 
 for some management communications/reporting, install [smirc](https://mirror.epiphyte.network/repos/)
