@@ -33,6 +33,7 @@ README.md
 ${SITES_AVAIL}\/default
 ${SITES_AVAIL}\/inner-tunnel
 vmpsd.conf.in
+radius.logrotate
 "
 
 function checksum-files()
