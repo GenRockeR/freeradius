@@ -1,6 +1,5 @@
 #!/usr/bin/python
 """Testing harness for freepydius implementation."""
-
 import argparse
 import wrapper
 
@@ -47,7 +46,7 @@ def main():
     attr = getattr(wrapper.freepydius, args.method)
     res = attr(tuples)
     print(res)
-    print
+    print("")
 
 if __name__ == '__main__':
     main()

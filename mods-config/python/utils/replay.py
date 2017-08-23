@@ -1,6 +1,5 @@
 #!/usr/bin/python
 """log replay for trace logging."""
-
 import argparse
 import ast
 import subprocess
@@ -11,7 +10,7 @@ KEY = " -> "
 
 def _commented(text):
     """commented line."""
-    print "# " + text
+    print("# " + text)
 
 
 def main():
@@ -41,15 +40,15 @@ def main():
             elif typed == "ACCOUNTING":
                 method = "accounting"
             else:
-                print "unknown method: " + method
+                print("unknown method: " + method)
                 exit(-1)
             cmd = ["python2.7", "harness.py", method]
             for item in objs:
                 cmd.append(item)
             _commented(method)
-            print _commented(" ".join(cmd))
+            print(_commented(" ".join(cmd)))
             subprocess.Popen(cmd)
-            print
+            print("")
 
 if __name__ == '__main__':
     main()

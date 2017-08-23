@@ -247,14 +247,14 @@ def _print_data(cat, curs, opts, converter=None):
     formatter = join_fmt.join(format_str)
     if opts.markdown:
         formatter = "| " + formatter + " |"
-        print formatter.format(*cols)
-        print formatter.format(*["--" for x in cols])
+        print(formatter.format(*cols))
+        print(formatter.format(*["--" for x in cols]))
     else:
-        print "{0} - ({1})".format(cat, ", ".join(cols))
-        print "==="
+        print("{0} - ({1})".format(cat, ", ".join(cols)))
+        print("===")
     for row in _gen():
-        print formatter.format(*row)
-    print
+        print(formatter.format(*row))
+    print("")
 
 
 def _get_cols(cursor):
@@ -426,7 +426,7 @@ def main():
         if item in available:
             available[item](curs, opts)
         else:
-            print "unknown report..." + item
+            print("unknown report..." + item)
     conn.close()
 
 if __name__ == "__main__":
