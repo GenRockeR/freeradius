@@ -461,6 +461,7 @@ def _create_lease_table(env, leases, unknowns, statics, header, filter_fxn):
 def _smirc(text):
     """Sending via smirc."""
     import smirc
+    print("smirc: {}".format(text))
     smirc.run(arguments=[text])
 
 
