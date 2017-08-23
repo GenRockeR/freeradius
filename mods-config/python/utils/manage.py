@@ -12,7 +12,8 @@ import random
 import string
 import filecmp
 import pwd
-import urllib
+import urllib.parse
+import urllib.request
 import datetime
 
 # user setup
