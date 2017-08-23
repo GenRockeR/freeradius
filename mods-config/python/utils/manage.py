@@ -12,7 +12,6 @@ import random
 import string
 import filecmp
 import pwd
-import urllib2
 import urllib
 import datetime
 
@@ -277,7 +276,7 @@ def post_get_data(env, endpoint, data):
     """Post to get data."""
     data["api.token"] = env.phab_token
     payload = urllib.urlencode(data)
-    r = urllib2.urlopen(env.phab + "/api/" + endpoint, data=payload)
+    r = urllib.request.urlopen(env.phab + "/api/" + endpoint, data=payload)
     resp = r.read()
     print(resp)
     return resp
