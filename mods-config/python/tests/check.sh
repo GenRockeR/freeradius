@@ -74,7 +74,7 @@ for f in $(echo "b c u v"); do
 done
 cp *.py $USRS
 OUT_JSON="actual.json"
-python2.7 ../utils/config_compose.py --output $OUT_JSON
+python ../utils/config_compose.py --output $OUT_JSON
 diff expected.json $OUT_JSON
 if [ $? -ne 0 ]; then
     echo "different composed results..."
