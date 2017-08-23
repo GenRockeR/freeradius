@@ -1,6 +1,6 @@
 /var/log/radius/radius.log {
          notifempty
-         daily
+         monthly
          missingok
          rotate 3650
          copytruncate
