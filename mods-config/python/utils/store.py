@@ -63,7 +63,7 @@ def _accept(input_stream):
                  key text,
                  val text,
                  type text)''')
-    print "streaming text into database..."
+    print("streaming text into database...")
     for line in input_stream:
         parts = line.split(replay.KEY)
         meta = parts[0]
