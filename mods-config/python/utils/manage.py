@@ -462,7 +462,11 @@ def _smirc(text):
     """Sending via smirc."""
     import smirc
     print("smirc: {}".format(text))
-    smirc.run(arguments=[text])
+    try:
+        smirc.run(arguments=[text])
+    except smirc.SMIRCError as e:
+        print("smirc error")
+        print(str(e))
 
 
 def _get_date_offset(days):
