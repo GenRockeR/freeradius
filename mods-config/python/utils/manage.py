@@ -211,6 +211,9 @@ def compose(env):
 
 def gen_pass(dump, key):
     """Generate password for a user account."""
+    if key is None:
+        print("no key available")
+        exit(1)
     rands = ''.join(random.choice(CHARS) for _ in range(64))
     encoded = wrapper.encrypt(rands, key)
     raw = wrapper.decrypt(encoded, key)
