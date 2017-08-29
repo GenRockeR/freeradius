@@ -22,6 +22,7 @@ BLCK_KEY = "blacklist"
 BYPASS_KEY = "bypass"
 ATTR_KEY = "attr"
 PORT_BYPASS_KEY = "port"
+_IS_BYPASS = "isbypass"
 rlock = threading.RLock()
 logger = None
 _CONFIG_FILE_NAME="network.json"
@@ -120,7 +121,7 @@ def _config(input_name):
             vlan_name = bypass[lowered]
             if vlan_name in vlans:
                 # input_name (User-Name) HAS to == "pass"
-                user_obj = { PASS_KEY: input_name, MAC_KEY: [lowered] }
+                user_obj = { PASS_KEY: input_name, MAC_KEY: [lowered], _IS_BYPASS: True }
                 vlan_obj = vlans[vlan_name]
     return (user_obj, vlan_obj)
 
@@ -194,7 +195,10 @@ def _get_pass(user_name):
   user = config[0]
   if user is not None:
     if PASS_KEY in user:
-      return _decrypt(user[PASS_KEY], _get_tea_key())
+      if _IS_BYPASS in user and user[_IS_BYPASS]:
+        return user[PASS_KEY]
+      else:
+        return _decrypt(user[PASS_KEY], _get_tea_key())
 
 
 def _get_vlan(user_name, macs):
