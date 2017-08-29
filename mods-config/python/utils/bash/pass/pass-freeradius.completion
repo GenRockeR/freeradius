@@ -1,0 +1,21 @@
+#!/bin/bash
+function _pass-freeradius()
+{
+    local cur opts prev
+    source /usr/bin/pass-freeradius
+    cur=${COMP_WORDS[COMP_CWORD]}
+    prev=${COMP_WORDS[COMP_CWORD-1]}
+    case $COMP_CWORD in
+        1)
+            opts="$CP $LS $SH"
+        ;;
+        2)
+            if [ $prev == $CP ] || [ $prev == $SH ]; then
+                opts=$(get-users)
+            fi
+        ;;
+    esac
+    COMPREPLY=( $(compgen -W "$opts" -- $cur) )
+}
+
+complete -F _pass-freeradius pass-freeradius
