@@ -218,6 +218,9 @@ def gen_pass(dump, key):
     rands = ''.join(random.choice(CHARS) for _ in range(64))
     encoded = wrapper.encrypt(rands, key)
     raw = wrapper.decrypt(encoded, key)
+    if rands != raw:
+        print("encrypt/decrypt problem")
+        exit(1)
     if dump:
         print("password:")
         print(raw)

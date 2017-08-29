@@ -10,6 +10,7 @@ import logging
 import os
 import threading
 import uuid
+import random
 from ctypes import *
 from logging.handlers import TimedRotatingFileHandler
 
@@ -34,6 +35,7 @@ _DOMAIN_SLASH = "\\"
 _ENC_KEY_FILE = _PY_CONF + 'keyfile'
 _ENC_DELIMITER = "."
 _ENC_KEY = "|"
+_ENC_PAD = ord(":")
 
 def byteify(input):
   """make sure we get strings."""
@@ -144,28 +146,49 @@ def _get_tea_key():
     return _convert_key(f.read().strip())
 
 
-def _encrypt(v, key):
+def _split_key(key):
+  if _ENC_PAD not in key:
+    raise Exception("invalid key input - no padding indicator")
+  idx = key.index(_ENC_PAD)
+  pad = "".join([chr(x) for ind, x in enumerate(key) if ind < idx])
+  keyed = [x for ind, x in enumerate(key) if ind > idx]
+  return (int(pad), keyed)
+
+
+def _encrypt(v, key_input):
   if len(v) % 2 != 0:
     raise Exception("value must be divisible by 2")
   resulting = []
+  key_parts = _split_key(key_input)
+  key = key_parts[1]
+  pad = key_parts[0]
   for i in range(0, len(v)):
     if i % 2 == 1:
       continue
     k = key[i:i+4]
     cur = (ord(v[i]), ord(v[i + 1]))
     res = _tea_encrypt(cur, k)
-    resulting.append("{}{}{}".format(res[0], _ENC_DELIMITER, res[1]))
+    f_pad = str(random.randint(0, 999)).rjust(pad, '0')
+    l_pad = str(random.randint(0, 999)).rjust(pad, '0')
+    resulting.append("{}{}{}{}{}".format(f_pad,
+                                         res[0],
+                                         _ENC_DELIMITER,
+                                         l_pad,
+                                         res[1]))
   return _ENC_KEY.join(resulting)
 
 
-def _decrypt(v, key):
+def _decrypt(v, key_input):
   split = v.split(_ENC_KEY)
   resulting = []
   idx = 0
+  key_parts = _split_key(key_input)
+  key = key_parts[1]
+  pad = key_parts[0]
   for item in split:
     k = key[idx:idx+4]
     parts = item.split(_ENC_DELIMITER)
-    res = _tea_decrypt((int(parts[0]), int(parts[1])), k)
+    res = _tea_decrypt((int(parts[0][pad:]), int(parts[1][pad:])), k)
     resulting.append(chr(res[0]))
     resulting.append(chr(res[1]))
     idx = idx + 2
