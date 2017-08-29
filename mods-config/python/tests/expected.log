@@ -33,7 +33,7 @@ vlan2.user6 - 000011112222
 
 ()
 
-(2, (), (('Cleartext-Password', 'pass1'),))
+(2, (), (('Cleartext-Password', 'aeb2Yei3fohCe5pheaz0ieVie2bee2ae'),))
 
 # alt.json
 *** authorize ***
@@ -44,7 +44,7 @@ vlan2.user6 - 000011112222
 
 ()
 
-(2, (), (('Cleartext-Password', 'pass1'),))
+(2, (), (('Cleartext-Password', 'aeb2Yei3fohCe5pheaz0ieVie2bee2ae'),))
 
 vlan1.user4 - 001122334455
 ===
@@ -68,7 +68,7 @@ vlan1.user4 - 001122334455
 
 ()
 
-(2, (('Tunnel-Type', 'VLAN'), ('Tunnel-Medium-Type', 'IEEE-802'), ('Tunnel-Private-Group-Id', '10')), (('Cleartext-Password', 'pass2'),))
+(2, (('Tunnel-Type', 'VLAN'), ('Tunnel-Medium-Type', 'IEEE-802'), ('Tunnel-Private-Group-Id', '10')), (('Cleartext-Password', 'jaipohM6ooDokaeGh3aecheeTaiquaew'),))
 
 vlan2.user1 - 001122334455
 ===
@@ -92,7 +92,7 @@ vlan2.user1 - 001122334455
 
 ()
 
-(2, (('Tunnel-Type', 'VLAN'), ('Tunnel-Medium-Type', 'IEEE-802'), ('Tunnel-Private-Group-Id', '11')), (('Cleartext-Password', 'pass4'),))
+(2, (('Tunnel-Type', 'VLAN'), ('Tunnel-Medium-Type', 'IEEE-802'), ('Tunnel-Private-Group-Id', '11')), (('Cleartext-Password', 'caiZu2aelah0aitieneef3cohThu7eid'),))
 
 vlan2.user2 - 001122334455
 ===
@@ -116,7 +116,7 @@ vlan2.user2 - 001122334455
 
 ()
 
-(2, (('Tunnel-Type', 'VLAN'), ('Tunnel-Medium-Type', 'IEEE-802'), ('Tunnel-Private-Group-Id', '11')), (('Cleartext-Password', 'pass5'),))
+(2, (('Tunnel-Type', 'VLAN'), ('Tunnel-Medium-Type', 'IEEE-802'), ('Tunnel-Private-Group-Id', '11')), (('Cleartext-Password', 'Aovohxei6AfohquaereJe1aiKuGhoaza'),))
 
 vlan2.user3 - 001122334455
 ===
@@ -140,7 +140,7 @@ vlan2.user3 - 001122334455
 
 ()
 
-(2, (('Tunnel-Type', 'VLAN'), ('Tunnel-Medium-Type', 'IEEE-802'), ('Tunnel-Private-Group-Id', '11')), (('Cleartext-Password', 'pass1'),))
+(2, (('Tunnel-Type', 'VLAN'), ('Tunnel-Medium-Type', 'IEEE-802'), ('Tunnel-Private-Group-Id', '11')), (('Cleartext-Password', 'wich5angei4bei5Chie4xe7thai8wiew'),))
 
 vlan2.user6 - 001122334455
 ===
@@ -153,7 +153,7 @@ vlan2.user6 - 001122334455
 
 ()
 
-(2, (('Tunnel-Type', 'VLAN'), ('Tunnel-Medium-Type', 'IEEE-802'), ('Tunnel-Private-Group-Id', '11')), (('Cleartext-Password', 'pass1'),))
+(2, (('Tunnel-Type', 'VLAN'), ('Tunnel-Medium-Type', 'IEEE-802'), ('Tunnel-Private-Group-Id', '11')), (('Cleartext-Password', 'aeb2Yei3fohCe5pheaz0ieVie2bee2ae'),))
 
 # alt.json
 *** authorize ***
@@ -164,7 +164,7 @@ vlan2.user6 - 001122334455
 
 ()
 
-(2, (('Tunnel-Type', 'VLAN'), ('Tunnel-Medium-Type', 'IEEE-802'), ('Tunnel-Private-Group-Id', '11')), (('Cleartext-Password', 'pass1'),))
+(2, (('Tunnel-Type', 'VLAN'), ('Tunnel-Medium-Type', 'IEEE-802'), ('Tunnel-Private-Group-Id', '11')), (('Cleartext-Password', 'aeb2Yei3fohCe5pheaz0ieVie2bee2ae'),))
 
 AABBCCDDEE11 - aabbccddee11
 ===
@@ -212,5 +212,5 @@ vlan2.usera - 001122334455
 
 ()
 
-(2, (('Tunnel-Type', 'VLAN'), ('Tunnel-Medium-Type', 'IEEE-802'), ('Tunnel-Private-Group-Id', '11')), (('Cleartext-Password', 'pass6'),))
+(2, (('Tunnel-Type', 'VLAN'), ('Tunnel-Medium-Type', 'IEEE-802'), ('Tunnel-Private-Group-Id', '11')), (('Cleartext-Password', 'aothinohxeG4shioLeig5chahl4su1Ie'),))
 
