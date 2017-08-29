@@ -174,7 +174,6 @@ def _tea_decrypt(v, k):
   delta=0x9E3779B9
   n=32
   w=[0,0]
-
   while(n>0):
       z.value -= ( y.value << 4 ) + k[2] ^ y.value + sum.value ^ ( y.value >> 5 ) + k[3]
       y.value -= ( z.value << 4 ) + k[0] ^ z.value + sum.value ^ ( z.value >> 5 ) + k[1]
@@ -191,7 +190,7 @@ def _get_pass(user_name):
   user = config[0]
   if user is not None:
     if PASS_KEY in user:
-      return user[PASS_KEY]
+      return _decrypt(user[PASS_KEY], _get_tea_key())
 
 
 def _get_vlan(user_name, macs):
