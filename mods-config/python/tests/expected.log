@@ -214,3 +214,13 @@ vlan2.usera - 001122334455
 
 (2, (('Tunnel-Type', 'VLAN'), ('Tunnel-Medium-Type', 'IEEE-802'), ('Tunnel-Private-Group-Id', '11')), (('Cleartext-Password', 'aothinohxeG4shioLeig5chahl4su1Ie'),))
 
+*** authorize ***
+
+*** radlog call in authorize ***
+
+(('User-Name', 'vlan1.user4'), ('Calling-Station-Id', '001122334455'))
+
+()
+
+(2, (), ())
+

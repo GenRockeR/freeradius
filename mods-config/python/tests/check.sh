@@ -65,6 +65,7 @@ function test-all()
     test-objs vlan2.user6 $valid_mac
     test-objs "AABBCCDDEE11" "aabbccddee11"
     test-objs vlan2.usera $valid_mac
+    test-config-full vlan1.user4 $valid_mac "network.json" "keyfile.pad"
 }
 
 test-all > $OUT

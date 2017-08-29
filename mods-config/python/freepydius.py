@@ -155,6 +155,13 @@ def _split_key(key):
   return (int(pad), keyed)
 
 
+def _pad(pad):
+    """Pad a value."""
+    if pad == 0:
+        return ""
+    return str(random.random()).replace(".", "").rjust(pad, '0')[0:pad]
+
+
 def _encrypt(v, key_input):
   if len(v) % 2 != 0:
     raise Exception("value must be divisible by 2")
@@ -168,8 +175,8 @@ def _encrypt(v, key_input):
     k = key[i:i+4]
     cur = (ord(v[i]), ord(v[i + 1]))
     res = _tea_encrypt(cur, k)
-    f_pad = str(random.randint(0, 999)).rjust(pad, '0')
-    l_pad = str(random.randint(0, 999)).rjust(pad, '0')
+    f_pad = _pad(pad)
+    l_pad = _pad(pad)
     resulting.append("{}{}{}{}{}".format(f_pad,
                                          res[0],
                                          _ENC_DELIMITER,
