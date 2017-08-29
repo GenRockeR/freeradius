@@ -7,10 +7,11 @@ LS="ls"
 CP="-c"
 SH="show"
 _RADIUS_PYTHON="/mods-config/python/"
+_CONF="/.config/epiphyte/env"
 
 function get-config()
 {
-    source $HOME/.config/epiphyte/env
+    source $HOME/$_CONF
     cat ${NETCONF}network.json
 }
 
@@ -50,6 +51,7 @@ function get-val()
     load-users | grep -q "$1"
     if [ $? -eq 0 ]; then
         # NOTE: if JSON ever gets really long this GREP will fail so...let's not have a user name start that far down...
+        source $HOME/$_CONF
         val=$(get-config | grep -A1000 "$1" | grep "\"pass\"" | head -n 1 | cut -d ":" -f 2 | sed "s/\"//g;s/,//g")
         val=$(PYTHONPATH="$PYTHONPATH:$FREERADIUS_REPO$_RADIUS_PYTHON" python $FREERADIUS_REPO${_RADIUS_PYTHON}utils/keying.py --oldkey $TEA_KEY --newkey $(pwgen 256 1) --password "$val" | grep "decrypted" | cut -d ":" -f 2)
         if [ -z $2 ]; then
