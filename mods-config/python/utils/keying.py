@@ -15,6 +15,7 @@ def change_password(old_key, new_key, password):
     if old_key is not None:
         old = wrapper.decrypt(old, _key(old_key))
     print("was: {}".format(password))
+    print("decrypted: {}".format(old))
     print("now:")
     print(wrapper.encrypt(old, _key(new_key)))
 
