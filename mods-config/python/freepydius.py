@@ -7,8 +7,10 @@
 import radiusd
 import json
 import logging
+import os
 import threading
 import uuid
+from ctypes import *
 from logging.handlers import TimedRotatingFileHandler
 
 # json keys
@@ -23,11 +25,14 @@ PORT_BYPASS_KEY = "port"
 rlock = threading.RLock()
 logger = None
 _CONFIG_FILE_NAME="network.json"
-_CONFIG_FILE = "/etc/raddb/mods-config/python/" + _CONFIG_FILE_NAME
+_PY_CONF = '/etc/raddb/mods-config/python/'
+_CONFIG_FILE = _PY_CONF + _CONFIG_FILE_NAME
 _LOG_FILE_NAME = 'trace.log'
 _LOG_FILE = "/var/log/radius/freepydius/" + _LOG_FILE_NAME
-
 _DOMAIN_SLASH = "\\"
+_ENC_KEY_FILE = _PY_CONF + 'keyfile'
+_ENC_DELIMITER = "."
+_ENC_KEY = "|"
 
 def byteify(input):
   """make sure we get strings."""
@@ -119,6 +124,66 @@ def _config(input_name):
                 vlan_obj = vlans[vlan_name]
     return (user_obj, vlan_obj)
 
+
+def _get_tea_key():
+  with open(_ENC_KEY_FILE, 'r') as f:
+    return f.read().strip()
+
+def _encrypt(v, key):
+  if len(v) % 2 != 0:
+    raise Exception("value must be divisible by 2")
+  resulting = []
+  for i in range(0, len(v)):
+    if i % 2 == 1:
+      continue
+    cur = (ord(v[i]), ord(v[i + 1]))
+    res = _tea_encrypt(cur, key)
+    resulting.append("{}{}{}".format(res[0], _ENC_DELIMITER, res[1]))
+  return _ENC_KEY.join(resulting)
+
+def _decrypt(v, key):
+  split = v.split(_ENC_KEY)
+  resulting = []
+  for item in split:
+    parts = item.split(_ENC_DELIMITER)
+    res = _tea_decrypt((int(parts[0]), int(parts[1])), key)
+    resulting.append(chr(res[0]))
+    resulting.append(chr(res[1]))
+  return "".join(resulting)
+
+def _tea_encrypt(v, k):
+  y = c_uint32(v[0]);
+  z = c_uint32(v[1]);
+  s = c_uint32(0);
+  delta = 0x9E3779B9;
+  n = 32
+  w = [0,0]
+  while (n > 0):
+    s.value += delta
+    y.value += ( z.value << 4 ) + k[0] ^ z.value + s.value ^ ( z.value >> 5 ) + k[1]
+    z.value += ( y.value << 4 ) + k[2] ^ y.value + s.value ^ ( y.value >> 5 ) + k[3]
+    n -= 1
+  w[0] = y.value
+  w[1] = z.value
+  return w
+
+def _tea_decrypt(v, k):
+  y=c_uint32(v[0])
+  z=c_uint32(v[1])
+  sum=c_uint32(0xC6EF3720)
+  delta=0x9E3779B9
+  n=32
+  w=[0,0]
+
+  while(n>0):
+      z.value -= ( y.value << 4 ) + k[2] ^ y.value + sum.value ^ ( y.value >> 5 ) + k[3]
+      y.value -= ( z.value << 4 ) + k[0] ^ z.value + sum.value ^ ( z.value >> 5 ) + k[1]
+      sum.value -= delta
+      n -= 1
+
+  w[0]=y.value
+  w[1]=z.value
+  return w
 
 def _get_pass(user_name):
   """set the configuration for down-the-line modules."""

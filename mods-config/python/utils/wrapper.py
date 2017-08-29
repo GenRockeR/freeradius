@@ -16,6 +16,14 @@ def convert_mac(mac):
     """convert mac."""
     return freepydius._convert_mac(mac)
 
+def encrypt(value, key):
+    """encrypt a value."""
+    return freepydius._encrypt(value, key)
+
+def decrypt(value, key):
+    """decrypt a value."""
+    return freepydius._decrypt(value, key)
+
 PORT = freepydius.PORT_BYPASS_KEY
 LOG_FILE = freepydius._LOG_FILE_NAME
 LOG_NAME = freepydius._LOG_FILE

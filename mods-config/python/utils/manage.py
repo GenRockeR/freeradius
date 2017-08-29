@@ -5,7 +5,6 @@ import os
 import shutil
 import hashlib
 import json
-import base64
 import subprocess
 import wrapper
 import random
@@ -210,34 +209,11 @@ def compose(env):
                    "--output", os.path.join(here, FILE_NAME)]
     call(composition, "compose configuration", working_dir=offset)
 
-
-def _base_json(obj):
-    """Convert 'pass' keys to base64 'pass64' keys."""
-    if isinstance(obj, dict):
-        res = {}
-        for key in obj.keys():
-            new_obj = obj[key]
-            if key == "pass":
-                b = new_obj.encode("utf-8")
-                res[key + "64"] = base64.b64encode(b).decode("utf-8")
-            else:
-                new_obj = _base_json(new_obj)
-                res[key] = new_obj
-        return res
-    else:
-        if isinstance(obj, list):
-            res = []
-            for key in obj:
-                res.append(_base_json(key))
-            return res
-        else:
-            return obj
-
-
-def gen_pass(dump):
+def gen_pass(dump, key):
     """Generate password for a user account."""
-    raw = ''.join(random.choice(CHARS) for _ in range(64))
-    encoded = base64.b64encode(raw).decode("utf-8")
+    rands = ''.join(random.choice(CHARS) for _ in range(64))
+    encoded = wrapper.encrypt(rands, key)
+    raw = wrapper.decrypt(encoded, key)
     if dump:
         print("password:")
         print(raw)
@@ -247,16 +223,16 @@ def gen_pass(dump):
         return (raw, encoded)
 
 
-def add_user():
+def add_user(key):
     """Add a new user definition."""
     print("please enter the user name:")
-    named = raw_input()
+    named = input()
     print("please enter the phabricator name to alias (blank to skip)")
-    aliased = raw_input()
+    aliased = input()
     alias = ""
     if aliased is not None and len(aliased) > 0:
         alias = "u_obj.attrs = [common.ALIASED + '{}']".format(aliased)
-    passes = gen_pass(False)
+    passes = gen_pass(False, key)
     raw = passes[0]
     password = passes[1]
     user_definition = """
@@ -667,7 +643,7 @@ def check():
         output = None
         with open(FILE_NAME, 'r') as f:
             j = json.loads(f.read())
-            output = json.dumps(_base_json(j),
+            output = json.dumps(j,
                                 sort_keys=True,
                                 indent=4,
                                 separators=(',', ': '))
@@ -682,15 +658,19 @@ def main():
                         nargs='?',
                         choices=[CHECK, ADD_USER, BUILD, GEN_PSWD],
                         default=CHECK)
+    parser.add_argument('--key', type=str)
     args = parser.parse_args()
+    key = None
+    if args.key:
+        key = [ord(x) for x in args.key]
     if args.action == CHECK:
         check()
     elif args.action == BUILD:
         build()
     elif args.action == ADD_USER:
-        add_user()
+        add_user(key)
     elif args.action == GEN_PSWD:
-        gen_pass(True)
+        gen_pass(True, key)
 
 if __name__ == "__main__":
     main()
