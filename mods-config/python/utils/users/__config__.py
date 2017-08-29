@@ -133,6 +133,15 @@ class Assignment(object):
                 return False
         if self.password is None or len(self.password) < 32:
             return self.report("no or short password")
+        for c in self.password:
+            try:
+                int(c)
+            except ValueError:
+                if c == '|' or c == '.':
+                    pass
+                else:
+                    return self.report("invalid character in password")
+
         if self.bypass is not None and len(self.bypass) > 0:
             for mac in self.bypass:
                 if not is_mac(mac, category='bypass'):
