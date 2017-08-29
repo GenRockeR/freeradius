@@ -1,9 +1,13 @@
 #!/usr/bin/python
+"""Password change/keying/etc."""
 import wrapper
 import argparse
 
+
 def _key(key):
+    """convert to a key."""
     return [ord(x) for x in key]
+
 
 def change_password(old_key, new_key, password):
     """change a password."""
@@ -13,6 +17,7 @@ def change_password(old_key, new_key, password):
     print("was: {}".format(password))
     print("now:")
     print(wrapper.encrypt(old, _key(new_key)))
+
 
 def main():
     """main-entry point."""

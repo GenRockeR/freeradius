@@ -209,6 +209,7 @@ def compose(env):
                    "--output", os.path.join(here, FILE_NAME)]
     call(composition, "compose configuration", working_dir=offset)
 
+
 def gen_pass(dump, key):
     """Generate password for a user account."""
     if key is None:
