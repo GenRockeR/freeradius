@@ -133,9 +133,16 @@ def _config(input_name):
     return (user_obj, vlan_obj)
 
 
+def _convert_key(key):
+    """Convert a key."""
+    return [ord(x) for x in key]
+
+
 def _get_tea_key():
+  """Get the TEA key from keyfile."""
   with open(_ENC_KEY_FILE, 'r') as f:
-    return [ord(x) for x in f.read().strip()]
+    return _convert_key(f.read().strip())
+
 
 def _encrypt(v, key):
   if len(v) % 2 != 0:
@@ -150,6 +157,7 @@ def _encrypt(v, key):
     resulting.append("{}{}{}".format(res[0], _ENC_DELIMITER, res[1]))
   return _ENC_KEY.join(resulting)
 
+
 def _decrypt(v, key):
   split = v.split(_ENC_KEY)
   resulting = []
@@ -162,6 +170,7 @@ def _decrypt(v, key):
     resulting.append(chr(res[1]))
     idx = idx + 2
   return "".join(resulting)
+
 
 def _tea_encrypt(v, k):
   y = c_uint32(v[0]);
