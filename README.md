@@ -213,6 +213,13 @@ vim /etc/raddb/mods-config/python/network.json
 }
 ```
 
+our config file is using a primitive encryption algorithm (TEA) to handle very simple encryption/password handling. A keyfile must be defined with a 4 character (or more, though more are ignored) string passkey
+```
+vim /etc/raddb/mods-config/python/keyfile
+---
+abcd
+```
+
 ### blacklist
 
 because it may be beneficial to temporarily disable a vlan, user, or device there is an ability to blacklist
