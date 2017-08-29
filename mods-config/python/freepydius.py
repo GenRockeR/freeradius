@@ -136,7 +136,7 @@ def _encrypt(v, key):
   for i in range(0, len(v)):
     if i % 2 == 1:
       continue
-    cur = (ord(v[i]), ord(v[i + 1]))
+    cur = (ord(v[i]) + i, ord(v[i + 1]) + i)
     res = _tea_encrypt(cur, key)
     resulting.append("{}{}{}".format(res[0], _ENC_DELIMITER, res[1]))
   return _ENC_KEY.join(resulting)
@@ -144,11 +144,13 @@ def _encrypt(v, key):
 def _decrypt(v, key):
   split = v.split(_ENC_KEY)
   resulting = []
+  idx = 0
   for item in split:
     parts = item.split(_ENC_DELIMITER)
     res = _tea_decrypt((int(parts[0]), int(parts[1])), key)
-    resulting.append(chr(res[0]))
-    resulting.append(chr(res[1]))
+    resulting.append(chr(res[0] - idx))
+    resulting.append(chr(res[1] - idx))
+    idx = idx + 2
   return "".join(resulting)
 
 def _tea_encrypt(v, k):
