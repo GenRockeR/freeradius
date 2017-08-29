@@ -31,6 +31,12 @@ def is_mac(mac):
     """Check if an object is a mac."""
     return freepydius._mac(mac)
 
+
+def convert_key(key):
+    """Convert a key for encrypt/decrypt functions."""
+    return freepydius._convert_key(key)
+
+
 PORT = freepydius.PORT_BYPASS_KEY
 LOG_FILE = freepydius._LOG_FILE_NAME
 LOG_NAME = freepydius._LOG_FILE

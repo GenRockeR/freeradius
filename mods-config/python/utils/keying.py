@@ -13,11 +13,11 @@ def change_password(old_key, new_key, password):
     """change a password."""
     old = password
     if old_key is not None:
-        old = wrapper.decrypt(old, _key(old_key))
+        old = wrapper.decrypt(old, wrapper.convert_key(old_key))
     print("was: {}".format(password))
     print("decrypted: {}".format(old))
     print("now:")
-    print(wrapper.encrypt(old, _key(new_key)))
+    print(wrapper.encrypt(old, wrapper.convert_key(new_key)))
 
 
 def main():

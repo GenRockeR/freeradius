@@ -666,7 +666,7 @@ def main():
     args = parser.parse_args()
     key = None
     if args.key:
-        key = [ord(x) for x in args.key]
+        key = wrapper.convert_key(args.key)
     if args.action == CHECK:
         check()
     elif args.action == BUILD:
