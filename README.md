@@ -213,7 +213,7 @@ vim /etc/raddb/mods-config/python/network.json
 }
 ```
 
-our config file is using a primitive encryption algorithm (TEA) to handle very simple encryption/password handling. A keyfile must be defined with a 4 character (or more, though more are ignored) string passkey
+our config file is using a primitive encryption algorithm (TEA) to handle very simple encryption/password handling. A keyfile must be defined that is as long as (or longer than) the longest configured password
 ```
 vim /etc/raddb/mods-config/python/keyfile
 ---
