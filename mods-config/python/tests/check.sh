@@ -45,7 +45,7 @@ function test-objs()
 
 function test-config()
 {
-    python2.7 ../utils/harness.py authorize User-Name=$1 Calling-Station-Id=$2 --json $3
+    python2.7 ../utils/harness.py authorize User-Name=$1 Calling-Station-Id=$2 --json $3 --keyfile keyfile.test
 }
 
 function test-all()

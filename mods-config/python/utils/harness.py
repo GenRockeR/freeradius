@@ -31,6 +31,7 @@ def main():
     parser.add_argument('kv', nargs='*', help="key/value pairs")
     parser.add_argument('--json', default="../network.json",
                         help="network config")
+    parser.add_argument('--keyfile', required=True)
     args = parser.parse_args()
     kv = []
     wrapper.radiusd.config = ()
@@ -43,6 +44,7 @@ def main():
         kv.append(new_kv)
     tuples = tuple(tuple(x) for x in kv)
     wrapper.freepydius._CONFIG_FILE = args.json
+    wrapper.freepydius._ENC_KEY_FILE = args.keyfile
     attr = getattr(wrapper.freepydius, args.method)
     res = attr(tuples)
     print(res)
