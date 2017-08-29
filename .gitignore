@@ -4,6 +4,7 @@ mods-config/python/network.json*
 mods-config/python/tests/alt.json
 mods-config/python/tests/actual.json
 mods-config/python/utils/users/*
+mods-config/python/keyfile
 certs/*.pem
 certs/*.der
 certs/*.csr
