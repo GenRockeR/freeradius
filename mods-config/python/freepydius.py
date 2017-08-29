@@ -127,7 +127,7 @@ def _config(input_name):
 
 def _get_tea_key():
   with open(_ENC_KEY_FILE, 'r') as f:
-    return f.read().strip()
+    return [ord(x) for x in f.read().strip()]
 
 def _encrypt(v, key):
   if len(v) % 2 != 0:
