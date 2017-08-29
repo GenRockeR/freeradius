@@ -135,6 +135,11 @@ def _common_call(common, method, entity):
     return obj
 
 
+def check_object(obj):
+    """Check an object."""
+    return obj.check(wrapper)
+
+
 def _process(output):
     """process the composition of users."""
     user_objs = {}
@@ -147,7 +152,7 @@ def _process(output):
         for obj in _load_objs(v_name, users.__config__.VLAN):
             if vlans is None:
                 vlans = {}
-            if not obj.check():
+            if not check_object(obj):
                 exit(-1)
             num_str = str(obj.num)
             for vk in vlans.keys():
@@ -161,7 +166,7 @@ def _process(output):
     for b_name in _get_by_indicator(BLKL_INDICATOR):
         print "loading blacklist..." + b_name
         for obj in _load_objs(b_name, users.__config__.Blacklist):
-            if not obj.check():
+            if not check_object(obj):
                 exit(-1)
             blacklist.append(obj.obj)
     if vlans is None or blacklist is None:
@@ -182,7 +187,7 @@ def _process(output):
             vlans_with_users[vlan] = vlans[vlan]
             meta.vlan_user(vlan, key)
             fqdn = vlan + "." + key
-            if not obj.check():
+            if not check_object(obj):
                 print "did not pass check..."
                 exit(-1)
             if obj.disabled:

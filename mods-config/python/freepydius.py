@@ -91,6 +91,18 @@ def _blacklist_objects(objs, blacklist, sep=None, sub_key=None, value=False):
   return cleansed
 
 
+def _mac(possible_mac):
+  """check if an object is a mac."""
+  valid = False
+  if len(possible_mac) == 12:
+    valid = True
+    for c in possible_mac:
+      if c not in ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f']:
+        valid = False
+        break
+  return valid
+
+
 def _config(input_name):
   """get a user config from file."""
   user_name = _convert_user_name(input_name)
@@ -111,18 +123,13 @@ def _config(input_name):
         vlan_obj = vlans[vlan]
     else:
       lowered = user_name.lower()
-      if len(user_name) == 12:
-        valid = True
-        for c in lowered:
-          if c not in ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f']:
-            valid = False
-            break
-        if valid and lowered in bypass:
-            vlan_name = bypass[lowered]
-            if vlan_name in vlans:
-                # input_name (User-Name) HAS to == "pass"
-                user_obj = { PASS_KEY: input_name, MAC_KEY: [lowered], _IS_BYPASS: True }
-                vlan_obj = vlans[vlan_name]
+      valid = _mac(lowered)
+      if valid and lowered in bypass:
+        vlan_name = bypass[lowered]
+        if vlan_name in vlans:
+          # input_name (User-Name) HAS to == "pass"
+          user_obj = { PASS_KEY: input_name, MAC_KEY: [lowered], _IS_BYPASS: True }
+          vlan_obj = vlans[vlan_name]
     return (user_obj, vlan_obj)
 
 

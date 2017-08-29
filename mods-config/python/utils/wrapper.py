@@ -26,6 +26,11 @@ def decrypt(value, key):
     """decrypt a value."""
     return freepydius._decrypt(value, key)
 
+
+def is_mac(mac):
+    """Check if an object is a mac."""
+    return freepydius._mac(mac)
+
 PORT = freepydius.PORT_BYPASS_KEY
 LOG_FILE = freepydius._LOG_FILE_NAME
 LOG_NAME = freepydius._LOG_FILE
