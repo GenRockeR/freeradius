@@ -99,6 +99,7 @@ keying-check 2 1
 keying-check 2 12
 keying-check 0 12
 python ../utils/keying.py --oldkey 4:abcdef  --newkey 2:abcdef --password "80311914048020.20111203538740" >> $ACTUAL_KEYS
+sed -i '/^ / d' $ACTUAL_KEYS
 sed -i "s/[0-9]3119140480[0-9]/valid/g;s/[0-9]1112035387[0-9]/valid/g" $ACTUAL_KEYS
 diff expected.keys $ACTUAL_KEYS
 if [ $? -ne 0 ]; then

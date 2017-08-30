@@ -2,33 +2,11 @@ was: 12
 decrypted: 12
 now:
 Traceback (most recent call last):
-  File "../utils/keying.py", line 33, in <module>
-    main()
-  File "../utils/keying.py", line 30, in main
-    change_password(args.oldkey, args.newkey, args.password)
-  File "../utils/keying.py", line 20, in change_password
-    print(wrapper.encrypt(old, wrapper.convert_key(new_key)))
-  File "/root/workspace/freeradius/mods-config/python/utils/wrapper.py", line 22, in encrypt
-    return freepydius._encrypt(value, key)
-  File "../freepydius.py", line 176, in _encrypt
-    key_parts = _split_key(key_input)
-  File "../freepydius.py", line 156, in _split_key
-    raise Exception("pad must be divisible by 2")
 Exception: pad must be divisible by 2
 was: 1
 decrypted: 1
 now:
 Traceback (most recent call last):
-  File "../utils/keying.py", line 33, in <module>
-    main()
-  File "../utils/keying.py", line 30, in main
-    change_password(args.oldkey, args.newkey, args.password)
-  File "../utils/keying.py", line 20, in change_password
-    print(wrapper.encrypt(old, wrapper.convert_key(new_key)))
-  File "/root/workspace/freeradius/mods-config/python/utils/wrapper.py", line 22, in encrypt
-    return freepydius._encrypt(value, key)
-  File "../freepydius.py", line 174, in _encrypt
-    raise Exception("value must be divisible by 2")
 Exception: value must be divisible by 2
 was: 12
 decrypted: 12
