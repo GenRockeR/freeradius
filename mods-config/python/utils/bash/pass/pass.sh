@@ -52,8 +52,8 @@ function get-val()
     if [ $? -eq 0 ]; then
         # NOTE: if JSON ever gets really long this GREP will fail so...let's not have a user name start that far down...
         source $HOME/$_CONF
-        val=$(get-config | grep -A1000 "$1" | grep "\"pass\"" | head -n 1 | cut -d ":" -f 2 | sed "s/\"//g;s/,//g")
-        val=$(PYTHONPATH="$PYTHONPATH:$FREERADIUS_REPO$_RADIUS_PYTHON" python $FREERADIUS_REPO${_RADIUS_PYTHON}utils/keying.py --oldkey $TEA_KEY --newkey $(pwgen 256 1) --password "$val" | grep "decrypted" | cut -d ":" -f 2)
+        val=$(get-config | grep -A1000 "$1" | grep "\"pass\"" | head -n 1 | cut -d ":" -f 2 | sed "s/\"//g;s/,//g;s/ //g")
+        val=$(PYTHONPATH="$PYTHONPATH:$FREERADIUS_REPO$_RADIUS_PYTHON" python $FREERADIUS_REPO${_RADIUS_PYTHON}utils/keying.py --oldkey $TEA_KEY --newkey "0:"$(pwgen 256 1) --password "$val" | grep "decrypted" | cut -d ":" -f 2)
         if [ -z $2 ]; then
             echo $val
         else
