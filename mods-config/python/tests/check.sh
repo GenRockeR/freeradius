@@ -9,6 +9,7 @@ mac_multi=""
 ALT="alt.json"
 OUT="actual.log"
 USRS="../utils/users/"
+ACTUAL_KEYS="actual.keys"
 cat network.json | grep -v "blacklist" | head -n -1 > $ALT
 echo ',"blacklist":[]}' >> $ALT
 for b in $(echo $blacklist); do
@@ -84,5 +85,22 @@ python2.7 ../utils/config_compose.py --output $OUT_JSON
 diff expected.json $OUT_JSON
 if [ $? -ne 0 ]; then
     echo "different composed results..."
+    exit -1
+fi
+
+function keying-check()
+{
+    python ../utils/keying.py --newkey $1:abcdef --password $2 >> $ACTUAL_KEYS 2>&1
+}
+
+rm -f $ACTUAL_KEYS
+keying-check 5 12
+keying-check 2 1
+keying-check 2 12
+keying-check 0 12
+sed -i "s/[0-9]3119140480[0-9]/valid/g;s/[0-9]1112035387[0-9]/valid/g" $ACTUAL_KEYS
+diff expected.keys $ACTUAL_KEYS
+if [ $? -ne 0 ]; then
+    echo "different keying results..."
     exit -1
 fi

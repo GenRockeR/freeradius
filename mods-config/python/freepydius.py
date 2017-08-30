@@ -152,15 +152,22 @@ def _split_key(key):
   idx = key.index(_ENC_PAD)
   pad = "".join([chr(x) for ind, x in enumerate(key) if ind < idx])
   keyed = [x for ind, x in enumerate(key) if ind > idx]
-  return (int(pad), keyed)
+  if int(pad) % 2 != 0:
+    raise Exception("pad must be divisible by 2")
+  return (int(int(pad) / 2), keyed)
 
 
-def _pad(pad):
+def _pad(pad, res):
     """Pad a value."""
     if pad == 0:
-        return ""
-    return str(random.random()).replace(".", "").rjust(pad, '0')[0:pad]
-
+        return res
+    idx = 0
+    val = str(res)
+    while idx < pad:
+      val = val.ljust(len(val) + 1, str(random.randint(0, 9)))
+      val = val.rjust(len(val) + 1, str(random.randint(0, 9)))
+      idx = idx + 1
+    return val
 
 def _encrypt(v, key_input):
   if len(v) % 2 != 0:
@@ -175,13 +182,11 @@ def _encrypt(v, key_input):
     k = key[i:i+4]
     cur = (ord(v[i]), ord(v[i + 1]))
     res = _tea_encrypt(cur, k)
-    f_pad = _pad(pad)
-    l_pad = _pad(pad)
-    resulting.append("{}{}{}{}{}".format(f_pad,
-                                         res[0],
-                                         _ENC_DELIMITER,
-                                         l_pad,
-                                         res[1]))
+    f_pad = _pad(pad, res[0])
+    l_pad = _pad(pad, res[1])
+    resulting.append("{}{}{}".format(f_pad,
+                                     _ENC_DELIMITER,
+                                     l_pad))
   return _ENC_KEY.join(resulting)
 
 
@@ -192,10 +197,16 @@ def _decrypt(v, key_input):
   key_parts = _split_key(key_input)
   key = key_parts[1]
   pad = key_parts[0]
+  end_pad = -1 * pad
   for item in split:
     k = key[idx:idx+4]
     parts = item.split(_ENC_DELIMITER)
-    res = _tea_decrypt((int(parts[0][pad:]), int(parts[1][pad:])), k)
+    f_in = parts[0]
+    l_in = parts[1]
+    if end_pad != 0:
+      f_in = f_in[pad:end_pad]
+      l_in = l_in[pad:end_pad]
+    res = _tea_decrypt((int(f_in), int(l_in)), k)
     resulting.append(chr(res[0]))
     resulting.append(chr(res[1]))
     idx = idx + 2
