@@ -384,6 +384,8 @@ def update_leases(env, running_config):
             leased = lease in macs
             is_wildcard = False
             for wild in auto:
+                if is_wildcard:
+                    break
                 for l in leases[lease]:
                     if wild in l:
                         is_wildcard = True
