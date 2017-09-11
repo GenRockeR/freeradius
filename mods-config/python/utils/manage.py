@@ -614,11 +614,11 @@ def daily_report(env, running_config):
     optimize_config(env, optimized_confs, running_config)
 
 
-def _feed(env, message):
+def _feed(env, text):
     """Send a feed message to phabricator."""
     import feedmepy
     message = feedmepy.FeedMe()
-    code = message.now(message, room=room, url=env.phab, token=env.phab_token)
+    code = message.now(text, room=env.synapse_feed, url=env.phab, token=env.phab_token)
     print("feedme: {}".format(str(code)))
 
 
