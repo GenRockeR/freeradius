@@ -14,7 +14,6 @@ import pwd
 import urllib.parse
 import urllib.request
 import datetime
-import re
 
 # user setup
 CHARS = string.ascii_uppercase + string.ascii_lowercase + string.digits
@@ -386,7 +385,7 @@ def update_leases(env, running_config):
             is_wildcard = False
             for wild in auto:
                 for l in leases[lease]:
-                    if len(re.findall(wild, l)) > 0:
+                    if wild in l:
                         is_wildcard = True
                         break
             if leased or port_by or is_wildcard:
