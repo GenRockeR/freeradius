@@ -613,12 +613,14 @@ def daily_report(env, running_config):
     update_leases(env, running_config)
     optimize_config(env, optimized_confs, running_config)
 
+
 def _feed(env, message):
     """Send a feed message to phabricator."""
     import feedmepy
     message = feedmepy.FeedMe()
     code = message.now(message, room=room, url=env.phab, token=env.phab_token)
     print("feedme: {}".format(str(code)))
+
 
 def build():
     """Build and apply a user configuration."""
