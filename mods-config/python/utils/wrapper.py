@@ -37,6 +37,7 @@ def convert_key(key):
     return freepydius._convert_key(key)
 
 
+WILDCARD = freepydius.WILDCARD_KEY
 PORT = freepydius.PORT_BYPASS_KEY
 LOG_FILE = freepydius._LOG_FILE_NAME
 LOG_NAME = freepydius._LOG_FILE

@@ -23,6 +23,7 @@ BLCK_KEY = "blacklist"
 BYPASS_KEY = "bypass"
 ATTR_KEY = "attr"
 PORT_BYPASS_KEY = "port"
+WILDCARD_KEY = "wildcard"
 _IS_BYPASS = "isbypass"
 rlock = threading.RLock()
 logger = None
