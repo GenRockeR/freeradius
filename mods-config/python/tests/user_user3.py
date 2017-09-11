@@ -6,6 +6,7 @@ normal.password = "3657463861.3307820909|2702706688.2267165039|1859720229.986357
 normal.vlan = "dev"
 normal.attrs = ["test=test"]
 normal.port_bypass = ["001122221100"]
+normal.wildcard = ["abc"]
 
 admin = __config__.Assignment()
 admin.inherits = normal

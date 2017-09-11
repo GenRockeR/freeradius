@@ -98,12 +98,13 @@ class ConfigMeta(object):
         self.vlan_initiate.append(vlan_to)
 
 
-def _create_obj(macs, password, attrs, port_bypassed):
+def _create_obj(macs, password, attrs, port_bypassed, wildcards):
     """create a user definition."""
     return {wrapper.freepydius.MAC_KEY: macs,
             wrapper.freepydius.PASS_KEY: password,
             wrapper.freepydius.ATTR_KEY: attrs,
-            wrapper.freepydius.PORT_BYPASS_KEY: port_bypassed}
+            wrapper.freepydius.PORT_BYPASS_KEY: port_bypassed,
+            wrapper.freepydius.WILDCARD_KEY: wildcards}
 
 
 def _get_mod(name):
@@ -197,6 +198,7 @@ def _process(output):
             password = obj.password
             bypass = sorted(obj.bypass)
             port_bypassed = sorted(obj.port_bypass)
+            wildcards = sorted(obj.wildcard)
             attrs = []
             if obj.attrs:
                 attrs = sorted(obj.attrs)
@@ -213,7 +215,8 @@ def _process(output):
                 user_objs[fqdn] = _create_obj(macs,
                                               password,
                                               attrs,
-                                              port_bypassed)
+                                              port_bypassed,
+                                              wildcards)
             if bypass is not None and len(bypass) > 0:
                 for mac_bypass in bypass:
                     if mac_bypass in bypass_objs:
