@@ -618,7 +618,10 @@ def _feed(env, text):
     """Send a feed message to phabricator."""
     import feedmepy
     message = feedmepy.FeedMe()
-    code = message.now(text, room=env.synapse_feed, url=env.phab, token=env.phab_token)
+    code = message.now(text,
+                       room=env.synapse_feed,
+                       url=env.phab,
+                       token=env.phab_token)
     print("feedme: {}".format(str(code)))
 
 
