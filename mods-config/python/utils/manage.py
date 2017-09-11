@@ -14,6 +14,7 @@ import pwd
 import urllib.parse
 import urllib.request
 import datetime
+import re
 
 # user setup
 CHARS = string.ascii_uppercase + string.ascii_lowercase + string.digits
@@ -378,16 +379,25 @@ def update_leases(env, running_config):
         user_name = resolve_user(user, user_resolutions)
         macs = conf[user][wrapper.MACS]
         port = conf[user][wrapper.PORT]
+        auto = conf[user][wrapper.WILDCARD]
         for lease in leases:
             port_by = lease in port
             leased = lease in macs
-            if leased or port_by:
+            is_wildcard = False
+            for wild in auto:
+                for l in leases[lease]:
+                    if len(re.findall(wild, l)) > 0:
+                        is_wildcard = True
+                        break
+            if leased or port_by or is_wildcard:
                 leases[lease].append(user_name)
                 if lease in lease_unknown:
                     while lease in lease_unknown:
                         lease_unknown.remove(lease)
             if port_by:
                 leases[lease].append("port-bypass")
+            if is_wildcard:
+                leases[lease].append("auto-assigned")
 
     def is_mgmt(lease):
         """Check if a management ip."""
