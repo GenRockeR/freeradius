@@ -395,7 +395,7 @@ def update_leases(env, running_config):
                         lease_unknown.remove(lease)
             if port_by:
                 leases[lease].append("port-bypass")
-            if is_wildcard:
+            if is_wildcard and not port_by:
                 leases[lease].append("auto-assigned")
 
     def is_mgmt(lease):
