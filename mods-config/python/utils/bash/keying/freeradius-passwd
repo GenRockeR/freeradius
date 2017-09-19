@@ -1,0 +1,72 @@
+#!/bin/bash
+USERS="users/"
+if [ -z "$1" ]; then
+    echo "mode required"
+    exit 1
+fi
+
+if [ -z "$2" ]; then
+    echo "input required"
+    exit 1
+fi
+
+if [ ! -d "$USERS" ]; then
+    echo "must be run where a users subdir is available"
+    exit 1
+fi
+
+source ~/.config/epiphyte/env
+USE_PATH="$FREERADIUS_REPO/mods-config/python/"
+_pykey() {
+    PYTHONPATH="$USE_PATH:$PYTHONPATH" python ${USE_PATH}utils/keying.py $@ | tail -n 1
+}
+
+_rekey() {
+    _cwd=$PWD
+    cd $USERS
+    for u in $(ls user*); do
+        echo $u
+        for p in $(cat $u | grep "password" | cut -d "=" -f 2 | sed "s/'//g"); do
+            new_pass=$(_pykey --oldkey "$TEA_KEY" --newkey "$1" --password $p)
+            sed -i "s/$p/$new_pass/g" $u
+        done
+    done
+    cd $_cwd
+}
+
+_newpass() {
+    if [ -z "$1" ]; then
+        echo "must provide a user file"
+        exit 1
+    fi
+
+    if [ ! -e "$1" ]; then
+        echo "must be an existing user file"
+        exit 1
+    fi
+    
+    echo "$1" | grep -q "users/user_"
+    if [ $? -ne 0 ]; then
+        echo "file does not appear valid"
+        exit 1
+    fi
+
+    for p in $(cat $1 | grep "password" | cut -d "=" -f 2 | sed "s/'//g"); do
+        new_pass=$(_pykey --newkey "$TEA_KEY" --password $(pwgen 64 1))
+        sed -i "s/$p/$new_pass/g" $1
+    done
+}
+
+REKEY="rekey"
+PASSWD="passwd"
+case $1 in
+    $REKEY)
+        _rekey $2
+        ;;
+    $PASSWD)
+        _newpass $2
+        ;;
+    *)
+        echo "call with $REKEY or $PASSWD"
+        ;;
+esac
