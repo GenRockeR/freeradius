@@ -21,12 +21,16 @@ _pykey() {
     PYTHONPATH="$USE_PATH:$PYTHONPATH" python ${USE_PATH}utils/keying.py $@ | tail -n 1
 }
 
+_passwords() {
+    cat $1 | grep "password" | cut -d "=" -f 2 | sed "s/'//g"
+}
+
 _rekey() {
     _cwd=$PWD
     cd $USERS
     for u in $(ls user*); do
         echo $u
-        for p in $(cat $u | grep "password" | cut -d "=" -f 2 | sed "s/'//g"); do
+        for p in $(_passwords $u); do
             new_pass=$(_pykey --oldkey "$TEA_KEY" --newkey "$1" --password $p)
             sed -i "s/$p/$new_pass/g" $u
         done
@@ -51,7 +55,7 @@ _newpass() {
         exit 1
     fi
 
-    for p in $(cat $1 | grep "password" | cut -d "=" -f 2 | sed "s/'//g"); do
+    for p in $(_passwords $1); do
         new_pass=$(_pykey --newkey "$TEA_KEY" --password $(pwgen 64 1))
         sed -i "s/$p/$new_pass/g" $1
     done
