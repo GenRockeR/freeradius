@@ -1,8 +1,5 @@
 {
-    "blacklist": [
-        "blah=test",
-        "user1"
-    ],
+    "blacklist": [],
     "bypass": {
         "112233445566": "dev"
     },
