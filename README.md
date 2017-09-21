@@ -225,7 +225,7 @@ vim /etc/raddb/mods-config/python/keyfile
 
 ### headless/server
 
-to connect a headless system using systemd-network and wpa_supplicant check [here](https://wiki.archlinux.org/index.php/WPA_supplicant#802.1x.2Fradius)
+to connect a headless system using systemd-network and wpa_supplicant check [here](https://github.com/epiphyte/wsw)
 
 ### android
 
