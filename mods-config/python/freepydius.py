@@ -19,7 +19,6 @@ PASS_KEY = "pass"
 MAC_KEY = "macs"
 USER_KEY = "users"
 VLAN_KEY = "vlans"
-BLCK_KEY = "blacklist"
 BYPASS_KEY = "bypass"
 ATTR_KEY = "attr"
 PORT_BYPASS_KEY = "port"
@@ -60,40 +59,6 @@ def _convert_user_name(name):
   return user_name
 
 
-def _blacklist_objects(objs, blacklist, sep=None, sub_key=None, value=False):
-  """cleanse blacklisted objects from the config."""
-  cleansed = {}
-  for item in objs:
-    if item in blacklist:
-      continue
-    if sep is not None:
-      parts = item.split(sep)
-      valid = True
-      for part in parts:
-        if part in blacklist:
-          valid = False
-          break
-      if not valid:
-        continue
-      if sub_key is not None and len(sub_key) > 0: 
-        valid = True
-        for sk in sub_key:
-          if not valid:
-            break
-          if sk in objs[item]:
-            for sub in objs[item][sk]:
-              if sub in blacklist:
-                valid = False
-                break
-        if not valid:
-          continue
-    if value:
-      if objs[item] in blacklist:
-        continue
-    cleansed[item] = objs[item]
-  return cleansed
-
-
 def _mac(possible_mac):
   """check if an object is a mac."""
   valid = False
@@ -111,10 +76,9 @@ def _config(input_name):
   user_name = _convert_user_name(input_name)
   with open(_CONFIG_FILE) as f:
     obj = byteify(json.loads(f.read()))
-    blacklist = obj[BLCK_KEY]
-    users = _blacklist_objects(obj[USER_KEY], blacklist, sep=".", sub_key=[MAC_KEY, ATTR_KEY])
-    vlans = _blacklist_objects(obj[VLAN_KEY], blacklist)
-    bypass = _blacklist_objects(obj[BYPASS_KEY], blacklist, value=True)
+    users = obj[USER_KEY]
+    vlans = obj[VLAN_KEY]
+    bypass = obj[BYPASS_KEY]
     user_obj = None
     vlan_obj = None
     if "." in user_name:

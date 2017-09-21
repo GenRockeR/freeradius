@@ -12,7 +12,6 @@ import importlib
 IND_DELIM = "_"
 USER_INDICATOR = "user" + IND_DELIM
 VLAN_INDICATOR = "vlan" + IND_DELIM
-BLKL_INDICATOR = "blacklist" + IND_DELIM
 
 
 class ConfigMeta(object):
@@ -25,7 +24,6 @@ class ConfigMeta(object):
         self.bypasses = []
         self.vlans = []
         self.all_vlans = []
-        self.blacklist = []
         self.user_name = []
         self.vlan_users = []
         self.attrs = []
@@ -74,18 +72,6 @@ class ConfigMeta(object):
             if ref not in self.all_vlans:
                 print "reference to unknown vlan: " + ref
                 exit(-1)
-        if len(set(self.blacklist)) != len(self.blacklist):
-            print "duplicate blacklisted items"
-            exit(-1)
-        for item in self.blacklist:
-            if item not in self.user_name and \
-               item not in self.macs and \
-               item not in self.vlans and \
-               item not in self.bypasses and \
-               item not in self.vlan_users and \
-               item not in self.attrs:
-                    print "unknown entity to blacklist: " + item
-                    exit(-1)
 
     def vlan_user(self, vlan, user):
         """indicate a vlan was used."""
@@ -145,7 +131,6 @@ def _process(output):
     """process the composition of users."""
     user_objs = {}
     vlans = None
-    blacklist = []
     bypass_objs = {}
     meta = ConfigMeta()
     for v_name in _get_by_indicator(VLAN_INDICATOR):
@@ -164,16 +149,9 @@ def _process(output):
             if obj.initiate is not None and len(obj.initiate) > 0:
                 for init_to in obj.initiate:
                     meta.vlan_to_vlan(init_to)
-    for b_name in _get_by_indicator(BLKL_INDICATOR):
-        print "loading blacklist..." + b_name
-        for obj in _load_objs(b_name, users.__config__.Blacklist):
-            if not check_object(obj):
-                exit(-1)
-            blacklist.append(obj.obj)
-    if vlans is None or blacklist is None:
+    if vlans is None:
         raise Exception("missing required config settings...")
     meta.all_vlans = vlans.keys()
-    meta.blacklist = blacklist
     vlans_with_users = {}
     for f_name in _get_by_indicator(USER_INDICATOR):
         print "composing..." + f_name
@@ -226,7 +204,6 @@ def _process(output):
     full = {}
     full[wrapper.freepydius.USER_KEY] = user_objs
     full[wrapper.freepydius.VLAN_KEY] = vlans_with_users
-    full[wrapper.freepydius.BLCK_KEY] = blacklist
     full[wrapper.freepydius.BYPASS_KEY] = bypass_objs
     with open(output, 'w') as f:
         f.write(json.dumps(full, sort_keys=True,
