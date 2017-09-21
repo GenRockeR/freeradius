@@ -129,6 +129,12 @@ def check_object(obj):
 
 def _process(output):
     """process the composition of users."""
+    common_mod = None
+    try:
+        common_mod = _get_mod("common")
+        print "loaded common definitions..."
+    except:
+        print "defaults only..."
     user_objs = {}
     vlans = None
     bypass_objs = {}
@@ -156,6 +162,7 @@ def _process(output):
     for f_name in _get_by_indicator(USER_INDICATOR):
         print "composing..." + f_name
         for obj in _load_objs(f_name, users.__config__.Assignment):
+            obj = _common_call(common_mod, 'ready', obj)
             key = f_name.replace(USER_INDICATOR, "")
             if not key.isalnum():
                 print "does not meet naming requirements..."
