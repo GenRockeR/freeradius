@@ -38,20 +38,6 @@ class VLAN(object):
         return True
 
 
-class Blacklist(object):
-    """Blacklist object."""
-
-    def __init__(self, obj):
-        """init the instance."""
-        self.obj = obj
-
-    def check(self, wrapper):
-        """check the blacklist definition."""
-        if self.obj is None or len(self.obj) == 0:
-            return False
-        return True
-
-
 class Assignment(object):
     """assignment object."""
     def __init__(self):

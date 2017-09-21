@@ -10,14 +10,12 @@ The important things in the following examples:
 File names **MUST** match the format "type_whatever.py"
 * user -> "user_<name>.py"
 * vlan -> "vlan_<whatever>.py"
-* blacklist -> "blacklist_<whatever.py>"
 
 ### Objects
 
 Make sure to define objects accordingly in python such-that it will load them into the config
 * user->vlan assignments = `__config__.Assignment`
 * vlan = `__config__.VLAN`
-* blacklist = `__config__.Blacklist`
 
 ## users
 
@@ -47,16 +45,6 @@ vim vlan_test.py
 import __config__
 normal = __config__.VLAN("dev", 10)
 admin_only = __config__.VLAN("prod", 11)
-```
-
-## blacklist
-
-blacklists have minimal configuration, just an object string value
-```
-vim blacklist_user1.py
----
-import __config__
-obj = __config__.Blacklist("112233445566")
 ```
 
 ## common
