@@ -53,6 +53,7 @@ class Assignment(object):
         self.inherits = None
         self.port_bypass = []
         self.wildcard = []
+        self.groups = None
 
     def _compare_date(self, value, regex, today):
         """compare date."""
@@ -142,4 +143,6 @@ class Assignment(object):
                 uniq_attr.append(parts[0])
             if len(uniq_attr) != len(set(uniq_attr)):
                 return self.report("attribute keys must be unique")
+        if self.group is None:
+            return self.report("no group specified")
         return True

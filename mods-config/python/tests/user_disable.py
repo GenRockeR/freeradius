@@ -8,3 +8,4 @@ normal.password = "1010350112.2810416559|684262070.4200109179|3252374392.6575688
 normal.bypass = [disabled]
 normal.disable = {disabled: "2017-01-01"}
 normal.vlan = "dev"
+normal.group = 'test'
