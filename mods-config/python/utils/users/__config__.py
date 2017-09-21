@@ -53,7 +53,7 @@ class Assignment(object):
         self.inherits = None
         self.port_bypass = []
         self.wildcard = []
-        self.groups = None
+        self.group = None
 
     def _compare_date(self, value, regex, today):
         """compare date."""
@@ -73,6 +73,7 @@ class Assignment(object):
         self.password = other.password
         self.attrs = other.attrs
         self.macs = set(self.macs + other.macs)
+        self.group = other.group
 
     def check(self, wrapper):
         """check the assignment definition."""
