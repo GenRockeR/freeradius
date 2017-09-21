@@ -1,41 +1,5 @@
-112233445566 - 112233445566
-===
-# network.json
-*** authorize ***
-
-*** radlog call in authorize ***
-
-(('User-Name', '112233445566'), ('Calling-Station-Id', '112233445566'))
-
-()
-
-(2, (), ())
-
-# alt.json
-*** authorize ***
-
-*** radlog call in authorize ***
-
-(('User-Name', '112233445566'), ('Calling-Station-Id', '112233445566'))
-
-()
-
-(2, (('Tunnel-Type', 'VLAN'), ('Tunnel-Medium-Type', 'IEEE-802'), ('Tunnel-Private-Group-Id', '11')), (('Cleartext-Password', '112233445566'),))
-
 vlan2.user6 - 000011112222
 ===
-# network.json
-*** authorize ***
-
-*** radlog call in authorize ***
-
-(('User-Name', 'vlan2.user6'), ('Calling-Station-Id', '000011112222'))
-
-()
-
-(2, (), (('Cleartext-Password', 'aeb2Yei3fohCe5pheaz0ieVie2bee2ae'),))
-
-# alt.json
 *** authorize ***
 
 *** radlog call in authorize ***
@@ -48,18 +12,6 @@ vlan2.user6 - 000011112222
 
 vlan1.user4 - 001122334455
 ===
-# network.json
-*** authorize ***
-
-*** radlog call in authorize ***
-
-(('User-Name', 'vlan1.user4'), ('Calling-Station-Id', '001122334455'))
-
-()
-
-(2, (), ())
-
-# alt.json
 *** authorize ***
 
 *** radlog call in authorize ***
@@ -72,18 +24,6 @@ vlan1.user4 - 001122334455
 
 vlan2.user1 - 001122334455
 ===
-# network.json
-*** authorize ***
-
-*** radlog call in authorize ***
-
-(('User-Name', 'vlan2.user1'), ('Calling-Station-Id', '001122334455'))
-
-()
-
-(2, (), ())
-
-# alt.json
 *** authorize ***
 
 *** radlog call in authorize ***
@@ -96,18 +36,6 @@ vlan2.user1 - 001122334455
 
 vlan2.user2 - 001122334455
 ===
-# network.json
-*** authorize ***
-
-*** radlog call in authorize ***
-
-(('User-Name', 'vlan2.user2'), ('Calling-Station-Id', '001122334455'))
-
-()
-
-(2, (), ())
-
-# alt.json
 *** authorize ***
 
 *** radlog call in authorize ***
@@ -120,18 +48,6 @@ vlan2.user2 - 001122334455
 
 vlan2.user3 - 001122334455
 ===
-# network.json
-*** authorize ***
-
-*** radlog call in authorize ***
-
-(('User-Name', 'vlan2.user3'), ('Calling-Station-Id', '001122334455'))
-
-()
-
-(2, (), ())
-
-# alt.json
 *** authorize ***
 
 *** radlog call in authorize ***
@@ -144,18 +60,6 @@ vlan2.user3 - 001122334455
 
 vlan2.user6 - 001122334455
 ===
-# network.json
-*** authorize ***
-
-*** radlog call in authorize ***
-
-(('User-Name', 'vlan2.user6'), ('Calling-Station-Id', '001122334455'))
-
-()
-
-(2, (('Tunnel-Type', 'VLAN'), ('Tunnel-Medium-Type', 'IEEE-802'), ('Tunnel-Private-Group-Id', '11')), (('Cleartext-Password', 'aeb2Yei3fohCe5pheaz0ieVie2bee2ae'),))
-
-# alt.json
 *** authorize ***
 
 *** radlog call in authorize ***
@@ -168,18 +72,6 @@ vlan2.user6 - 001122334455
 
 AABBCCDDEE11 - aabbccddee11
 ===
-# network.json
-*** authorize ***
-
-*** radlog call in authorize ***
-
-(('User-Name', 'AABBCCDDEE11'), ('Calling-Station-Id', 'aabbccddee11'))
-
-()
-
-(2, (('Tunnel-Type', 'VLAN'), ('Tunnel-Medium-Type', 'IEEE-802'), ('Tunnel-Private-Group-Id', '11')), (('Cleartext-Password', 'AABBCCDDEE11'),))
-
-# alt.json
 *** authorize ***
 
 *** radlog call in authorize ***
@@ -192,18 +84,6 @@ AABBCCDDEE11 - aabbccddee11
 
 vlan2.usera - 001122334455
 ===
-# network.json
-*** authorize ***
-
-*** radlog call in authorize ***
-
-(('User-Name', 'vlan2.usera'), ('Calling-Station-Id', '001122334455'))
-
-()
-
-(2, (), ())
-
-# alt.json
 *** authorize ***
 
 *** radlog call in authorize ***
@@ -213,14 +93,4 @@ vlan2.usera - 001122334455
 ()
 
 (2, (('Tunnel-Type', 'VLAN'), ('Tunnel-Medium-Type', 'IEEE-802'), ('Tunnel-Private-Group-Id', '11')), (('Cleartext-Password', 'aothinohxeG4shioLeig5chahl4su1Ie'),))
-
-*** authorize ***
-
-*** radlog call in authorize ***
-
-(('User-Name', 'vlan1.user4'), ('Calling-Station-Id', '001122334455'))
-
-()
-
-(2, (), ())
 

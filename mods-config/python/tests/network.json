@@ -1,5 +1,5 @@
 {
-    "blacklist": ["112233445566", "vlan1", "vlan2.user1", "user2", "aabbccddeeff", "test"],
+    "blacklist": [],
     "bypass":
     {
         "aabbccddee11": "vlan2",
