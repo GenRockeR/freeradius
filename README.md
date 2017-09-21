@@ -208,29 +208,16 @@ vim /etc/raddb/mods-config/python/network.json
     {
         "prod": "10",
         "dev": "20"
-    },
-    "blacklist": ["dev"]
+    }
 }
 ```
 
-our config file is using a primitive encryption algorithm (TEA) to handle very simple encryption/password handling. A keyfile must be defined that is as long as (or longer than) the longest configured password
+our config file is using a primitive encryption algorithm (TEA) to handle very simple encryption/password handling. A keyfile must be defined that is as long as (or longer than) the longest configured password prefixed with a padding length (>= 0)
 ```
 vim /etc/raddb/mods-config/python/keyfile
 ---
-abcd
+2:abcd
 ```
-
-### blacklist
-
-because it may be beneficial to temporarily disable a vlan, user, or device there is an ability to blacklist
-
-the blacklist section is a list of strings where a string can be:
-* users (e.g. user1)
-* vlan (e.g. prod)
-* vlan.user (e.g. prod.user1)
-* MAC-based auth MAC
-* MAC (for a user set) which will blacklist all users with that mac assigned to them
-* An attribute ("attr" array) on users
 
 ---
 
