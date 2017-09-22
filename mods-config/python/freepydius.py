@@ -318,21 +318,25 @@ def authorize(p):
   print("")
   print(radiusd.config)
   print("")
-  user_mac = _get_user_mac(p)
-  user = user_mac[0]
-  macs = user_mac[1]
   reply = ()
   conf = ()
-  if user is not None:
-    password = _get_pass(user)
-    if password is not None:
-      conf = ( ('Cleartext-Password', password), )
-    if macs is not None:
-      vlan = _get_vlan(user, macs)
-      if vlan is not None:
-        reply = ( ('Tunnel-Type', 'VLAN'),
-                  ('Tunnel-Medium-Type', 'IEEE-802'),
-                  ('Tunnel-Private-Group-Id', vlan), )
+  try:
+    user_mac = _get_user_mac(p)
+    user = user_mac[0]
+    macs = user_mac[1]
+    if user is not None:
+      password = _get_pass(user)
+      if password is not None:
+        conf = ( ('Cleartext-Password', password), )
+      if macs is not None:
+        vlan = _get_vlan(user, macs)
+        if vlan is not None:
+          reply = ( ('Tunnel-Type', 'VLAN'),
+                    ('Tunnel-Medium-Type', 'IEEE-802'),
+                    ('Tunnel-Private-Group-Id', vlan), )
+  except Exception as e:
+    log.log("freepydius error")
+    log.log(str(e))
   log.log(reply)
   log.log(conf)
   return (radiusd.RLM_MODULE_OK, reply, conf)
