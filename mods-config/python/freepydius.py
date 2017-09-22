@@ -335,7 +335,7 @@ def authorize(p):
                     ('Tunnel-Medium-Type', 'IEEE-802'),
                     ('Tunnel-Private-Group-Id', vlan), )
   except Exception as e:
-    log.log("freepydius error")
+    log.log("error")
     log.log(str(e))
   log.log(reply)
   log.log(conf)
@@ -375,13 +375,17 @@ def post_auth(p):
   log.log(p)
   print("*** post_auth ***")
   print(p)
-  user_mac = _get_user_mac(p)
   response = radiusd.RLM_MODULE_REJECT
-  user = user_mac[0]
-  macs = user_mac[1]
-  if user is not None and macs is not None:
-    if _get_vlan(user, macs) is not None:
-      response = radiusd.RLM_MODULE_OK
+  try:
+    user_mac = _get_user_mac(p)
+    user = user_mac[0]
+    macs = user_mac[1]
+    if user is not None and macs is not None:
+      if _get_vlan(user, macs) is not None:
+        response = radiusd.RLM_MODULE_OK
+  except Exception as e:
+    log.log("error")
+    log.log(str(e))
   log.log(( ('Response', response), ))
   return response
 
