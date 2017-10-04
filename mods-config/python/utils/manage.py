@@ -317,13 +317,17 @@ def update_wiki(env, running_config):
     first = True
     outputs = [("vlan", "user"), ("---", "---")]
     user_resolved = get_user_resolutions(users)
+    tracked = []
     for vlan in sorted(vlans.keys()):
         if not first:
             outputs.append(("-", "-"))
         first = False
         for user in vlans[vlan]:
             user_name = resolve_user(user, user_resolved)
-            outputs.append((vlan, user_name))
+            tracking = "{}.{}".format(vlan, user_name)
+            if tracking not in tracked:
+                outputs.append((vlan, user_name))
+                tracked.append(tracking)
     content = _create_header()
     for output in outputs:
         content = content + "| {} | {} |\n".format(output[0], output[1])
