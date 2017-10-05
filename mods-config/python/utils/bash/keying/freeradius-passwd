@@ -1,17 +1,26 @@
 #!/bin/bash
 USERS="users/"
-if [ -z "$1" ]; then
-    echo "mode required"
-    exit 1
-fi
+error=0
 
-if [ -z "$2" ]; then
-    echo "input required"
-    exit 1
+_err() {
+    error=1
+    echo "ERROR -> $@"
+}
+
+if [ -z "$1" ]; then
+    _err "mode required"
+else
+    if [ -z "$2" ]; then
+        _err "input required"
+    fi
 fi
 
 if [ ! -d "$USERS" ]; then
-    echo "must be run where a users subdir is available"
+    _err "must be run where a users subdir is available"
+fi
+
+if [ $error -ne 0 ]; then
+    echo "unable to continue"
     exit 1
 fi
 
