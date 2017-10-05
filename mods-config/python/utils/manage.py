@@ -510,8 +510,7 @@ def daily_report(env, running_config):
             lines.append(l)
             if skip >= 2:
                 parts = l.split("|")
-                user = parts[1]
-                mac = parts[2]
+                user = parts[1].strip()
                 res = parts[3]
                 if user not in optimized:
                     optimized[user] = False
