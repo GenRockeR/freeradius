@@ -474,26 +474,6 @@ def _get_date_offset(days):
             datetime.timedelta(days)).strftime("%Y-%m-%d")
 
 
-def call_wrapper(env, method, added):
-    """Call the report-wrapper implementation."""
-    base = _get_utils(env)
-    cmd = [os.path.join(base, "report-wrapper.sh"), method]
-    for x in added:
-        cmd.append(x)
-    call(cmd, "report wrapper", working_dir=base)
-
-
-def execute_report(env, report, out_type, skip_lines, out_file, fxn="report"):
-    """Execute a report."""
-    call_wrapper(env, fxn, [
-           report,
-           out_type,
-           str(skip_lines),
-           out_file])
-    with open(out_file, 'r') as f:
-        return f.read()
-
-
 def delete_if_exists(file_name):
     """Delete a file if it exists."""
     if os.path.exists(file_name):
@@ -571,50 +551,8 @@ def daily_report(env, running_config):
     print('completing daily reports')
     with open(report_indicator, 'w') as f:
         f.write("")
-    reports = {}
-    titles = {}
-    optimized_confs = []
-    for item in range(1, 11):
-        date_offset = _get_date_offset(item)
-        path = os.path.join(env.log_files,
-                            wrapper.LOG_FILE) + "." + date_offset
-        if not os.path.exists(path):
-            continue
-        print(date_offset)
-        call_wrapper(env, "store", [path])
-        for report in [("failures", "Rejections")]:
-            output_file = env.working_dir + report[0]
-            report_name = report[0]
-            titles[report_name] = report[1]
-            if report_name not in reports:
-                reports[report_name] = _create_header()
-            use_markdown = """
 
-### {}
-
----
-
-""".format(date_offset)
-            use_markdown += execute_report(env,
-                                           report_name,
-                                           "markdown",
-                                           1,
-                                           output_file)
-            reports[report_name] += use_markdown
-            opt_file = env.working_dir + "optimized.json"
-            optimized_config = execute_report(env,
-                                              "optimized",
-                                              "n/a",
-                                              0,
-                                              opt_file,
-                                              "optimize")
-            opt_conf = json.loads(optimized_config)
-            optimized_confs.append(opt_conf)
-
-    for report in reports:
-        html = reports[report]
-        title = titles[report]
-        post_content(env, title.lower(), title, html)
+    post_content(env, "auths", "Auths", "")
     update_leases(env, running_config)
     optimize_config(env, optimized_confs, running_config)
 
