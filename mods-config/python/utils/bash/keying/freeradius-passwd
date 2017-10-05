@@ -65,7 +65,11 @@ _newpass() {
     fi
 
     for p in $(_passwords $1); do
-        new_pass=$(_pykey --newkey "$TEA_KEY" --password $(pwgen 64 1))
+        _new=$2 
+        if [ -z "$_new" ]; then
+            _new=$(pwgen 64 1)
+        fi
+        new_pass=$(_pykey --newkey "$TEA_KEY" --password $_new)
         sed -i "s/$p/$new_pass/g" $1
     done
 }
@@ -74,10 +78,10 @@ REKEY="rekey"
 PASSWD="passwd"
 case $1 in
     $REKEY)
-        _rekey $2
+        _rekey $@
         ;;
     $PASSWD)
-        _newpass $2
+        _newpass $@
         ;;
     *)
         echo "call with $REKEY or $PASSWD"
