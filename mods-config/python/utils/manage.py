@@ -165,20 +165,9 @@ def _get_exclude(name):
     return '--exclude={}'.format(name)
 
 
-def call(cmd, error_text, working_dir=None, ins=None):
+def call(cmd, error_text, working_dir=None):
     """Call for subproces/ing."""
-    std_in = None
-    if ins is not None:
-        std_in = subprocess.PIPE
-    p = subprocess.Popen(cmd, cwd=working_dir, stdin=std_in)
-    if ins is not None:
-        p.stdin.write(ins.encode('utf-8'))
-        out, err = p.communicate()
-        if out is not None:
-            print(out.decode('utf-8'))
-        if err is not None:
-            print(err.decode('utf-8'))
-        return
+    p = subprocess.Popen(cmd, cwd=working_dir)
     p.wait()
     if p.returncode != 0:
         print("unable to {}".format(error_text))
