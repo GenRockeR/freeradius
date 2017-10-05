@@ -540,8 +540,16 @@ def daily_report(env, running_config):
     print('completing daily reports')
     with open(report_indicator, 'w') as f:
         f.write("")
-
-    post_content(env, "auths", "Auths", "")
+    output = env.working_dir + "auths.md"
+    call(["python",
+          "report_auths.py",
+          "--output",
+          output],
+          working_dir=_get_util(env))
+    auths = None
+    with open(output) as f:
+        auths = f.read()
+    post_content(env, "auths", "Auths", auths)
     update_leases(env, running_config)
     optimize_config(env, optimized_confs, running_config)
 
