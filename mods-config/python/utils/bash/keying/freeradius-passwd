@@ -76,14 +76,17 @@ _newpass() {
 
 REKEY="rekey"
 PASSWD="passwd"
+cmd=""
 case $1 in
     $REKEY)
-        _rekey $@
+        cmd="_rekey"
         ;;
     $PASSWD)
-        _newpass $@
+        cmd="_newpass"
         ;;
     *)
         echo "call with $REKEY or $PASSWD"
+        exit 1
         ;;
 esac
+$cmd ${@:2}
