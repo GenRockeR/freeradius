@@ -3,6 +3,7 @@
 import datetime as dt
 import argparse
 import json
+import wrapper
 
 _KEY = "->"
 
@@ -56,9 +57,9 @@ def main():
     authd = {}
     with open(args.config) as f:
         j = json.loads(f.read())
-        users = j["users"]
+        users = j[wrapper.USERS]
         for u in users:
-            for m in users[u]["macs"]:
+            for m in users[u][wrapper.MACS]:
                 k = _new_key(u, m)
                 authd[k] = "n/a"
     today = dt.date.today()
