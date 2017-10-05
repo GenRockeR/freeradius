@@ -550,7 +550,7 @@ def daily_report(env, running_config):
     auths = None
     with open(output) as f:
         auths = f.read()
-    post_content(env, "auths", "Auths", auths)
+    post_content(env, "auths", "Auths", _create_header() + auths)
     update_leases(env, running_config)
     optimize_config(env, optimized_confs, running_config)
 
