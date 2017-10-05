@@ -13,16 +13,26 @@ def _file(day_offset, auth_info):
             data = parts[1]
             is_accept = "Tunnel-Type" in data
             if is_accept:
-                user = uuid_log[uuid]
-                auth_info[user] = day_offset
+                if uuid in uuid_log:
+                    user = uuid_log[uuid]
+                    auth_info[user] = day_offset
             else:
                 if "User-Name" in data:
                     idx = data.index("User-Name") + 13
                     user_start = data[idx:]
                     user_start = user_start[:user_start.index(")") - 1]
-                    uuid_log[uuid] = user_start
-                    if user_start not in auth_info:
-                        auth_info[user_start] = None
+                    calling = None
+                    if "Calling-Station-Id" in data:
+                        calling_station = data.index("Calling-Station-Id") + 22
+                        calling = data[calling_station:]
+                        calling = calling[:calling.index(")") - 1]
+                        calling = calling.replace(":",
+                                                  "").replace("-",
+                                                              "").lower()
+                        key = "{}->{}".format(user_start, calling)
+                        uuid_log[uuid] = key
+                        if key not in auth_info:
+                            auth_info[key] = None
 
 
 def main():
