@@ -545,7 +545,8 @@ def daily_report(env, running_config):
           "report_auths.py",
           "--output",
           output],
-         working_dir=_get_util(env))
+         "report authorizations",
+         working_dir=_get_utils(env))
     auths = None
     with open(output) as f:
         auths = f.read()

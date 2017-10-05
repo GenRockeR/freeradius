@@ -52,6 +52,9 @@ def main():
     parser.add_argument("--config",
                         type=str,
                         default="/etc/raddb/mods-config/python/network.json")
+    parser.add_argument("--output",
+                        type=str,
+                        default=None)
     args = parser.parse_args()
     config = None
     authd = {}
@@ -65,14 +68,22 @@ def main():
     today = dt.date.today()
     for x in reversed(range(1, args.days + 1)):
         _file("{}".format(today - dt.timedelta(days=x)), authd)
-    print("| user | mac | last |")
-    print("| ---  | --- | ---  |")
+    lines = []
+    lines.append("| user | mac | last |")
+    lines.append("| ---  | --- | ---  |")
     for item in sorted(authd.keys()):
         on = authd[item]
         parts = item.split(_KEY)
         if on is None:
             on = ""
-        print("| {} | {} | {} |".format(parts[0], parts[1], on))
+        lines.append("| {} | {} | {} |".format(parts[0], parts[1], on))
+    if args.output is None:
+        for l in lines:
+            print(l)
+    else:
+        with open(args.output, 'w') as f:
+            f.write("\n".join(lines))
+
 
 if __name__ == "__main__":
     main()
