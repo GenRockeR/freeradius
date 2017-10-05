@@ -4,6 +4,7 @@ import datetime as dt
 import argparse
 import json
 import wrapper
+import os
 
 _KEY = "->"
 
@@ -13,10 +14,10 @@ def _new_key(user, mac):
     return "{}{}{}".format(user, _KEY, mac)
 
 
-def _file(day_offset, auth_info):
+def _file(day_offset, auth_info, logs):
     """Read a file."""
     uuid_log = {}
-    with open("trace.log.{}".format(day_offset), 'r') as f:
+    with open(os.path.join(logs, "trace.log.{}".format(day_offset)), 'r') as f:
         for l in f:
             parts = l.split("->")
             uuid = parts[0].split(":")[3].strip()
@@ -55,6 +56,9 @@ def main():
     parser.add_argument("--output",
                         type=str,
                         default=None)
+    parser.add_argument("--logs",
+                        type=str,
+                        default="/var/log/radius/freepydius")
     args = parser.parse_args()
     config = None
     authd = {}
@@ -67,7 +71,7 @@ def main():
                 authd[k] = "n/a"
     today = dt.date.today()
     for x in reversed(range(1, args.days + 1)):
-        _file("{}".format(today - dt.timedelta(days=x)), authd)
+        _file("{}".format(today - dt.timedelta(days=x)), authd, args.logs)
     lines = []
     lines.append("| user | mac | last |")
     lines.append("| ---  | --- | ---  |")
