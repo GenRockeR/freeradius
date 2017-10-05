@@ -323,7 +323,7 @@ def update_wiki(env, running_config):
     post_content(env, "vlans", "VLANs", content)
 
 
-def update_leases(env, running_config):
+def update_leases(env, conf):
     """Update the wiki with lease information."""
     leases = {}
     lease_unknown = []
@@ -364,9 +364,6 @@ def update_leases(env, running_config):
     except Exception as e:
         print("error parsing leases.")
         print(str(e))
-    conf = None
-    with open(running_config, 'r') as f:
-        conf = json.loads(f.read())[wrapper.USERS]
     user_resolutions = get_user_resolutions(conf)
     for user in conf:
         user_name = resolve_user(user, user_resolutions)
@@ -502,6 +499,10 @@ def daily_report(env, running_config):
          working_dir=_get_utils(env))
     auths = None
     optimized = {}
+    conf = None
+    with open(running_config, 'r') as f:
+        conf = json.loads(f.read())[wrapper.USERS]
+    not_cruft = get_not_cruft(conf)
     with open(output) as f:
         lines = []
         skip = 0
@@ -509,21 +510,22 @@ def daily_report(env, running_config):
             lines.append(l)
             if skip >= 2:
                 parts = l.split("|")
-                user = parts[0]
-                mac = parts[1]
-                res = parts[2]
+                user = parts[1]
+                mac = parts[2]
+                res = parts[3]
                 if user not in optimized:
-                    optimized[user] = []
+                    optimized[user] = False
                 if "n/a" not in res:
-                    optimized[user].append(mac)
+                    optimized[user] = True
             skip += 1
         auths = "".join(lines)
     post_content(env, "auths", "Auths", _create_header() + auths)
-    update_leases(env, running_config)
+    update_leases(env, conf)
     suggestions = []
     for u in optimized:
-        if len(optimized[u]) == 0:
-            suggestions.append("drop user {}".format(u))
+        if not optimized[u]:
+            if u not in not_cruft:
+                suggestions.append("drop user {}".format(u))
     if len(suggestions) > 0:
         _smirc("\n".join(sorted(suggestions)))
 
