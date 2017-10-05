@@ -26,9 +26,7 @@ def _file(day_offset, auth_info):
                         calling_station = data.index("Calling-Station-Id") + 22
                         calling = data[calling_station:]
                         calling = calling[:calling.index(")") - 1]
-                        calling = calling.replace(":",
-                                                  "").replace("-",
-                                                              "").lower()
+                        calling = replace(":", "").replace("-", "").lower()
                         key = "{}->{}".format(user_start, calling)
                         uuid_log[uuid] = key
                         if key not in auth_info:
@@ -41,9 +39,14 @@ def main():
     today = dt.date.today()
     for x in reversed(range(1, 11)):
         _file("{}".format(today - dt.timedelta(days=x)), authd)
+    print("| user | mac | date |")
+    print("| ---  | --- | ---  |")
     for item in sorted(authd.keys()):
         on = authd[item]
-        print("{}={}".format(item, on))
+        parts = item.split("->")
+        if on is None:
+            on = ""
+        print("| {} | {} | {} |".format(parts[0], parts[1], on))
 
 if __name__ == "__main__":
     main()
