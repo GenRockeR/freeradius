@@ -482,7 +482,7 @@ def daily_report(env, running_config):
         return
     hour = today.hour
     report_indicator = env.working_dir + "indicator"
-    if hour != 9:
+    if hour != 1:
         delete_if_exists(report_indicator)
         return
     if os.path.exists(report_indicator):
