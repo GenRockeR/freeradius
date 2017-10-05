@@ -546,7 +546,7 @@ def daily_report(env, running_config):
           "--output",
           output],
          "report authorizations",
-         working_dir="/var/log/radius/freepydius")
+         working_dir=_get_utils(env))
     auths = None
     with open(output) as f:
         auths = f.read()
