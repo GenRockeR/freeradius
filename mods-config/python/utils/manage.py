@@ -477,52 +477,6 @@ def _create_header():
 """
 
 
-def optimize_config(env, optimized, running_config):
-    """Check any configuration optimizations."""
-    opt_conf = {}
-    # need to merge these into a single configuration
-    for user in optimized:
-        if user not in opt_conf:
-            opt_conf[user] = []
-        for mac in optimized[user]:
-            if mac not in opt_conf[user]:
-                opt_conf[user].append(mac)
-    run_conf = None
-    with open(running_config, 'r') as f:
-        run_conf = json.loads(f.read())
-    suggestions = []
-    users = run_conf[wrapper.USERS]
-    not_cruft = get_not_cruft(users)
-    for user in users:
-        if user not in opt_conf:
-            if user not in not_cruft:
-                suggestions.append("drop user {}".format(user))
-    cruft = []
-    for user in opt_conf:
-        if user not in users:
-            continue
-        macs = users[user][wrapper.MACS]
-        for mac in opt_conf[user]:
-            if mac in macs:
-                macs.remove(mac)
-        for m in macs:
-            if user not in not_cruft:
-                cruft.append((user, m))
-    content = _create_header()
-    content += "\n"
-    if len(cruft) > 0:
-        cruft = sorted(cruft)
-        cruft.insert(0, ("---", "---"))
-        cruft.insert(0, ("user", "mac"))
-        for item in cruft:
-            content += "| {} | {} |\n".format(item[0], item[1])
-    else:
-        content += "nothing to cleanup"
-    post_content(env, "cruft", "Cruft", content)
-    if len(suggestions) > 0:
-        _smirc("\n".join(sorted(suggestions)))
-
-
 def daily_report(env, running_config):
     """Write daily reports."""
     today = datetime.datetime.now()
@@ -563,10 +517,15 @@ def daily_report(env, running_config):
                 if "n/a" not in res:
                     optimized[user].append(mac)
             skip += 1
-        auths = "\n".join(lines)
+        auths = "".join(lines)
     post_content(env, "auths", "Auths", _create_header() + auths)
     update_leases(env, running_config)
-    optimize_config(env, optimized, running_config)
+    suggestions = []
+    for u in optimized:
+        if len(optimized[u]) == 0:
+            suggestions.append("drop user {}".format(u))
+    if len(suggestions) > 0:
+        _smirc("\n".join(sorted(suggestions)))
 
 
 def _feed(env, text):
