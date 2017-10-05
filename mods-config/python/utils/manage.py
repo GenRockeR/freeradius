@@ -503,6 +503,7 @@ def daily_report(env, running_config):
     with open(running_config, 'r') as f:
         conf = json.loads(f.read())[wrapper.USERS]
     not_cruft = get_not_cruft(conf)
+    _is_na = "n/a"
     with open(output) as f:
         lines = []
         skip = 0
@@ -514,14 +515,16 @@ def daily_report(env, running_config):
                 res = parts[3]
                 if user not in optimized:
                     optimized[user] = False
-                if "n/a"in res:
+                if _is_na in res:
                     if user not in not_cruft:
                         adj = []
                         for x in parts:
                             if len(x.strip()) == 0:
                                 adj.append(x)
                             else:
-                                adj.append("**{}**".format(x))
+                                cruft_mark = x.replace(_is_na,
+                                                       _is_na + " (cruft)")
+                                adj.append("**{}**".format(cruft_mark))
                         new_line = "|".join(adj)
                 else:
                     optimized[user] = True
