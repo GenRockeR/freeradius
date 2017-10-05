@@ -7,6 +7,8 @@ import wrapper
 import os
 
 _KEY = "->"
+_NA = "n/a"
+_DENY = "denied"
 
 
 def _new_key(user, mac):
@@ -43,7 +45,8 @@ def _file(day_offset, auth_info, logs):
                         key = _new_key(user_start, calling)
                         uuid_log[uuid] = key
                         if key not in auth_info:
-                            auth_info[key] = "denied ({})".format(day_offset)
+                            auth_info[key] = "{} ({})".format(_DENY,
+                                                              day_offset)
 
 
 def main():
@@ -68,14 +71,25 @@ def main():
         for u in users:
             for m in users[u][wrapper.MACS]:
                 k = _new_key(u, m)
-                authd[k] = "n/a"
+                authd[k] = _NA
     today = dt.date.today()
     for x in reversed(range(1, args.days + 1)):
         _file("{}".format(today - dt.timedelta(days=x)), authd, args.logs)
     lines = []
     lines.append("| user | mac | last |")
     lines.append("| ---  | --- | ---  |")
+    denied = []
+    cruft = []
+    rest = []
     for item in sorted(authd.keys()):
+        val = authd[item]
+        if _NA in val:
+            cruft.append(item)
+        elif _DENY in val:
+            denied.append(item)
+        else:
+            rest.append(item)
+    for item in denied + cruft + rest:
         on = authd[item]
         parts = item.split(_KEY)
         if on is None:
