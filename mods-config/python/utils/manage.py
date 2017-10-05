@@ -507,7 +507,7 @@ def daily_report(env, running_config):
         lines = []
         skip = 0
         for l in f:
-            lines.append(l)
+            new_line = l
             if skip >= 2:
                 parts = l.split("|")
                 user = parts[1].strip()
@@ -515,7 +515,16 @@ def daily_report(env, running_config):
                 if user not in optimized:
                     optimized[user] = False
                 if "n/a" not in res:
+                    if user not in not_cruft:
+                        adj = []
+                        for x in parts:
+                            if len(x.strip()) == 0:
+                                adj.append(x)
+                            else:
+                                adj.append("**{}**".format(x))
+                        new_line = "|".join(adj)
                     optimized[user] = True
+            lines.append(new_lines)
             skip += 1
         auths = "".join(lines)
     post_content(env, "auths", "Auths", _create_header() + auths)
