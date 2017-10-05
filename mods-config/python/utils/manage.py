@@ -15,6 +15,8 @@ import urllib.parse
 import urllib.request
 import datetime
 
+REPORTING_HOUR = 1
+
 # user setup
 CHARS = string.ascii_uppercase + string.ascii_lowercase + string.digits
 
@@ -482,7 +484,7 @@ def daily_report(env, running_config):
         return
     hour = today.hour
     report_indicator = env.working_dir + "indicator"
-    if hour != 1:
+    if hour != REPORTING_HOUR:
         delete_if_exists(report_indicator)
         return
     if os.path.exists(report_indicator):
