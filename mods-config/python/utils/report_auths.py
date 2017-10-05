@@ -43,7 +43,7 @@ def _file(day_offset, auth_info, logs):
                         key = _new_key(user_start, calling)
                         uuid_log[uuid] = key
                         if key not in auth_info:
-                            auth_info[key] = "denied"
+                            auth_info[key] = "denied ({})".format(day_offset)
 
 
 def main():
