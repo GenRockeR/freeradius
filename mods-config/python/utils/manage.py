@@ -477,17 +477,16 @@ def _create_header():
 """
 
 
-def optimize_config(env, optimized_configs, running_config):
+def optimize_config(env, optimized, running_config):
     """Check any configuration optimizations."""
     opt_conf = {}
     # need to merge these into a single configuration
-    for optimized in optimized_configs:
-        for user in optimized:
-            if user not in opt_conf:
-                opt_conf[user] = []
-            for mac in optimized[user]:
-                if mac not in opt_conf[user]:
-                    opt_conf[user].append(mac)
+    for user in optimized:
+        if user not in opt_conf:
+            opt_conf[user] = []
+        for mac in optimized[user]:
+            if mac not in opt_conf[user]:
+                opt_conf[user].append(mac)
     run_conf = None
     with open(running_config, 'r') as f:
         run_conf = json.loads(f.read())
@@ -548,11 +547,26 @@ def daily_report(env, running_config):
          "report authorizations",
          working_dir=_get_utils(env))
     auths = None
+    optimized = {}
     with open(output) as f:
-        auths = f.read()
+        lines = []
+        skip = 0
+        for l in f:
+            lines.append(l)
+            if skip >= 2:
+                parts = l.split("|")
+                user = parts[0]
+                mac = parts[1]
+                res = parts[2]
+                if user not in optimized:
+                    optimized[user] = []
+                if "n/a" not in res:
+                    optimized[user].append(mac)
+            skip += 1
+        auths = "\n".join(lines)
     post_content(env, "auths", "Auths", _create_header() + auths)
     update_leases(env, running_config)
-    optimize_config(env, optimized_confs, running_config)
+    optimize_config(env, optimized, running_config)
 
 
 def _feed(env, text):
