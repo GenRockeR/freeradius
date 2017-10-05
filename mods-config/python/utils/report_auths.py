@@ -1,4 +1,5 @@
 #!/usr/bin/python
+"""Report authorization information."""
 import datetime as dt
 
 
@@ -28,7 +29,7 @@ def main():
     """Accept/reject reporting."""
     authd = {}
     today = dt.date.today()
-    for x in reversed(range(1,11)):
+    for x in reversed(range(1, 11)):
         _file("{}".format(today - dt.timedelta(days=x)), authd)
     for item in sorted(authd.keys()):
         on = authd[item]
@@ -36,4 +37,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-
