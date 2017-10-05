@@ -6,7 +6,9 @@ import json
 
 _KEY = "->"
 
+
 def _new_key(user, mac):
+    """Create a key."""
     return "{}{}{}".format(user, _KEY, mac)
 
 
