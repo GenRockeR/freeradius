@@ -17,24 +17,9 @@ replay a log into the freepydius implementation
 python2.7 replay.py --file trace.log
 ```
 
-## report
+## report_auths
 
-run reports over the output of a store
-```
-python2.7 --database dump.db --reports packets rebuild 
-```
-
-## store
-
-convert the (or multiple) trace.log files into a sqlite database
-
-```
-cat trace.log | python2.7 store.py
-```
-
-## wrapper
-
-helpers for the other utils
+report on authorization/rejection information
 
 ## config_compose
 
