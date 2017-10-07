@@ -60,7 +60,6 @@ class Env(object):
         self.working_dir = None
         self.phab_leases = None
         self.mgmt_ips = None
-        self.is_secondary = None
         self.synapse_feed = None
 
     def add(self, key, value):
@@ -84,8 +83,6 @@ class Env(object):
             self.phab_leases = value
         elif key == FLAG_MGMT_LEASE:
             self.mgmt_ips = value
-        elif key == IS_SECONDARY:
-            self.is_secondary = value
         elif key == SYNAPSE_FEED:
             self.synapse_feed = value
 
@@ -114,7 +111,6 @@ class Env(object):
             errors += self._in_error(WORK_DIR, self.working_dir)
             errors += self._in_error(LEASE_PASTE, self.phab_leases)
             errors += self._in_error(FLAG_MGMT_LEASE, self.mgmt_ips)
-            errors += self._in_error(IS_SECONDARY, self.is_secondary)
             errors += self._in_error(SYNAPSE_FEED, self.synapse_feed)
         if errors > 0:
             exit(1)
@@ -549,7 +545,6 @@ def _feed(env, text):
 def build():
     """Build and apply a user configuration."""
     env = _get_vars("/etc/environment")
-    secondary = env.is_secondary and os.path.exists(env.is_secondary)
     env.validate(full=True)
     os.chdir(env.net_config)
     compose(env)
@@ -570,12 +565,9 @@ def build():
             with open(git_indicator, 'r') as f:
                 git = f.read().strip()
         status = "ready"
-        if secondary:
-            status = "secondary"
         _smirc("{} -> {} ({})".format(status, git, hashed))
         _feed(env, "radius configuration updated")
-    if not secondary:
-        daily_report(env, run_config)
+    daily_report(env, run_config)
 
 
 def check():
