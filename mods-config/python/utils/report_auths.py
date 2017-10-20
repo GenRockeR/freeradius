@@ -25,7 +25,7 @@ def _file(day_offset, auth_info, logs):
             uuid = parts[0].split(":")[3].strip()
             data = parts[1]
             is_accept = "Tunnel-Type" in data
-            is_respoonse = "('Response', 2)" in data
+            is_response = "('Response', 2)" in data
             if is_accept or is_response:
                 if uuid in uuid_log:
                     user = uuid_log[uuid]
