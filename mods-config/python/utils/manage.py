@@ -15,7 +15,7 @@ import urllib.parse
 import urllib.request
 import datetime
 
-REPORTING_HOUR = 1
+REPORTING_HOUR = 9
 
 # user setup
 CHARS = string.ascii_uppercase + string.ascii_lowercase + string.digits
