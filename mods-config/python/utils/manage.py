@@ -476,6 +476,8 @@ def daily_report(env, running_config):
         return
     if os.path.exists(report_indicator):
         return
+    print('SIGHUP radius')
+    call(['kill', '-1', '`cat /var/run/radiusd/radiusd.pid`'], 'sighup radius')
     print('completing daily reports')
     with open(report_indicator, 'w') as f:
         f.write("")
