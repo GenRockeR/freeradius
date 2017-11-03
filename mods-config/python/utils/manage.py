@@ -483,7 +483,7 @@ def daily_report(env, running_config):
         with open(radius_pid) as f:
             pid = "".join(f.readlines()).strip()
     if pid is not None:
-        call(['kill', '-1', pid], 'sighup radius')
+        call(['kill', '-9', pid], 'sighup radius')
     print('completing daily reports')
     with open(report_indicator, 'w') as f:
         f.write("")
