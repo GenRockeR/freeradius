@@ -109,13 +109,14 @@ vim /etc/environment
 PYTHONPATH=/etc/raddb/mods-config/python/
 ```
 
-need to update the freeradius systemd script to include the environment setting for python
+need to update the freeradius systemd script to include the environment setting for python and restart mode for process
 ```
 sudo systemctl edit freeradius.service
 ---
 # add to the [Service] section
 [Service]
 EnvironmentFile=/etc/environment
+Restart=always
 ```
 
 freepydius logging
