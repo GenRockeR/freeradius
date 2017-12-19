@@ -612,7 +612,11 @@ def main():
     if args.action == CHECK:
         check()
     elif args.action == BUILD:
-        build()
+        try:
+            build()
+        except Exception as e:
+            _smirc("build error")
+            print(str(e))
     elif args.action == ADD_USER:
         add_user(key)
     elif args.action == GEN_PSWD:
