@@ -20,7 +20,7 @@ def _file(day_offset, auth_info, logs):
     """Read a file."""
     uuid_log = {}
     file_name = os.path.join(logs, "trace.log.{}".format(day_offset))
-    if not os.path.exist(file_name):
+    if not os.path.exists(file_name):
         print("{} does not exist".format(file_name))
         return
     with open(file_name, 'r') as f:
