@@ -77,7 +77,7 @@ We are able to review information about accounting (e.g. Start/Stop) to see conn
 
 ### Technical Notes
 
-* We do have Cleartext-Password both in the configuration enumerated below, but it is also (currently) logged to the trace log. Be advised of this when distributing/debugging logs
+* The Cleartext-Password will still show in the logs. Be advised of this when distributing/debugging
 * Instead of removing commented out sections, they are there for reference in the configs
 * Though the python module is configured to be available for each phase (e.g. authorize, authenticate, accounting, post_auth, pre_proxy, preacct), it is not currently enabled for all (e.g. preacct, pre_proxy)
 * MAC spoofing is likely the highest risk (currently known) for this configuration, see 'Future Options' above for how this can and may be mitigated
@@ -176,7 +176,7 @@ vim /etc/raddb/mods-config/python/network.json
     {
         "prod.user1":
         {
-            "pass": "prodaccount$1",
+            "pass": "<tea_encrypted_pass1>",
             "macs":
             [
                 "4fff3a7e7a11",
@@ -187,7 +187,7 @@ vim /etc/raddb/mods-config/python/network.json
         },
         "prod.user2":
         {
-            "pass": "prodaccount$2",
+            "pass": "<tea_encrypted_pass2>",
             "macs":
             [
                 "4fff3a7e7a11",
@@ -197,7 +197,7 @@ vim /etc/raddb/mods-config/python/network.json
         },
         "dev.user1":
         {
-            "pass": "devaccount",
+            "pass": "<tea_encrypted_pass3>",
             "macs":
             [
                 "4fff3a7e7a11",
