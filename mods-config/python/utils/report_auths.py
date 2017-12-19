@@ -19,7 +19,11 @@ def _new_key(user, mac):
 def _file(day_offset, auth_info, logs):
     """Read a file."""
     uuid_log = {}
-    with open(os.path.join(logs, "trace.log.{}".format(day_offset)), 'r') as f:
+    file_name = os.path.join(logs, "trace.log.{}".format(day_offset))
+    if not os.path.exist(file_name):
+        print("{} does not exist".format(file_name))
+        return
+    with open(file_name, 'r') as f:
         for l in f:
             parts = l.split("->")
             uuid = parts[0].split(":")[3].strip()
