@@ -162,6 +162,7 @@ def call(cmd, error_text, working_dir=None):
     p = subprocess.Popen(cmd, cwd=working_dir)
     p.wait()
     if p.returncode != 0:
+        _smirc("radius call failed")
         print("unable to {}".format(error_text))
         exit(1)
 
