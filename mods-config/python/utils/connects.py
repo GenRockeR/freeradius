@@ -47,7 +47,7 @@ CREATE TABLE IF NOT EXISTS tracked
             print(txt)
             curs.executemany("""
 INSERT INTO tracked (date, user, port, ip, mac) VALUES (?, ?, ?, ?, ?)
-                             """, [(date, t[0], t[1], t[2], t[3]),])
+                             """, [(date, t[0], t[1], t[2], t[3]), ])
         except Exception as e:
             print("reporting error")
             print(t)
