@@ -3,6 +3,7 @@ import argparse
 import os
 import sqlite3 as sl
 import sys
+import datetime
 
 
 def _extract(line, attr):
