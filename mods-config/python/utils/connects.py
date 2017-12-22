@@ -58,10 +58,10 @@ INSERT INTO tracked (date, user, port, ip, mac) VALUES (?, ?, ?, ?, ?)
 def main():
     """Main entry."""
     parser = argparse.ArgumentParser()
-    parser.add_argument("--db", default=".")
+    parser.add_argument("--db", default="/var/db")
     args = parser.parse_args()
     lines = sys.stdin.readlines()
-    with sl.connect(os.path.join("test.db")) as c:
+    with sl.connect(os.path.join(args.db, "auths.db")) as c:
         tracked = []
         for l in lines:
             if "->" in l:
