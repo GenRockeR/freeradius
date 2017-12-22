@@ -9,13 +9,17 @@ import wrapper
 
 
 def _object(user, port, nas_ip, mac):
+    """Create an object."""
     return (user, port, nas_ip, wrapper.convert_mac(mac))
 
+
 def _get(key, existing, tple):
+    """Get a tuple key if not set."""
     if existing:
         return existing
     if tple[0] == key:
         return tple[1]
+
 
 def _report(conn, tracked):
     """Report on new entries as found."""
@@ -25,16 +29,28 @@ CREATE TABLE IF NOT EXISTS tracked
 (
     date text,
     user text,
-    nasp text,
-    nasi text
+    port text,
+    ip text,
+    mac text
 )
 """)
     date = datetime.datetime.now().strftime("%Y-%m-%d")
-    for row in curs.execute("select user, nasp, nasi from tracked"):
-        t = _object(u, p, n)
+    for row in curs.execute("select user, port, ip, mac from tracked"):
+        t = _object(row[0], row[1], row[2], row[3])
         if t in tracked:
             tracked.remove(t)
-    print(tracked) 
+    for t in tracked:
+        try:
+            print(t)
+            curs.executemany("""
+INSERT INTO tracked (date, user, port, ip, mac) VALUES (?, ?, ?, ?, ?)
+                             """, [(date, t[0], t[1], t[2], t[3]),])
+            curs.commit()
+        except Exception as e:
+            print("reporting error")
+            print(t)
+            print(e)
+
 
 def main():
     """Main entry."""
