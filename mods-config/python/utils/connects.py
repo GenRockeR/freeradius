@@ -1,4 +1,5 @@
 #!/usr/bin/python
+"""Report on auth connects attempts."""
 import argparse
 import os
 import sqlite3 as sl
