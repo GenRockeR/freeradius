@@ -6,6 +6,7 @@ import sys
 import datetime
 from ast import literal_eval as make_tuple
 import wrapper
+import smirc
 
 
 def _object(user, port, nas_ip, mac):
@@ -41,11 +42,12 @@ CREATE TABLE IF NOT EXISTS tracked
             tracked.remove(t)
     for t in tracked:
         try:
-            print(t)
+            txt = "auth attempt: {}".format(t)
+            smirc.run(arguments=[txt])
+            print(txt)
             curs.executemany("""
 INSERT INTO tracked (date, user, port, ip, mac) VALUES (?, ?, ?, ?, ?)
                              """, [(date, t[0], t[1], t[2], t[3]),])
-            curs.commit()
         except Exception as e:
             print("reporting error")
             print(t)
@@ -78,7 +80,6 @@ def main():
                 for mac in macs:
                     tracked.append(_object(user, nasp, nasi, mac))
         _report(c, list(set(tracked)))
-
 
 
 if __name__ == "__main__":
