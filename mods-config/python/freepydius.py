@@ -11,6 +11,7 @@ import os
 import threading
 import uuid
 import random
+import six
 from ctypes import *
 from logging.handlers import TimedRotatingFileHandler
 
@@ -75,7 +76,10 @@ def _config(input_name):
   """get a user config from file."""
   user_name = _convert_user_name(input_name)
   with open(_CONFIG_FILE) as f:
-    obj = byteify(json.loads(f.read()))
+    if six.PY2:
+      obj = byteify(json.loads(f.read()))
+    else:
+      obj = json.loads(f.read())
     users = obj[USER_KEY]
     vlans = obj[VLAN_KEY]
     bypass = obj[BYPASS_KEY]

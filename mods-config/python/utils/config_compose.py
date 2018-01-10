@@ -32,7 +32,7 @@ class ConfigMeta(object):
     def password(self, password):
         """password group validation(s)."""
         if password in self.passwords:
-            print "password duplicated"
+            print("password duplicated")
             exit(-1)
         self.passwords.append(password)
 
@@ -40,7 +40,7 @@ class ConfigMeta(object):
         """bypass management."""
         for mac in macs:
             if mac in self.bypasses:
-                print "already bypassed"
+                print("already bypassed")
                 exit(-1)
             self.bypasses.append(mac)
 
@@ -58,19 +58,19 @@ class ConfigMeta(object):
         """verify meta data."""
         for mac in self.macs:
             if mac in self.bypasses:
-                print "mac is globally bypassed: " + mac
+                print("mac is globally bypassed: " + mac)
                 exit(-1)
         for mac in self.bypasses:
             if mac in self.macs:
-                print "mac is user assigned: " + mac
+                print("mac is user assigned: " + mac)
                 exit(-1)
         used_vlans = set(self.vlans + self.vlan_initiate)
         if len(used_vlans) != len(set(self.all_vlans)):
-            print "unused vlans detected"
+            print("unused vlans detected")
             exit(-1)
         for ref in used_vlans:
             if ref not in self.all_vlans:
-                print "reference to unknown vlan: " + ref
+                print("reference to unknown vlan: " + ref)
                 exit(-1)
 
     def vlan_user(self, vlan, user):
@@ -126,21 +126,20 @@ def check_object(obj):
     """Check an object."""
     return obj.check(wrapper)
 
-
 def _process(output):
     """process the composition of users."""
     common_mod = None
     try:
         common_mod = _get_mod("common")
-        print "loaded common definitions..."
+        print("loaded common definitions...")
     except:
-        print "defaults only..."
+        print("defaults only...")
     user_objs = {}
     vlans = None
     bypass_objs = {}
     meta = ConfigMeta()
     for v_name in _get_by_indicator(VLAN_INDICATOR):
-        print "loading vlan..." + v_name
+        print("loading vlan..." + v_name)
         for obj in _load_objs(v_name, users.__config__.VLAN):
             if vlans is None:
                 vlans = {}
@@ -149,7 +148,7 @@ def _process(output):
             num_str = str(obj.num)
             for vk in vlans.keys():
                 if num_str == vlans[vk]:
-                    print "vlan number defined multiple times..."
+                    print("vlan number defined multiple times...")
                     exit(-1)
             vlans[obj.name] = num_str
             if obj.initiate is not None and len(obj.initiate) > 0:
@@ -160,12 +159,12 @@ def _process(output):
     meta.all_vlans = vlans.keys()
     vlans_with_users = {}
     for f_name in _get_by_indicator(USER_INDICATOR):
-        print "composing..." + f_name
+        print("composing..." + f_name)
         for obj in _load_objs(f_name, users.__config__.Assignment):
             obj = _common_call(common_mod, 'ready', obj)
             key = f_name.replace(USER_INDICATOR, "")
             if not key.isalnum():
-                print "does not meet naming requirements..."
+                print("does not meet naming requirements...")
                 exit(-1)
             vlan = obj.vlan
             if vlan not in vlans:
@@ -174,10 +173,10 @@ def _process(output):
             meta.vlan_user(vlan, key)
             fqdn = vlan + "." + key
             if not check_object(obj):
-                print "did not pass check..."
+                print("did not pass check...")
                 exit(-1)
             if obj.disabled:
-                print "account is disabled or has expired..."
+                print("account is disabled or has expired...")
                 continue
             macs = sorted(obj.macs)
             password = obj.password

@@ -65,7 +65,7 @@ class Assignment(object):
 
     def report(self, cause):
         """report an issue."""
-        print cause
+        print(cause)
         return False
 
     def copy(self, other):
