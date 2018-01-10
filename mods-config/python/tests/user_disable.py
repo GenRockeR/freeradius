@@ -1,6 +1,6 @@
 """User with a disabled setting."""
-import __config__
-import common
+import users.__config__ as __config__
+import users.common as common
 disabled = "11ff33445566"
 normal = __config__.Assignment()
 normal.macs = [common.VALID_MAC]

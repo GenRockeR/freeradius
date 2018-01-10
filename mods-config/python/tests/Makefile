@@ -2,6 +2,6 @@
 
 all:
 	./check.sh
-	pip install pep8 pep257
-	cd ../utils/ && pep8 *.py
+	pip install pycodestyle pep257
+	cd ../utils/ && pycodestyle *.py
 	cd ../utils/ && pep257 *.py
