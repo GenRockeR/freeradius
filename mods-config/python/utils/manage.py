@@ -225,8 +225,8 @@ def add_user(key):
     raw = passes[0]
     password = passes[1]
     user_definition = """
-import __config__
-import common
+import users.__config__ as __config__
+import users.common
 
 u_obj = __config__.Assignment()
 u_obj.password = '{}'
@@ -622,6 +622,7 @@ def main():
         add_user(key)
     elif args.action == GEN_PSWD:
         gen_pass(True, key)
+
 
 if __name__ == "__main__":
     main()

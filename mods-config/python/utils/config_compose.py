@@ -126,13 +126,14 @@ def check_object(obj):
     """Check an object."""
     return obj.check(wrapper)
 
+
 def _process(output):
     """process the composition of users."""
     common_mod = None
     try:
         common_mod = _get_mod("common")
         print("loaded common definitions...")
-    except:
+    except Exception as e:
         print("defaults only...")
     user_objs = {}
     vlans = None

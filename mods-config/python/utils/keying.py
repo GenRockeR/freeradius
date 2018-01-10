@@ -29,5 +29,6 @@ def main():
     args = parser.parse_args()
     change_password(args.oldkey, args.newkey, args.password)
 
+
 if __name__ == "__main__":
     main()
