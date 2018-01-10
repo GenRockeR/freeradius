@@ -84,7 +84,7 @@ We are able to review information about accounting (e.g. Start/Stop) to see conn
 
 ---
 
-[![Build Status](https://travis-ci.org/epiphyte/freeradius.svg?branch=stable)](https://travis-ci.org/epiphyte/freeradius)
+[![Build Status](https://travis-ci.org/epiphyte/freeradius.svg?branch=master)](https://travis-ci.org/epiphyte/freeradius)
 
 ## setup/install
 
