@@ -42,7 +42,7 @@ def main():
             else:
                 print("unknown method: " + method)
                 exit(-1)
-            cmd = ["python2.7", "harness.py", method]
+            cmd = ["python", "harness.py", method]
             for item in objs:
                 cmd.append(item)
             _commented(method)

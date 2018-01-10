@@ -186,7 +186,7 @@ def compose(env):
              _get_exclude("__config__.py")]
     call(rsync, "rsync user definitions")
     here = os.getcwd()
-    composition = ["python2.7",
+    composition = ["python",
                    "config_compose.py",
                    "--output", os.path.join(here, FILE_NAME)]
     call(composition, "compose configuration", working_dir=offset)
