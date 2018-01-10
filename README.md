@@ -93,7 +93,7 @@ We are able to review information about accounting (e.g. Start/Stop) to see conn
 
 install python2 and freeradius
 ```
-pacman -S freeradius python2
+pacman -S freeradius python2 python-six
 ```
 sorry freeradius but we need to talk...
 ```
