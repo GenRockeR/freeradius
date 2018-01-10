@@ -11,7 +11,7 @@ import os
 import threading
 import uuid
 import random
-import six
+import sys
 from ctypes import *
 from logging.handlers import TimedRotatingFileHandler
 
@@ -37,6 +37,7 @@ _ENC_KEY_FILE = _PY_CONF + 'keyfile'
 _ENC_DELIMITER = "."
 _ENC_KEY = "|"
 _ENC_PAD = ord(":")
+_ISPY2 = sys.version_info < (3, 0)
 
 def byteify(input):
   """make sure we get strings."""
@@ -76,7 +77,7 @@ def _config(input_name):
   """get a user config from file."""
   user_name = _convert_user_name(input_name)
   with open(_CONFIG_FILE) as f:
-    if six.PY2:
+    if _ISPY2:
       obj = byteify(json.loads(f.read()))
     else:
       obj = json.loads(f.read())
