@@ -52,7 +52,7 @@ mkdir -p $BIN
 rm -rf $UPSTREAM
 git clone https://github.com/FreeRADIUS/freeradius-server.git $UPSTREAM
 cd $UPSTREAM
-git checkout tags/release_3_0_15
+git checkout tags/release_3_0_16
 cd ..
 checksum-files "../" "${MODS_CONF_PY}util|${MODS_CONF_PY}tests|${MODS_CONF_PY}freepydius|${HERE}|travis.yml" | sed "s/\.\.//g" | sort > $EXPECT
 checksum-files "$UPSTREAM/raddb" "blah" | sed "s/src\/raddb//g" | sort > $ACTUAL

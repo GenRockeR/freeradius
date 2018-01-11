@@ -18,3 +18,4 @@ certs/dh
 certs/random
 *.log*
 *.db
+upstream/src/
