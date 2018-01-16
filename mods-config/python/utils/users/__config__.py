@@ -29,6 +29,7 @@ class VLAN(object):
         self.net = None
         self.owner = None
         self.desc = None
+        self.group = None
 
     def check(self, wrapper):
         """Check the definition."""
