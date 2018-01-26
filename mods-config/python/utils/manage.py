@@ -226,7 +226,7 @@ def add_user(key):
     password = passes[1]
     user_definition = """
 import users.__config__ as __config__
-import users.common
+import users.common as common
 
 u_obj = __config__.Assignment()
 u_obj.password = '{}'
