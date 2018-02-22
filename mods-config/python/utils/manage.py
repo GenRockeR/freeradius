@@ -232,6 +232,7 @@ u_obj = __config__.Assignment()
 u_obj.password = '{}'
 u_obj.vlan = None
 u_obj.group = None
+u_obj.macs = None
 {}
 """.format(password, alias)
     with open(os.path.join(USER_FOLDER, "user_" + named + ".py"), 'w') as f:
