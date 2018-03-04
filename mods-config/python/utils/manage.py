@@ -42,7 +42,6 @@ LOG_FILES = "LOG_FILES"
 WORK_DIR = "WORKING_DIR"
 LEASE_PASTE = "PHAB_LEASE_PASTE"
 FLAG_MGMT_LEASE = "LEASE_MGMT"
-SYNAPSE_FEED = "SYNAPSE_FEED"
 
 
 class Env(object):
@@ -60,7 +59,6 @@ class Env(object):
         self.working_dir = None
         self.phab_leases = None
         self.mgmt_ips = None
-        self.synapse_feed = None
 
     def add(self, key, value):
         """Add a key, sets into environment."""
@@ -83,8 +81,6 @@ class Env(object):
             self.phab_leases = value
         elif key == FLAG_MGMT_LEASE:
             self.mgmt_ips = value
-        elif key == SYNAPSE_FEED:
-            self.synapse_feed = value
 
     def _error(self, key):
         """Print an error."""
@@ -111,7 +107,6 @@ class Env(object):
             errors += self._in_error(WORK_DIR, self.working_dir)
             errors += self._in_error(LEASE_PASTE, self.phab_leases)
             errors += self._in_error(FLAG_MGMT_LEASE, self.mgmt_ips)
-            errors += self._in_error(SYNAPSE_FEED, self.synapse_feed)
         if errors > 0:
             exit(1)
 
@@ -545,17 +540,6 @@ def daily_report(env, running_config):
         _smirc("\n".join(sorted(suggestions)))
 
 
-def _feed(env, text):
-    """Send a feed message to phabricator."""
-    import feedmepy
-    message = feedmepy.FeedMe()
-    code = message.now(text,
-                       room=env.synapse_feed,
-                       url=env.phab,
-                       token=env.phab_token)
-    print("feedme: {}".format(str(code)))
-
-
 def build():
     """Build and apply a user configuration."""
     env = _get_vars("/etc/environment")
@@ -580,7 +564,6 @@ def build():
                 git = f.read().strip()
         status = "ready"
         _smirc("{} -> {} ({})".format(status, git, hashed))
-        _feed(env, "radius configuration updated")
     daily_report(env, run_config)
 
 
