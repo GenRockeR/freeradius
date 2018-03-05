@@ -154,7 +154,7 @@ ln -s /etc/raddb/radius.logrotate /etc/logrotate.d/radius
 
 ### additional
 
-for some management communications/reporting, install [smirc and feedme](https://mirror.epiphyte.network/repos/)
+for some management communications/reporting, install [smirc](https://mirror.epiphyte.network/repos/)
 
 ---
 
