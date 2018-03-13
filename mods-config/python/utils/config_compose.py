@@ -7,6 +7,7 @@ import users
 import users.__config__
 import wrapper
 import importlib
+import csv
 
 # file indicators
 IND_DELIM = "_"
@@ -210,7 +211,7 @@ def _process(output, audit):
                         raise Exception(mac_bypass + " previously defined")
                     bypass_objs[mac_bypass] = vlan
             user_all = sorted(set(obj.macs + obj.port_bypass + obj.bypass))
-            user_macs["{} ({})".format(key, vlan)] = user_all
+            user_macs[key] = (vlan, user_all)
     meta.verify()
     full = {}
     full[wrapper.freepydius.USER_KEY] = user_objs
@@ -219,17 +220,14 @@ def _process(output, audit):
     with open(output, 'w') as f:
         f.write(json.dumps(full, sort_keys=True,
                            indent=4, separators=[",", ": "]))
-    lines = []
-    lines.append(["user", "mac"])
-    lines.append(["---", "---"])
-    for u in user_macs:
-        macs = user_macs[u]
-        for m in macs:
-            lines.append([u, m])
     with open(audit, 'w') as f:
-        for l in lines:
-            f.write("| {} |\n".format(" | ".join(l)))
-
+        csv_writer = csv.writer(f)
+        for u in user_macs:
+            obj = user_macs[u]
+            vlan = obj[0]
+            macs = obj[1]
+            for m in macs:
+                csv_writer.writerow([u, vlan, m])
 
 def main():
     """main entry."""

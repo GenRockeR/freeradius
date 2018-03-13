@@ -29,7 +29,7 @@ GEN_PSWD = "password"
 # file handling
 FILE_NAME = wrapper.CONFIG_NAME
 PREV_FILE = FILE_NAME + ".prev"
-AUDIT = "audit.md"
+AUDIT = "audit.csv"
 USER_FOLDER = "users/"
 PYTHON_MODS = "mods-config/python"
 
