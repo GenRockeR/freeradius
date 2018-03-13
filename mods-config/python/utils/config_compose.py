@@ -221,7 +221,7 @@ def _process(output, audit):
         f.write(json.dumps(full, sort_keys=True,
                            indent=4, separators=[",", ": "]))
     with open(audit, 'w') as f:
-        csv_writer = csv.writer(f)
+        csv_writer = csv.writer(f, lineterminator=os.linesep)
         for u in user_macs:
             obj = user_macs[u]
             vlan = obj[0]
