@@ -162,7 +162,6 @@ def _process(output, audit):
     user_macs = {}
     for f_name in _get_by_indicator(USER_INDICATOR):
         print("composing..." + f_name)
-        u_name = f_name.replace(USER_INDICATOR, "")
         for obj in _load_objs(f_name, users.__config__.Assignment):
             obj = _common_call(common_mod, 'ready', obj)
             key = f_name.replace(USER_INDICATOR, "")
@@ -210,7 +209,8 @@ def _process(output, audit):
 
                         raise Exception(mac_bypass + " previously defined")
                     bypass_objs[mac_bypass] = vlan
-            user_macs[u_name] = sorted(set(obj.macs + obj.port_bypass + obj.bypass))
+            user_all = sorted(set(obj.macs + obj.port_bypass + obj.bypass))
+            user_macs["{} ({})".format(key, vlan)] = user_all
     meta.verify()
     full = {}
     full[wrapper.freepydius.USER_KEY] = user_objs
