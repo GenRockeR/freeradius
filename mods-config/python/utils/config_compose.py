@@ -127,7 +127,7 @@ def check_object(obj):
     return obj.check(wrapper)
 
 
-def _process(output):
+def _process(output, audit):
     """process the composition of users."""
     common_mod = None
     try:
@@ -159,8 +159,10 @@ def _process(output):
         raise Exception("missing required config settings...")
     meta.all_vlans = vlans.keys()
     vlans_with_users = {}
+    user_macs = {}
     for f_name in _get_by_indicator(USER_INDICATOR):
         print("composing..." + f_name)
+        u_name = f_name.replace(USER_INDICATOR, "")
         for obj in _load_objs(f_name, users.__config__.Assignment):
             obj = _common_call(common_mod, 'ready', obj)
             key = f_name.replace(USER_INDICATOR, "")
@@ -205,8 +207,10 @@ def _process(output):
             if bypass is not None and len(bypass) > 0:
                 for mac_bypass in bypass:
                     if mac_bypass in bypass_objs:
+
                         raise Exception(mac_bypass + " previously defined")
                     bypass_objs[mac_bypass] = vlan
+            user_macs[u_name] = sorted(set(obj.macs + obj.port_bypass + obj.bypass))
     meta.verify()
     full = {}
     full[wrapper.freepydius.USER_KEY] = user_objs
@@ -215,6 +219,16 @@ def _process(output):
     with open(output, 'w') as f:
         f.write(json.dumps(full, sort_keys=True,
                            indent=4, separators=[",", ": "]))
+    lines = []
+    lines.append(["user", "mac"])
+    lines.append(["---", "---"])
+    for u in user_macs:
+        macs = user_macs[u]
+        for m in macs:
+            lines.append([u, m])
+    with open(audit, 'w') as f:
+        for l in lines:
+            f.write("| {} |\n".format(" | ".join(l)))
 
 
 def main():
@@ -223,8 +237,9 @@ def main():
     try:
         parser = argparse.ArgumentParser()
         parser.add_argument("--output", type=str, required=True)
+        parser.add_argument("--audit", type=str, required=True)
         args = parser.parse_args()
-        _process(args.output)
+        _process(args.output, args.audit)
         success = True
     except Exception as e:
         print('unable to compose')

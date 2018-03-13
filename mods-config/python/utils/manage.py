@@ -29,6 +29,7 @@ GEN_PSWD = "password"
 # file handling
 FILE_NAME = wrapper.CONFIG_NAME
 PREV_FILE = FILE_NAME + ".prev"
+AUDIT = "audit.md"
 USER_FOLDER = "users/"
 PYTHON_MODS = "mods-config/python"
 
@@ -183,7 +184,10 @@ def compose(env):
     here = os.getcwd()
     composition = ["python",
                    "config_compose.py",
-                   "--output", os.path.join(here, FILE_NAME)]
+                   "--output",
+                   os.path.join(here, FILE_NAME),
+                   "--audit",
+                   os.path.join(here, AUDIT)]
     call(composition, "compose configuration", working_dir=offset)
 
 
