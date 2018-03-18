@@ -4,6 +4,7 @@ USRS="../utils/users/"
 ACTUAL_KEYS="actual.keys"
 KEY_LOG="actual_keys.log"
 valid_mac="001122334455"
+AUDIT_CSV="actual.csv"
 
 function test-objs()
 {
@@ -47,10 +48,16 @@ for f in $(echo "b c u v"); do
 done
 cp *.py $USRS
 OUT_JSON="actual.json"
-python ../utils/config_compose.py --output $OUT_JSON
+python ../utils/config_compose.py --output $OUT_JSON --audit $AUDIT_CSV
 diff expected.json $OUT_JSON
 if [ $? -ne 0 ]; then
     echo "different composed results..."
+    exit -1
+fi
+
+diff audit_exp.csv $AUDIT_CSV
+if [ $? -ne 0 ]; then
+    echo "different audit results..."
     exit -1
 fi
 

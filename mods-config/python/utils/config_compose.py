@@ -210,10 +210,12 @@ def _process(output, audit):
 
                         raise Exception(mac_bypass + " previously defined")
                     bypass_objs[mac_bypass] = vlan
-            user_all = sorted(set(obj.macs + obj.port_bypass + obj.bypass))
+            user_all = []
+            for l in [obj.macs, obj.port_bypass, obj.bypass]:
+                user_all += list(l)
             if key not in user_macs:
                 user_macs[key] = []
-            user_macs[key].append((vlan, user_all))
+            user_macs[key].append((vlan, sorted(set(user_all))))
     meta.verify()
     full = {}
     full[wrapper.freepydius.USER_KEY] = user_objs
@@ -230,6 +232,7 @@ def _process(output, audit):
                 macs = obj[1]
                 for m in macs:
                     csv_writer.writerow([u, vlan, m])
+
 
 def main():
     """main entry."""
