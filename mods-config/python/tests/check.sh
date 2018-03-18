@@ -5,6 +5,7 @@ ACTUAL_KEYS="actual.keys"
 KEY_LOG="actual_keys.log"
 valid_mac="001122334455"
 AUDIT_CSV="actual.csv"
+AUDIT_CSV_SORT="actual.sort.csv"
 
 function test-objs()
 {
@@ -55,7 +56,8 @@ if [ $? -ne 0 ]; then
     exit -1
 fi
 
-diff audit_exp.csv $AUDIT_CSV
+cat $AUDIT_CSV | sort > $AUDIT_CSV_SORT
+diff audit_exp.csv $AUDIT_CSV_SORT
 if [ $? -ne 0 ]; then
     echo "different audit results..."
     exit -1
