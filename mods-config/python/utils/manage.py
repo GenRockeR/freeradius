@@ -41,7 +41,6 @@ PHAB_TOKEN = "PHAB_TOKEN"
 PHAB_HOST = "PHAB_HOST"
 LOG_FILES = "LOG_FILES"
 WORK_DIR = "WORKING_DIR"
-LEASE_PASTE = "DNS_LEASES"
 FLAG_MGMT_LEASE = "LEASE_MGMT"
 RPT_HOST = "RPT_HOST"
 RPT_TOKEN = "RPT_TOKEN"
@@ -60,7 +59,6 @@ class Env(object):
         self.phab = None
         self.log_files = None
         self.working_dir = None
-        self.dns_leases = None
         self.mgmt_ips = None
         self.rpt_host = None
         self.rpt_token = None
@@ -82,8 +80,6 @@ class Env(object):
             self.log_files = value
         elif key == WORK_DIR:
             self.working_dir = value
-        elif key == LEASE_PASTE:
-            self.dns_leases = value
         elif key == FLAG_MGMT_LEASE:
             self.mgmt_ips = value
         elif key == RPT_HOST:
@@ -114,7 +110,6 @@ class Env(object):
             errors += self._in_error(PHAB_HOST, self.phab)
             errors += self._in_error(LOG_FILES, self.log_files)
             errors += self._in_error(WORK_DIR, self.working_dir)
-            errors += self._in_error(LEASE_PASTE, self.dns_leases)
             errors += self._in_error(FLAG_MGMT_LEASE, self.mgmt_ips)
             errors += self._in_error(RPT_HOST, self.rpt_host)
             errors += self._in_error(RPT_TOKEN, self.rpt_token)
