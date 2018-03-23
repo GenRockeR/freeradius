@@ -297,9 +297,9 @@ def update_assignments(env):
     with open(AUDIT, 'r') as f:
         r = csv.reader(f)
         for row in r:
-            u = r[0]
-            v = r[1]
-            m = r[2]
+            u = row[0]
+            v = row[1]
+            m = row[2]
             lines.append((u, v, m))
     post_content(env, "assigned", "\n".join(lines))
 
