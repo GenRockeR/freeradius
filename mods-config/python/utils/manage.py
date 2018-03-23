@@ -290,7 +290,7 @@ def resolve_user(user_name, user_resolutions):
     return "[@{}](/p/{})".format(user, user)
 
 
-def update_wiki(env, running_config):
+def update_membership(env, running_config):
     """Update wiki pages with config information for VLANs."""
     defs = {}
     with open(running_config, 'r') as f:
@@ -557,7 +557,7 @@ def build():
         shutil.copyfile(new_config, run_config)
         u = pwd.getpwnam("radiusd")
         os.chown(run_config, u.pw_uid, u.pw_gid)
-        update_wiki(env, run_config)
+        update_membership(env, run_config)
         hashed = get_file_hash(FILE_NAME)
         git = "latest commit"
         git_indicator = env.working_dir + "git"
