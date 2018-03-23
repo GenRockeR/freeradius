@@ -253,7 +253,7 @@ u_obj.macs = None
 def get_report_data(env, name):
     """GET or POST report data."""
     report_url = "{}/reports/view/{}?raw=true".format(env.rpt_host, name)
-    return make_report_req(env, report_url, None)
+    return make_report_req(env, report_url, None).decode("utf-8")
 
 
 def make_report_req(env, endpoint, data):
@@ -264,6 +264,8 @@ def make_report_req(env, endpoint, data):
         ctx.check_hostname = False
         ctx.verify_mode = ssl.CERT_NONE
     r = urllib.request.urlopen(endpoint, data=data, context=ctx)
+    if r.getcode() != 200:
+        raise Exception("invalid report request")
     resp = r.read()
     print(resp)
     return resp
