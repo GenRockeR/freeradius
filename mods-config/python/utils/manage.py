@@ -466,10 +466,7 @@ def delete_if_exists(file_name):
 
 def _create_header():
     """Create a report header."""
-    return """
-> this page is maintained by a bot
-> do _NOT_ edit it here
-"""
+    return ""
 
 
 def daily_report(env, running_config):
