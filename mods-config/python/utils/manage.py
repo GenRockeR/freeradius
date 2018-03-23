@@ -276,7 +276,8 @@ def post_content(env, page, content):
     report_url = "{}/reports/upload?session={}".format(env.rpt_host,
                                                        env.rpt_token)
     data = {"name": page, "content": content}
-    make_report_req(env, report_url, data.encode("utf-8"))
+    payload = urllib.parse.urlencode(data)
+    make_report_req(env, report_url, payload.encode("utf-8"))
 
 
 def get_user_attr(user, key):
