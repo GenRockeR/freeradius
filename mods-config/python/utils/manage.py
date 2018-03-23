@@ -14,6 +14,7 @@ import pwd
 import urllib.parse
 import urllib.request
 import datetime
+import ssl
 
 REPORTING_HOUR = 4
 
@@ -44,6 +45,7 @@ WORK_DIR = "WORKING_DIR"
 FLAG_MGMT_LEASE = "LEASE_MGMT"
 RPT_HOST = "RPT_HOST"
 RPT_TOKEN = "RPT_TOKEN"
+RPT_LOCAL = "RPT_LOCAL"
 
 
 class Env(object):
@@ -62,6 +64,7 @@ class Env(object):
         self.mgmt_ips = None
         self.rpt_host = None
         self.rpt_token = None
+        self.rpt_local = None
 
     def add(self, key, value):
         """Add a key, sets into environment."""
@@ -86,6 +89,8 @@ class Env(object):
             self.rpt_host = value
         elif key == RPT_TOKEN:
             self.rpt_token = value
+        elif key == RPT_LOCAL:
+            self.rpt_local = value
 
     def _error(self, key):
         """Print an error."""
@@ -113,6 +118,7 @@ class Env(object):
             errors += self._in_error(FLAG_MGMT_LEASE, self.mgmt_ips)
             errors += self._in_error(RPT_HOST, self.rpt_host)
             errors += self._in_error(RPT_TOKEN, self.rpt_token)
+            errors += self._in_error(RPT_LOCAL, self.rpt_local)
         if errors > 0:
             exit(1)
 
@@ -247,7 +253,17 @@ u_obj.macs = None
 def get_report_data(env, name):
     """GET or POST report data."""
     report_url = "{}/reports/view/{}?raw=true".format(env.rpt_host, name)
-    r = urllib.request.urlopen(report_url)
+    return make_report_req(env, report_url, None)
+
+
+def make_report_req(env, url, data):
+    """Make a report request."""
+    ctx = None
+    if env.rpt_local == "1":
+        ctx = ssl.create_default_context()
+        ctx.check_hostname = False
+        ctx.verify_mode = ssl.CERT_NONE
+    r = urllib.request.urlopen(report_url, data=data, context=ctx)
     resp = r.read()
     print(resp)
     return resp
