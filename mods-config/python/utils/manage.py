@@ -292,6 +292,7 @@ def resolve_user(user_name, user_resolutions):
 
 def update_assignments(env):
     """Update assignments report."""
+    import csv
     lines = [("user", "vlan", "mac"), ("---", "---", "---")]
     with open(AUDIT, 'r') as f:
         r = csv.reader(f)
