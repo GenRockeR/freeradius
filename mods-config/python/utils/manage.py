@@ -37,9 +37,6 @@ PYTHON_MODS = "mods-config/python"
 # env vars
 FREERADIUS_REPO = "FREERADIUS_REPO"
 NETCONFIG = "NETCONF"
-PHAB_SLUG = "PHAB_SLUG"
-PHAB_TOKEN = "PHAB_TOKEN"
-PHAB_HOST = "PHAB_HOST"
 LOG_FILES = "LOG_FILES"
 WORK_DIR = "WORKING_DIR"
 FLAG_MGMT_LEASE = "LEASE_MGMT"
@@ -56,9 +53,6 @@ class Env(object):
         self.freeradius_repo = None
         self.backing = {}
         self.net_config = None
-        self.phab_token = None
-        self.phab_slug = None
-        self.phab = None
         self.log_files = None
         self.working_dir = None
         self.mgmt_ips = None
@@ -73,12 +67,6 @@ class Env(object):
             self.freeradius_repo = value
         elif key == NETCONFIG:
             self.net_config = value
-        elif key == PHAB_SLUG:
-            self.phab_slug = value
-        elif key == PHAB_TOKEN:
-            self.phab_token = value
-        elif key == PHAB_HOST:
-            self.phab = value
         elif key == LOG_FILES:
             self.log_files = value
         elif key == WORK_DIR:
@@ -110,9 +98,6 @@ class Env(object):
         errors += self._in_error(FREERADIUS_REPO, self.freeradius_repo)
         if full:
             errors += self._in_error(NETCONFIG, self.net_config)
-            errors += self._in_error(PHAB_SLUG, self.phab_slug)
-            errors += self._in_error(PHAB_TOKEN, self.phab_token)
-            errors += self._in_error(PHAB_HOST, self.phab)
             errors += self._in_error(LOG_FILES, self.log_files)
             errors += self._in_error(WORK_DIR, self.working_dir)
             errors += self._in_error(FLAG_MGMT_LEASE, self.mgmt_ips)
