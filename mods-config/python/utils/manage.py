@@ -275,7 +275,7 @@ def post_content(env, page, content):
     """Post content to a wiki page."""
     report_url = "{}/reports/upload?session={}".format(env.rpt_host,
                                                        env.rpt_token)
-    data = {"name" = page, "content" = content}
+    data = {"name": page, "content": content}
     make_report_req(env, report_url, data.encode("utf-8"))
 
 
