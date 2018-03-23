@@ -301,7 +301,10 @@ def update_assignments(env):
             v = row[1]
             m = row[2]
             lines.append((u, v, m))
-    post_content(env, "assigned", "\n".join(lines))
+    content = _create_header()
+    for l in lines:
+        content = content + "| {} | {} | {} |\n".format(l[0], l[1], l[2])
+    post_content(env, "assigned", "\n".join("| {} |".format(lines)))
 
 
 def update_membership(env, running_config):
