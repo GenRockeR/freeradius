@@ -271,23 +271,12 @@ def make_report_req(env, endpoint, data):
     return resp
 
 
-def post_get_data(env, endpoint, data):
-    """Post to get data."""
-    data["api.token"] = env.phab_token
-    payload = urllib.parse.urlencode(data)
-    r = urllib.request.urlopen(env.phab + "/api/" + endpoint,
-                               data=payload.encode("utf-8"))
-    resp = r.read()
-    print(resp)
-    return resp
-
-
-def post_content(env, page, title, content):
+def post_content(env, page, content):
     """Post content to a wiki page."""
-    data = {"slug": env.phab_slug + page,
-            "title": title,
-            "content": content}
-    post_get_data(env, "phriction.edit", data)
+    report_url = "{}/reports/upload?session={}".format(env.rpt_host,
+                                                       env.rpt_token)
+    data = {"name" = page, "content" = content}
+    make_report_req(env, report_url, data.encode("utf-8"))
 
 
 def get_user_attr(user, key):
@@ -345,7 +334,7 @@ def update_wiki(env, running_config):
     content = _create_header()
     for output in outputs:
         content = content + "| {} | {} |\n".format(output[0], output[1])
-    post_content(env, "vlans", "VLANs", content)
+    post_content(env, "membership", content)
 
 
 def update_leases(env, conf):
@@ -430,7 +419,7 @@ def update_leases(env, conf):
                                             statics,
                                             "management",
                                             is_mgmt)
-    post_content(env, "leases", "Leases", content)
+    post_content(env, "leases", content)
 
 
 def _create_lease_table(env, leases, unknowns, statics, header, filter_fxn):
@@ -559,7 +548,7 @@ def daily_report(env, running_config):
             lines.append(new_line)
             skip += 1
         auths = "".join(lines)
-    post_content(env, "auths", "Auths", _create_header() + auths)
+    post_content(env, "auths", _create_header() + auths)
     update_leases(env, conf)
     suggestions = []
     for u in optimized:
