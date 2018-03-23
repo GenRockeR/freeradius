@@ -256,14 +256,14 @@ def get_report_data(env, name):
     return make_report_req(env, report_url, None)
 
 
-def make_report_req(env, url, data):
+def make_report_req(env, endpoint, data):
     """Make a report request."""
     ctx = None
     if env.rpt_local == "1":
         ctx = ssl.create_default_context()
         ctx.check_hostname = False
         ctx.verify_mode = ssl.CERT_NONE
-    r = urllib.request.urlopen(report_url, data=data, context=ctx)
+    r = urllib.request.urlopen(endpoint, data=data, context=ctx)
     resp = r.read()
     print(resp)
     return resp
