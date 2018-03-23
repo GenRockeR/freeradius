@@ -41,9 +41,10 @@ PHAB_TOKEN = "PHAB_TOKEN"
 PHAB_HOST = "PHAB_HOST"
 LOG_FILES = "LOG_FILES"
 WORK_DIR = "WORKING_DIR"
-LEASE_PASTE = "PHAB_LEASE_PASTE"
+LEASE_PASTE = "DNS_LEASES"
 FLAG_MGMT_LEASE = "LEASE_MGMT"
-
+RPT_HOST = "RPT_HOST"
+RPT_TOKEN = "RPT_TOKEN"
 
 class Env(object):
     """Environment definition."""
@@ -58,8 +59,10 @@ class Env(object):
         self.phab = None
         self.log_files = None
         self.working_dir = None
-        self.phab_leases = None
+        self.dns_leases = None
         self.mgmt_ips = None
+        self.rpt_host = None
+        self.rpt_token = None
 
     def add(self, key, value):
         """Add a key, sets into environment."""
@@ -79,9 +82,13 @@ class Env(object):
         elif key == WORK_DIR:
             self.working_dir = value
         elif key == LEASE_PASTE:
-            self.phab_leases = value
+            self.dns_leases = value
         elif key == FLAG_MGMT_LEASE:
             self.mgmt_ips = value
+        elif key == RPT_HOST:
+            self.rpt_host = value
+        elif key == RPT_TOKEN:
+            self.rpt_token = value
 
     def _error(self, key):
         """Print an error."""
@@ -106,8 +113,10 @@ class Env(object):
             errors += self._in_error(PHAB_HOST, self.phab)
             errors += self._in_error(LOG_FILES, self.log_files)
             errors += self._in_error(WORK_DIR, self.working_dir)
-            errors += self._in_error(LEASE_PASTE, self.phab_leases)
+            errors += self._in_error(LEASE_PASTE, self.dns_leases)
             errors += self._in_error(FLAG_MGMT_LEASE, self.mgmt_ips)
+            errors += self._in_error(RPT_HOST, self.rpt_host)
+            errors += self._in_error(RPT_TOKEN, self.rpt_token)
         if errors > 0:
             exit(1)
 
@@ -239,6 +248,15 @@ u_obj.macs = None
     print("{} was created with a password of {}".format(named, raw))
 
 
+def get_report_data(env, name):
+    """GET or POST report data."""
+    report_url = "{}/reports/view/{}?raw=true".format(env.rpt_host, name)
+    r = urllib.request.urlopen(report_url)
+    resp = r.read()
+    print(resp)
+    return resp
+
+
 def post_get_data(env, endpoint, data):
     """Post to get data."""
     data["api.token"] = env.phab_token
@@ -323,13 +341,7 @@ def update_leases(env, conf):
     statics = []
     mgmts = []
     try:
-        data = {
-                "constraints[phids][0]": env.phab_leases,
-                "attachments[content]": 1
-                }
-        resp = post_get_data(env, "paste.search", data)
-        data = json.loads(resp)["result"]["data"][0]
-        raw = data["attachments"]["content"]["content"]
+        raw = get_report_data(env, "dns")
         for line in raw.split("\n"):
             if len(line.strip()) == 0:
                 continue
