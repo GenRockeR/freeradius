@@ -290,6 +290,19 @@ def resolve_user(user_name, user_resolutions):
     return "[@{}](/p/{})".format(user, user)
 
 
+def update_assignments(env):
+    """Update assignments report."""
+    lines = [("user", "vlan", "mac"), ("---", "---", "---")]
+    with open(AUDIT, 'r') as f:
+        r = csv.reader(f)
+        for row in r:
+            u = r[0]
+            v = r[1]
+            m = r[2]
+            lines.append((u, v, m))
+    post_content(env, "assigned", "\n".join(lines))
+
+
 def update_membership(env, running_config):
     """Update wiki pages with config information for VLANs."""
     defs = {}
@@ -558,6 +571,7 @@ def build():
         u = pwd.getpwnam("radiusd")
         os.chown(run_config, u.pw_uid, u.pw_gid)
         update_membership(env, run_config)
+        update_assignments(env)
         hashed = get_file_hash(FILE_NAME)
         git = "latest commit"
         git_indicator = env.working_dir + "git"
