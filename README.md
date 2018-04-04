@@ -1,7 +1,7 @@
 freeradius
 ===
 
-**This repository and implementation was built and used through freeradius 3.0.16. Information and solutions here may no longer be relevant in future versions of freeradius.**
+**This repository and implementation was built and used through freeradius 3.0.16. Information and solutions here may no longer be relevant in future versions of freeradius. We are no longer utillizing this implementation, please see [radiucal](https://github.com/epiphyte/radiucal)**
 
 This is a freeradius setup that uses a python script to control user-password authentication and MACs to place user+MAC combinations into the proper vlan. This was done on Arch linux (in a container, as root)
 
