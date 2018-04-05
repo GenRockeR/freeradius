@@ -84,13 +84,6 @@ We are able to review information about accounting (e.g. Start/Stop) to see conn
 * Though the python module is configured to be available for each phase (e.g. authorize, authenticate, accounting, post_auth, pre_proxy, preacct), it is not currently enabled for all (e.g. preacct, pre_proxy)
 * MAC spoofing is likely the highest risk (currently known) for this configuration, see 'Future Options' above for how this can and may be mitigated
 
----
-
-| branch | status |
-| ------ | ------ |
-| master | [![Build Status](https://travis-ci.org/epiphyte/freeradius.svg?branch=master)](https://travis-ci.org/epiphyte/freeradius) |
-| stable | [![Build Status](https://travis-ci.org/epiphyte/freeradius.svg?branch=stable)](https://travis-ci.org/epiphyte/freeradius) |
-
 ## setup/install
 
 install python2 and freeradius
